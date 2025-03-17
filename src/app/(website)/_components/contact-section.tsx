@@ -50,7 +50,7 @@ export default function ContactSection() {
   return (
     <section className="w-full rounded-lg px-4 py-12">
       <div className="container mx-auto">
-        <h2 className="title mb-5">Contact Us</h2>
+        <h2 className="title">Contact Us</h2>
         <div className="mb-8">
           <p className="subTitle">
             Have questions or need assistance? Our team is here to help! Whether
@@ -188,7 +188,7 @@ export default function ContactSection() {
               )}
             />
 
-            <div className="flex justify-center">
+            <div className="">
               <Button
                 type="submit"
                 className="w-full max-w-xs bg-primary py-6 text-white hover:bg-red-600"
