@@ -8,8 +8,8 @@ import Image from "next/image";
 
 export default function Navbar() {
   return (
-    <div className="relative">
-      <nav className="fixed top-0 z-50 w-full bg-[#843E3E54]">
+    <div className="relative pb-20">
+      <nav className="fixed top-0 z-50 w-full bg-[#4C0000]/30 backdrop-blur-lg shadow-md shadow-orange-900">
         <div className="mx-auto flex h-[80px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
