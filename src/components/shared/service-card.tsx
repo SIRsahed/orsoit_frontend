@@ -14,13 +14,13 @@ interface ServiceCardProps {
 
 export function ServiceCard({ title, description, icon }: ServiceCardProps) {
   return (
-    <div className="relative w-[370px] h-[390px]">
+    <div className="relative h-[390px] w-[370px]">
       <Image
         src={"/curved_div.png"}
         alt="ORSO Solutions"
         height={400}
         width={400}
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
       />
 
       {/* Content positioned absolutely on top of the image */}
@@ -31,12 +31,12 @@ export function ServiceCard({ title, description, icon }: ServiceCardProps) {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-2xl font-semibold text-white">{title}</h3>
-            <p className="text-sm text-gray-400 max-w-[280px]">{description}</p>
+            <h3 className="text-2xl font-semibold text-primary">{title}</h3>
+            <p className="cardSubTitle max-w-[280px]">{description}</p>
           </div>
 
           <Button
-            className="bg-red-600 text-white transition-colors hover:bg-red-700"
+            className="bg-primary text-white transition-colors hover:bg-red-600"
             size="lg"
           >
             See Plans

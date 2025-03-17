@@ -6,9 +6,13 @@
   .text-balance {
     text-wrap: balance;
   }
+  .text-primary {
+    color: var(--text-primary);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
 }
-
-
 
 @layer base {
   :root {
@@ -18,7 +22,9 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --primary: #d80100;
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -65,8 +71,20 @@
     --chart-5: 340 75% 55%;
   }
 }
-
-
+@layer components {
+  .title {
+    @apply text-[36px] font-[700] leading-[37px] tracking-normal text-primary md:text-[56px] md:leading-[57.6px];
+  }
+  .subTitle {
+    @apply text-[14px] leading-[130%] text-secondary md:text-[16px];
+  }
+  .cardTitle {
+    @apply text-[26px] font-semibold leading-[120%] tracking-normal text-primary md:text-[32px];
+  }
+  .cardSubTitle {
+    @apply text-[10px] font-normal leading-[150%] tracking-normal text-[#999999] md:text-[12px];
+  }
+}
 
 @layer base {
   * {

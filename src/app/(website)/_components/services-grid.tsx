@@ -36,15 +36,15 @@ const services = [
 
 export function ServicesGrid() {
   return (
-    <section className="w-full bg-black px-4 py-16">
+    <section className="w-full px-4 py-16">
       <div className="container mx-auto space-y-8">
         <div className="text-center">
           <h2 className="mb-4 text-4xl font-bold text-white">Orso Services</h2>
-          <p className="mx-auto max-w-3xl text-gray-400">
+          <p className="mx-auto text-secondary">
             Have questions or need assistance? Our team is here to help! Whether
-            you`&apos;`re looking for cybersecurity solutions, have a security concern,
-            or just want to learn more about our services, feel free to reach
-            out.
+            you&apos;re looking for cybersecurity solutions, have a security
+            concern, or just want to learn more about our services, feel free to
+            reach out.
           </p>
         </div>
 
