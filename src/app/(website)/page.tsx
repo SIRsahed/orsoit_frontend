@@ -1,5 +1,5 @@
 import React from "react";
-import { ServicesGrid } from "./_components/services-grid";
+import { ServicesGrid } from "./about/_components/_components/services-grid";
 
 const page = () => {
   return <ServicesGrid />;
