@@ -27,16 +27,16 @@ export default function BlogsSection() {
   return (
     <section className="w-full py-12 md:py-16 lg:py-20">
       <div className="container">
-        <h2 className="title mb-5 text-center">Blogs</h2>
+        <h2 className="title text-center">Blogs</h2>
         <div className="flex flex-col items-center space-y-10">
           {/* Header Text */}
           <div className="text-secondary">
-            <p className="subTitle">
-              At Oreo, we are more than a cybersecurity provider – we're your
-              trusted partner in building a resilient digital environment. Our
-              mission is to empower businesses to operate securely in today's
-              complex and ever-changing threat landscape. We specialize in
-              delivering end-to-end security solutions.
+            <p className="subTitle text-center">
+              At Oreo, we are more than a cybersecurity provider – we&apos;re
+              your trusted partner in building a resilient digital environment.
+              Our mission is to empower businesses to operate securely in
+              today&apos;s complex and ever-changing threat landscape. We
+              specialize in delivering end-to-end security solutions.
             </p>
           </div>
 

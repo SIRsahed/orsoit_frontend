@@ -36,7 +36,7 @@ const services = [
 
 export function ServicesGrid() {
   return (
-    <section className="mt-[400px] w-full px-4 py-16">
+    <section className="w-full px-4 py-16">
       <div className="container mx-auto space-y-8">
         <div className="text-center">
           <h2 className="title">Orso Services</h2>

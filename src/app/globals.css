@@ -73,7 +73,7 @@
 }
 @layer components {
   .title {
-    @apply text-[36px] font-[700] leading-[37px] tracking-normal text-primary md:text-[56px] md:leading-[57.6px];
+    @apply mb-5 text-[36px] font-[700] leading-[37px] tracking-normal text-primary md:text-[56px] md:leading-[57.6px];
   }
   .subTitle {
     @apply text-[14px] leading-[130%] text-secondary md:text-[16px];
