@@ -15,7 +15,7 @@ export default function Footer() {
               height={100}
               width={100}
             />
-            <p className="text-sm text-gray-300">
+            <p className="subTitle">
               At Orso, we are dedicated to protecting your business in the
               ever-evolving digital landscape.
             </p>
