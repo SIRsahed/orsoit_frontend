@@ -42,7 +42,7 @@ export function ServicesGrid() {
           <h2 className="mb-4 text-4xl font-bold text-white">Orso Services</h2>
           <p className="mx-auto max-w-3xl text-gray-400">
             Have questions or need assistance? Our team is here to help! Whether
-            you're looking for cybersecurity solutions, have a security concern,
+            you`&apos;`re looking for cybersecurity solutions, have a security concern,
             or just want to learn more about our services, feel free to reach
             out.
           </p>
