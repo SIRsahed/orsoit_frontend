@@ -1,13 +1,31 @@
-import React from 'react'
+import React from "react";
+import MissionSection from "./_components/_components/Mission";
+import LearnMore from "./_components/_components/LearnMore";
+import VisionSection from "./vision";
+import TestimonialSection from "./_components/_components/TestimonialSection";
+import NewsletterSection from "./_components/_components/NewsletterSection";
 
-const page = () => {
+const Page = () => {
+  // Capitalize the component name to follow the convention
   return (
     <div>
-      <h1>about</h1>
-
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet consectetur numquam quaerat voluptatem dolores veniam delectus ipsa consequuntur sint vero ab tempore quo ex ullam saepe dignissimos eveniet nihil cupiditate nisi, optio magnam doloribus! Optio dolor sed iusto delectus fuga minus similique, doloribus obcaecati! Velit neque laudantium quaerat. Aperiam, optio?</p>
+      <div>
+        <LearnMore />
+      </div>
+      <div>
+        <MissionSection />
+      </div>
+      <div>
+        <VisionSection />
+      </div>
+      <div>
+        <TestimonialSection />
+      </div>
+      <div>
+        <NewsletterSection />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;
