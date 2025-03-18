@@ -93,4 +93,54 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1 {
+    @apply text-3xl font-bold leading-[40px] md:text-4xl md:leading-[50px];
+  }
+
+  h2 {
+    @apply text-2xl font-semibold leading-[40px] md:text-3xl md:leading-[50px];
+  }
+
+  h3 {
+    @apply text-xl font-medium leading-[35px] md:text-2xl md:leading-[45px];
+  }
+
+  /* p {
+    @apply text-base md:text-lg leading-[24px] md:leading-[28px];
+  } */
+  ul {
+    @apply list-disc pl-4 md:pl-5;
+  }
+
+  ol {
+    @apply list-decimal pl-4 md:pl-5;
+  }
+}
+
+.r-gradient {
+  background: rgb(216, 0, 0);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#d80000",endColorstr="#290505",GradientType=1);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
 }
