@@ -46,7 +46,7 @@ export function ServiceCard({
   };
 
   return (
-    <div className="relative h-[390px] w-[370px]">
+    <div className="relative h-[390px] w-[370px] z-10">
       <Image
         src={"/curved_div.png"}
         alt="ORSO Solutions"
