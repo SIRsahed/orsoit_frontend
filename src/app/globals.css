@@ -93,6 +93,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1 {
+    @apply text-3xl font-bold leading-[40px] md:text-4xl md:leading-[50px];
+  }
+
+  h2 {
+    @apply text-2xl font-semibold leading-[40px] md:text-3xl md:leading-[50px];
+  }
+
+  h3 {
+    @apply text-xl font-medium leading-[35px] md:text-2xl md:leading-[45px];
+  }
+
+  /* p {
+    @apply text-base md:text-lg leading-[24px] md:leading-[28px];
+  } */
+  ul {
+    @apply list-disc pl-4 md:pl-5;
+  }
+
+  ol {
+    @apply list-decimal pl-4 md:pl-5;
+  }
 }
 
 .r-gradient {

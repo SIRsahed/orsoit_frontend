@@ -27,7 +27,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="container relative z-20 mx-auto mt-auto translate-y-[400px] px-4 text-center">
+      <div className="container relative z-20 mx-auto mt-auto px-4 text-center">
         <h1 className="mb-6 text-4xl font-bold tracking-tight text-white md:text-[56px]">
           YOUR 1 IT SECURITY AND SERVICE PROVIDERS
         </h1>
