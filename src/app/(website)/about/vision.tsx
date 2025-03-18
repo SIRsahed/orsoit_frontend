@@ -2,10 +2,21 @@ import Image from 'next/image';
 
 const VisionSection = () => {
   return (
-    <section className="bg-black text-white py-16 w-[1170px] mx-auto h-[550px]">
-      <div className="px-4 lg:px-8 flex items-center h-full">
-        <div className="lg:w-1/2 pr-8 h-full flex items-center">
-          <div>
+    <section className="bg-black text-white lg:py-16 container mx-auto">
+      {/* <div className='relativ'>
+        <div className="absolute left-0 -top-40 w-full h-full">
+                  <Image 
+                    src="/images/c-1.png" 
+                    fill
+                    priority
+                    alt="image" 
+                    className="object-cover w-full opacity-40"
+                  />
+                </div>
+      </div> */}
+      <div className="lg:flex gap-14 lg:ml-4 items-center h-full">
+        <div className="lg:w-1/2 mb-8 lg:mb-0 lg:pr-8 h-full flex items-center">
+          <div className='text-center lg:text-start mt-10 lg:mt-0'>
             <h2 className="text-3xl font-bold mb-6">OUR VISION</h2>
             <p className="text-lg mb-4">
               At [Your Company Name], our vision is to be a global leader in cybersecurity, creating a secure digital future where individuals and businesses thrive without fear of cyber threats. We aspire to build a world where trust, privacy, and security are the foundation of all digital interactions.
@@ -38,3 +49,7 @@ const VisionSection = () => {
 };
 
 export default VisionSection;
+
+
+
+
