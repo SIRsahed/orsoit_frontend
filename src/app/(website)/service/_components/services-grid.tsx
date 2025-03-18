@@ -39,7 +39,7 @@ export function ServicesGrid() {
     <section className="w-full px-4 py-16">
       <div className="container mx-auto space-y-8">
         <div className="text-center">
-          <h2 className="mb-4 text-4xl font-bold text-white">Orso Services</h2>
+          <h2 className="title">Orso Services</h2>
           <p className="mx-auto text-secondary">
             Have questions or need assistance? Our team is here to help! Whether
             you&apos;re looking for cybersecurity solutions, have a security
