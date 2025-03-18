@@ -73,7 +73,7 @@ export default function BlogsSection() {
           {/* See All Link */}
           <div className="flex w-full items-start justify-end">
             <Link
-              href="#"
+              href="/blogs"
               className="inline-flex items-center font-medium text-red-600"
             >
               See All <ArrowRight className="ml-1 h-4 w-4" />
