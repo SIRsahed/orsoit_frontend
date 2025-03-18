@@ -116,3 +116,31 @@
     @apply list-decimal pl-4 md:pl-5;
   }
 }
+
+.r-gradient {
+  background: rgb(216, 0, 0);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(216, 0, 0, 0.5914740896358543) 0%,
+    rgba(127, 3, 3, 0.4206057422969187) 18%,
+    rgba(41, 5, 5, 0.08167016806722693) 58%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#d80000",endColorstr="#290505",GradientType=1);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+}
