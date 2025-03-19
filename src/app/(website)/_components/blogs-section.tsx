@@ -47,16 +47,22 @@ export default function BlogsSection() {
                 key={blog.id}
                 className="overflow-hidden border-0 bg-[#000000] shadow-none"
               >
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <Image
-                    src={blog.imageUrl || "/placeholder.svg"}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
+                <Link href={`/blogs/1`} className="block">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <Image
+                      src={blog.imageUrl || "/placeholder.svg"}
+                      alt={blog.title}
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+                </Link>
                 <CardContent className="px-0 py-5">
-                  <h3 className="cardTitle mb-2">{blog.title}</h3>
+                  <Link href={`/blogs/1`} className="block">
+                    <h3 className="cardTitle mb-2 hover:text-red-600">
+                      {blog.title}
+                    </h3>
+                  </Link>
                   {/* <p className="text-gray-500 text-sm mb-2">{blog.date}</p> */}
                   <p className="subTitle">{blog.excerpt}</p>
                 </CardContent>
@@ -67,7 +73,7 @@ export default function BlogsSection() {
           {/* See All Link */}
           <div className="flex w-full items-start justify-end">
             <Link
-              href="#"
+              href="/blogs"
               className="inline-flex items-center font-medium text-red-600"
             >
               See All <ArrowRight className="ml-1 h-4 w-4" />
