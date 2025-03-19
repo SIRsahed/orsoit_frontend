@@ -1,234 +1,268 @@
-// "use client";
-// import { useState, useEffect } from "react";
-// import {
-//   ChevronLeft,
-//   ChevronRight,
-//   Facebook,
-//   Twitter,
-//   Instagram,
-// } from "lucide-react";
-// import Image from "next/image";
+// "use client"
 
-// // Define the type for team members
-// interface TeamMember {
-//   id: number;
-//   name: string;
-//   title: string;
-//   image: string;
-//   socialLinks: {
-//     facebook?: string;
-//     twitter?: string;
-//     instagram?: string;
-//   };
-// }
+// import Image from "next/image"
+// import { Facebook, Twitter, Instagram } from "lucide-react"
+// import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+// import { useState } from "react"
+// import type { CarouselApi } from "@/components/ui/carousel"
 
-// export default function CarouselPages() {
-//   // Sample data - replace with your dynamic data source
-//   const teamMembers: TeamMember[] = [
+// export default function CyberSecurityCarousel() {
+//   const [api, setApi] = useState<CarouselApi | null>(null)
+
+//   const advisors = [
 //     {
-//       id: 1,
 //       name: "Alender",
 //       title: "Performance Advisor",
-//       image: "/placeholder.svg?height=150&width=150",
-//       socialLinks: {
-//         facebook: "#",
-//         twitter: "#",
-//         instagram: "#",
-//       },
+//       image: "/placeholder.svg?height=200&width=200",
 //     },
 //     {
-//       id: 2,
 //       name: "Alender",
 //       title: "Performance Advisor",
-//       image: "/placeholder.svg?height=150&width=150",
-//       socialLinks: {
-//         facebook: "#",
-//         twitter: "#",
-//         instagram: "#",
-//       },
+//       image: "/placeholder.svg?height=200&width=200",
 //     },
 //     {
-//       id: 3,
 //       name: "Alender",
 //       title: "Performance Advisor",
-//       image: "/placeholder.svg?height=150&width=150",
-//       socialLinks: {
-//         facebook: "#",
-//         twitter: "#",
-//         instagram: "#",
-//       },
+//       image: "/placeholder.svg?height=200&width=200",
 //     },
 //     {
-//       id: 4,
-//       name: "Sarah Johnson",
-//       title: "Security Specialist",
-//       image: "/placeholder.svg?height=150&width=150",
-//       socialLinks: {
-//         facebook: "#",
-//         twitter: "#",
-//         instagram: "#",
-//       },
+//       name: "Alender",
+//       title: "Performance Advisor",
+//       image: "/placeholder.svg?height=200&width=200",
 //     },
 //     {
-//       id: 5,
-//       name: "Michael Chen",
-//       title: "Threat Analyst",
-//       image: "/placeholder.svg?height=150&width=150",
-//       socialLinks: {
-//         facebook: "#",
-//         twitter: "#",
-//         instagram: "#",
-//       },
+//       name: "Alender",
+//       title: "Performance Advisor",
+//       image: "/placeholder.svg?height=200&width=200",
 //     },
-//   ];
+//     {
+//       name: "Alender",
+//       title: "Performance Advisor",
+//       image: "/placeholder.svg?height=200&width=200",
+//     },
+//   ]
 
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const [visibleCards, setVisibleCards] = useState<TeamMember[]>([]);
-//   const [cardsToShow, setCardsToShow] = useState(3);
+//   // Handle previous slide
+//   const handlePrevious = () => {
+//     if (api) {
+//       api.scrollPrev()
+//     }
+//   }
 
-//   // Handle responsive behavior
-//   useEffect(() => {
-//     const handleResize = () => {
-//       if (window.innerWidth < 640) {
-//         setCardsToShow(1);
-//       } else if (window.innerWidth < 1024) {
-//         setCardsToShow(2);
-//       } else {
-//         setCardsToShow(3);
-//       }
-//     };
-
-//     // Set initial value
-//     handleResize();
-
-//     // Add event listener
-//     window.addEventListener("resize", handleResize);
-
-//     // Clean up
-//     return () => window.removeEventListener("resize", handleResize);
-//   }, []);
-
-//   // Update visible cards when currentIndex or cardsToShow changes
-//   useEffect(() => {
-//     setVisibleCards(
-//       teamMembers.slice(currentIndex, currentIndex + cardsToShow),
-//     );
-//   }, [currentIndex, cardsToShow, teamMembers]);
-
-//   const handlePrev = () => {
-//     setCurrentIndex((prevIndex) => {
-//       const newIndex = prevIndex - cardsToShow;
-//       return newIndex >= 0
-//         ? newIndex
-//         : Math.max(teamMembers.length - cardsToShow, 0);
-//     });
-//   };
-
+//   // Handle next slide
 //   const handleNext = () => {
-//     setCurrentIndex((prevIndex) => {
-//       const newIndex = prevIndex + cardsToShow;
-//       return newIndex < teamMembers.length ? newIndex : 0;
-//     });
-//   };
+//     if (api) {
+//       api.scrollNext()
+//     }
+//   }
 
 //   return (
-//     <section className="w-full pt-12">
-//       <div className="container mx-auto px-4">
-//         <div className="absolute inset-0 z-0 h-full w-full">
-//           <Image
-//             src="/images/binaryimage.png"
-//             alt="Background"
-//             fill
-//             priority
-//             className="object-cover opacity-70 "
-//           />
-//         </div>
+//     <div className="w-full container mx-auto p-6 relative">
+//       <div className="flex items-center justify-between mb-6">
+//         <h2 className="text-3xl font-bold text-white">Cyber Security Solutions</h2>
 
-//         {/* First image positioned on the left with half width and full height */}
-//         <div className="z-1 absolute left-0 top-0 h-full w-[70%]">
-//           <Image
-//             src="/images/E-1.png"
-//             alt="Left side image"
-//             fill
-//             priority
-//             className="w-full object-cover opacity-50" // Add white border here
-//           />
-//         </div>
-//         <div className="mb-8 flex items-center justify-between">
-//           <h2 className="text-3xl font-bold text-white">
-//             Cyber Security Solutions
-//           </h2>
-//           <div className="flex space-x-2">
-//             <button
-//               onClick={handlePrev}
-//               className="rounded-full p-2 text-white hover:bg-red-900/30"
-//               aria-label="Previous slide"
-//             >
-//               <ChevronLeft className="h-6 w-6" />
-//             </button>
-//             <button
-//               onClick={handleNext}
-//               className="rounded-full p-2 text-white hover:bg-red-900/30"
-//               aria-label="Next slide"
-//             >
-//               <ChevronRight className="h-6 w-6" />
-//             </button>
-//           </div>
-//         </div>
-
-//         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-//           {visibleCards.map((member) => (
-//             <div
-//               key={member.id}
-//               className="flex flex-col items-center rounded-lg border border-red-900/30 bg-black p-6 transition-all"
-//             >
-//               <div className="mb-4 h-24 w-24 overflow-hidden rounded-full bg-gray-200">
-//                 <Image
-//                   src={member.image || "/placeholder.svg"}
-//                   alt={member.name}
-//                   width={150}
-//                   height={150}
-//                   className="h-full w-full object-cover"
-//                 />
-//               </div>
-//               <h3 className="mb-1 text-xl font-medium text-white">
-//                 {member.name}
-//               </h3>
-//               <p className="mb-4 text-sm text-gray-400">{member.title}</p>
-//               <div className="flex space-x-3">
-//                 {member.socialLinks.facebook && (
-//                   <a
-//                     href={member.socialLinks.facebook}
-//                     className="rounded-full bg-red-900/50 p-2 text-white hover:bg-red-800"
-//                     aria-label="Facebook"
-//                   >
-//                     <Facebook className="h-4 w-4" />
-//                   </a>
-//                 )}
-//                 {member.socialLinks.twitter && (
-//                   <a
-//                     href={member.socialLinks.twitter}
-//                     className="rounded-full bg-red-900/50 p-2 text-white hover:bg-red-800"
-//                     aria-label="Twitter"
-//                   >
-//                     <Twitter className="h-4 w-4" />
-//                   </a>
-//                 )}
-//                 {member.socialLinks.instagram && (
-//                   <a
-//                     href={member.socialLinks.instagram}
-//                     className="rounded-full bg-red-900/50 p-2 text-white hover:bg-red-800"
-//                     aria-label="Instagram"
-//                   >
-//                     <Instagram className="h-4 w-4" />
-//                   </a>
-//                 )}
-//               </div>
-//             </div>
-//           ))}
+//         {/* Navigation buttons at the top right */}
+//         <div className="flex space-x-4">
+//           <button
+//             onClick={handlePrevious}
+//             className="text-white hover:text-red-400 transition-colors"
+//             aria-label="Previous slide"
+//           >
+//             <span className="text-2xl">&lt;</span>
+//           </button>
+//           <button
+//             onClick={handleNext}
+//             className="text-white hover:text-red-400 transition-colors"
+//             aria-label="Next slide"
+//           >
+//             <span className="text-2xl">&gt;</span>
+//           </button>
 //         </div>
 //       </div>
-//     </section>
-//   );
+
+//       <div className="relative">
+//         <Carousel
+//           className="w-full"
+//           setApi={setApi}
+//           opts={{
+//             align: "start",
+//           }}
+//         >
+//           <CarouselContent>
+//             {advisors.map((advisor, index) => (
+//               <CarouselItem key={index} className="md:basis-1/3 p-2">
+//                 <div className="bg-[#0A0A0B] rounded-lg p-6 h-full flex flex-col items-center">
+//                   <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 mb-4">
+//                     <Image src={advisor.image || "/placeholder.svg"} alt={advisor.name} fill className="object-cover" />
+//                   </div>
+//                   <h3 className="text-xl font-bold text-white">{advisor.name}</h3>
+//                   <p className="text-gray-300 mb-4">{advisor.title}</p>
+//                   <div className="flex space-x-4 mt-auto">
+//                     <button className="text-red-600 hover:text-red-400 transition-colors">
+//                       <Facebook size={20} />
+//                     </button>
+//                     <button className="text-red-600 hover:text-red-400 transition-colors">
+//                       <Twitter size={20} />
+//                     </button>
+//                     <button className="text-red-600 hover:text-red-400 transition-colors">
+//                       <Instagram size={20} />
+//                     </button>
+//                   </div>
+//                 </div>
+//               </CarouselItem>
+//             ))}
+//           </CarouselContent>
+//         </Carousel>
+//       </div>
+//     </div>
+//   )
 // }
 
+"use client";
+
+import Image from "next/image";
+import { Facebook, Twitter, Instagram } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { useState } from "react";
+import type { CarouselApi } from "@/components/ui/carousel";
+
+export default function CyberSecurityCarousel() {
+  const [api, setApi] = useState<CarouselApi | null>(null);
+
+  const advisors = [
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "Alender",
+      title: "Performance Advisor",
+      image: "/placeholder.svg?height=200&width=200",
+    },
+  ];
+
+  // Handle previous slide
+  const handlePrevious = () => {
+    if (api) {
+      api.scrollPrev();
+    }
+  };
+
+  // Handle next slide
+  const handleNext = () => {
+    if (api) {
+      api.scrollNext();
+    }
+  };
+
+  return (
+    <div className="relative mx-auto w-full p-6">
+      {/* Absolutely positioned image */}
+      <div className="absolute left-0 top-1/4 z-0">
+        <Image
+          src="/images/c-1.png" // Update with your image path
+          alt="Left Side Image"
+          width={800} // Adjust width as needed
+          height={200} // Adjust height as needed
+          className="h-full w-full object-cover opacity-30" // Adjust opacity for subtle effect
+        />
+      </div>
+      <div className="container">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-3xl font-bold text-white">
+            Cyber Security Solutions
+          </h2>
+
+          {/* Navigation buttons at the top right */}
+          <div className="flex space-x-4">
+            <button
+              onClick={handlePrevious}
+              className="text-white transition-colors hover:text-red-400"
+              aria-label="Previous slide"
+            >
+              <span className="text-2xl">&lt;</span>
+            </button>
+            <button
+              onClick={handleNext}
+              className="text-white transition-colors hover:text-red-400"
+              aria-label="Next slide"
+            >
+              <span className="text-2xl">&gt;</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="relative">
+          <Carousel
+            className="w-full"
+            setApi={setApi}
+            opts={{
+              align: "start",
+            }}
+          >
+            <CarouselContent>
+              {advisors.map((advisor, index) => (
+                <CarouselItem key={index} className="p-2 md:basis-1/3">
+                  <div className="flex h-full flex-col items-center rounded-lg bg-[#0A0A0B] p-6">
+                    <div className="relative mb-4 h-32 w-32 overflow-hidden rounded-full bg-gray-200">
+                      <Image
+                        src="/images/cc-1.png"
+                        alt={advisor.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">
+                      {advisor.name}
+                    </h3>
+                    <p className="mb-4 text-gray-300">{advisor.title}</p>
+                    <div className="mt-auto flex space-x-4">
+                      {/* <button className="text-red-600 hover:text-red-400 transition-colors bg-[#D8010040] w-[30px] h-[30px]">
+                      <Facebook size={20} />
+                    </button> */}
+
+                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                        <Facebook size={15} />
+                      </button>
+                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                        <Twitter size={20} />
+                      </button>
+                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                        <Instagram size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
+      </div>
+    </div>
+  );
+}
