@@ -21,7 +21,7 @@ const AboutUsSection = () => {
           compliance, or protecting critical infrastructure.
         </p>
         <div className="mt-10 flex w-full flex-wrap justify-between gap-10">
-          <Link href="/contact-us">
+          <Link href="/about">
             <Button className="h-[45px] w-[340px] text-[18px]">
               Contact Us
             </Button>

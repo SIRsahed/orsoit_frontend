@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CuboidIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ServiceCardProps {
   title: string;
@@ -46,7 +47,7 @@ export function ServiceCard({
   };
 
   return (
-    <div className="relative h-[390px] w-[370px] z-10">
+    <div className="relative z-10 h-[390px] w-[370px]">
       <Image
         src={"/curved_div.png"}
         alt="ORSO Solutions"
@@ -66,14 +67,26 @@ export function ServiceCard({
             <h3 className="text-2xl font-semibold text-primary">{title}</h3>
             <p className="cardSubTitle max-w-[280px]">{description}</p>
           </div>
-
-          <Button
-            className="bg-primary text-white transition-colors hover:bg-red-600"
-            size="lg"
-            onClick={handleSeePlans}
-          >
-            See Plans
-          </Button>
+          <div>
+            {plans ? (
+              <Button
+                className="bg-primary text-white transition-colors hover:bg-red-600"
+                size="lg"
+                onClick={handleSeePlans}
+              >
+                See Plans
+              </Button>
+            ) : (
+              <Link href="/service/custom">
+                <Button
+                  className="bg-primary text-white transition-colors hover:bg-red-600"
+                  size="lg"
+                >
+                  See Plans
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>
