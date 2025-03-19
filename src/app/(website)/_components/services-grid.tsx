@@ -1,5 +1,6 @@
 import { ServiceCard } from "@/components/shared/service-card";
 import { CuboidIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const services = [
@@ -237,10 +238,13 @@ const services = [
 
 export function ServicesGrid() {
   return (
-    <section className="w-full px-4 py-16">
+    <section className="relative w-full py-16">
+      <div className="absolute right-0 -z-10 md:h-[1500px] md:w-[1500px]">
+        <Image src="/gradient/gr.png" alt="services-bg" fill />
+      </div>
       {/* Content */}
-      <div className="container z-20 mx-auto mb-20 mt-10 px-4 text-center">
-        <h1 className="mb-6 text-4xl font-bold tracking-tight text-white md:text-[56px]">
+      <div className="container z-20 mx-auto mb-20 mt-10 text-center">
+        <h1 className="mb-6 text-[46px] font-bold leading-[60px] tracking-tight text-white md:text-[56px]">
           YOUR 1 IT SECURITY AND SERVICE PROVIDERS
         </h1>
         <p className="mx-auto mb-8 text-base text-white/90 md:text-lg">
@@ -251,7 +255,7 @@ export function ServicesGrid() {
           a startup or an enterprise, we&apos;ve got you covered.
         </p>
         <Link
-          href="#"
+          href="/service"
           className="inline-block min-w-[250px] bg-red-600 px-8 py-3 text-center font-medium text-white transition-colors duration-200 hover:bg-red-700"
         >
           Explore More
@@ -270,16 +274,18 @@ export function ServicesGrid() {
         {/* r-gradient */}
         {/* <div className="hero_line_gradient absolute inset-0 bottom-0 -z-10">
         </div> */}
-        <div className="grid gap-6 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, index) => (
-            <ServiceCard
-              key={index}
-              title={service.title}
-              description={service.description}
-              icon={<CuboidIcon className="h-12 w-12 text-red-600" />}
-              plans={service.plans}
-            />
-          ))}
+        <div className="flex justify-center">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, index) => (
+              <ServiceCard
+                key={index}
+                title={service.title}
+                description={service.description}
+                icon={<CuboidIcon className="h-12 w-12 text-red-600" />}
+                plans={service.plans}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,10 +1,10 @@
 import React from "react";
-import ContactUsForm from "./_components/contact-us-form";
+import { TicketsList } from "./_components/ticket-list";
 
 const page = () => {
   return (
     <div>
-      <ContactUsForm />
+      <TicketsList />
     </div>
   );
 };

@@ -3,7 +3,6 @@ import MissionSection from "./_components/_components/Mission";
 import LearnMore from "./_components/_components/LearnMore";
 import VisionSection from "./vision";
 import TestimonialSection from "./_components/_components/TestimonialSection";
-import NewsletterSection from "./_components/_components/NewsletterSection";
 import CarouselPages from "./_components/_components/CarouselPages";
 
 const Page = () => {
@@ -26,14 +25,8 @@ const Page = () => {
       <div>
         <TestimonialSection />
       </div>
-      <div>
-        <NewsletterSection />
-      </div>
     </div>
   );
 };
 
 export default Page;
-
-
-
