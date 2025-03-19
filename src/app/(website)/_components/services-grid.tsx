@@ -196,44 +196,6 @@ const services = [
       },
     },
   },
-  {
-    title: "Get your custom Service",
-    description:
-      "Need a tailored security solution? We work with you to develop and implement custom security measures that address your specific needs and challenges.",
-    plans: {
-      basic: {
-        price: 250,
-        shortDescription: "Custom solution starter package",
-        features: [
-          "Business Solution",
-          "Market Growth Solution",
-          "Great Customer Support",
-        ],
-      },
-      standard: {
-        price: 450,
-        shortDescription: "Tailored security implementation",
-        features: [
-          "Business Solution",
-          "Market Growth Solution",
-          "Great Customer Support",
-          "Time Series Models",
-          "24/7 Consultant Service",
-        ],
-      },
-      premium: {
-        price: 900,
-        shortDescription: "Enterprise custom security ecosystem",
-        features: [
-          "Business Solution",
-          "Market Growth Solution",
-          "Great Customer Support",
-          "Time Series Models",
-          "24/7 Consultant Service",
-        ],
-      },
-    },
-  },
 ];
 
 export function ServicesGrid() {
@@ -285,6 +247,11 @@ export function ServicesGrid() {
                 plans={service.plans}
               />
             ))}
+            <ServiceCard
+              title="Get your custom Service"
+              description="Need a tailored security solution? We work with you to develop and implement custom security measures that address your specific needs and challenges."
+              icon={<CuboidIcon className="h-12 w-12 text-red-600" />}
+            />
           </div>
         </div>
       </div>
