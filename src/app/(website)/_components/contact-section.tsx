@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -48,7 +49,10 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="w-full rounded-lg px-4 py-12">
+    <section className="relative w-full rounded-lg px-4 py-12">
+      <div className="absolute left-0 top-[-300px] -z-10 md:h-[1500px] md:w-[1500px]">
+        <Image src="/gradient/gl.png" alt="services-bg" fill />
+      </div>
       <div className="container mx-auto">
         <h2 className="title">Contact Us</h2>
         <div className="mb-8">

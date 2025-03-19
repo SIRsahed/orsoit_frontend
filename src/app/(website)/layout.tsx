@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Navbar from "@/components/shared/navbar";
 import Footer from "@/components/shared/footer";
+import NewsletterSection from "@/components/shared/NewsletterSection";
 
 // const geistSans = localFont({
 //   src: "../fonts/GeistVF.woff",
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className={`bg-[#000000] antialiased`}>
         <Navbar />
         {children}
+        <NewsletterSection />
         <Footer />
       </body>
     </html>

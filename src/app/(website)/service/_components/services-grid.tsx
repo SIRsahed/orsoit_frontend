@@ -250,16 +250,18 @@ export function ServicesGrid() {
             reach out.
           </p>
         </div>
-        <div className="grid gap-6 overflow-auto sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, index) => (
-            <ServiceCard
-              key={index}
-              title={service.title}
-              description={service.description}
-              icon={<CuboidIcon className="h-12 w-12 text-red-600" />}
-              plans={service.plans}
-            />
-          ))}
+        <div className="flex justify-center">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, index) => (
+              <ServiceCard
+                key={index}
+                title={service.title}
+                description={service.description}
+                icon={<CuboidIcon className="h-12 w-12 text-red-600" />}
+                plans={service.plans}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

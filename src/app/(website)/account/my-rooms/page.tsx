@@ -1,10 +1,10 @@
 import React from "react";
-import ContactUsForm from "./_components/contact-us-form";
+import { RoomsList } from "./_components/room-lists";
 
 const page = () => {
   return (
     <div>
-      <ContactUsForm />
+      <RoomsList />
     </div>
   );
 };

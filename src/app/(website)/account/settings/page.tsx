@@ -1,10 +1,10 @@
 import React from "react";
-import ContactUsForm from "./_components/contact-us-form";
+import AccountSettingsForm from "./_components/account-settings";
 
 const page = () => {
   return (
     <div>
-      <ContactUsForm />
+      <AccountSettingsForm />
     </div>
   );
 };

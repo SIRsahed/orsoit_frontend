@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Image from "next/image";
 
 // Define the FAQ item type
 interface FaqItem {
@@ -76,31 +77,37 @@ export function Faq() {
   }
 
   return (
-    <div className="container mx-auto">
-      <h2 className="title text-center">FAQ</h2>
-      <p className="subTitle mb-10 text-center">
-        Welcome to our Web Security FAQ section! Here, we answer common
-        questions about cybersecurity, online threats, and best practices to
-        keep your digital world safe.
-      </p>
-      <Accordion type="single" collapsible className="w-full">
-        {faqItems.map((item) => (
-          <AccordionItem
-            key={item.id}
-            value={item.id}
-            className="mb-4 overflow-hidden rounded-md border border-[#444444] bg-transparent"
-          >
-            <AccordionTrigger className="px-6 py-4 text-left hover:bg-accent/10 hover:no-underline">
-              <span className="text-[18px] font-medium text-secondary">
-                {item.question}
-              </span>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-4 pt-2 text-muted-foreground">
-              {item.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+    <div className="relative">
+      <div className="absolute bottom-[-500px] right-0 -z-10 md:h-[1500px] md:w-[1500px]">
+        <Image src="/gradient/gr.png" alt="services-bg" fill />
+      </div>
+
+      <div className="container mx-auto">
+        <h2 className="title text-center">FAQ</h2>
+        <p className="subTitle mb-10 text-center">
+          Welcome to our Web Security FAQ section! Here, we answer common
+          questions about cybersecurity, online threats, and best practices to
+          keep your digital world safe.
+        </p>
+        <Accordion type="single" collapsible className="w-full">
+          {faqItems.map((item) => (
+            <AccordionItem
+              key={item.id}
+              value={item.id}
+              className="mb-4 overflow-hidden rounded-md border border-[#444444] bg-transparent"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:bg-accent/10 hover:no-underline">
+                <span className="text-[18px] font-medium text-secondary">
+                  {item.question}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 pt-2 text-muted-foreground">
+                {item.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </div>
   );
 }
