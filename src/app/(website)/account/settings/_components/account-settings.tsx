@@ -117,14 +117,14 @@ export default function AccountSettingsForm() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Account Settings</h1>
+      <h1 className="text-3xl font-bold text-primary">Account Settings</h1>
 
       <Form {...profileForm}>
         <form
           onSubmit={profileForm.handleSubmit(onProfileSubmit)}
           className="space-y-6"
         >
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 text-primary md:grid-cols-3">
             <div className="col-span-2 space-y-6">
               <FormField
                 control={profileForm.control}
@@ -240,6 +240,7 @@ export default function AccountSettingsForm() {
                 <Image
                   src={profileImage || "/placeholder.svg"}
                   alt="Profile"
+                  fill
                   className="h-full w-full object-cover"
                 />
               </div>
