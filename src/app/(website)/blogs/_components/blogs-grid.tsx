@@ -149,84 +149,119 @@ export default function BlogsGrid() {
 
   return (
     <section className="w-full py-12 md:py-16 lg:py-20">
-      <div className="container">
-        <h2 className="title text-center">Blogs</h2>
-        <div className="flex flex-col items-center space-y-10">
-          {/* Header Text */}
-          <div className="text-secondary">
-            <p className="subTitle text-center">
-              At Orso, we are more than a cybersecurity provider – we&apos;re
-              your trusted partner in building a resilient digital environment.
-              Our mission is to empower businesses to operate securely in
-              today&apos;s complex and ever-changing threat landscape. We
-              specialize in delivering end-to-end security solutions.
-            </p>
-          </div>
+      <div className="relative">
+        <div className="absolute left-0 top-[-300px] -z-10 h-[1500px] w-[1500px]">
+          <Image
+            alt="vision background"
+            width={800}
+            height={400}
+            src="/gradient/gl.png"
+            className="h-full w-full"
+          />
+        </div>
 
-          {/* Dynamic Blog Cards */}
-          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-            {currentBlogs.map((blog) => (
-              <Card
-                key={blog.id}
-                className="overflow-hidden border-0 bg-[#000000] shadow-none"
-              >
-                <Link href={`/blogs/1`} className="block">
-                  <div className="relative aspect-[16/9] w-full overflow-hidden">
-                    <Image
-                      src={blog.imageUrl || "/placeholder.svg"}
-                      alt={blog.title}
-                      fill
-                      className="object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                </Link>
-                <CardContent className="px-0 py-5">
+
+        <div className="absolute right-[-40px] bottom-[300px] -z-10 h-[1500px] w-[1000px]">
+          <Image
+            alt="vision background"
+            width={800}
+            height={400}
+            src="/gradient/gr.png"
+            className="h-full w-full"
+          />
+        </div>
+
+
+        <div className="absolute left-0 bottom-[-500px] -z-10 h-[1500px] w-[1000px]">
+          <Image
+            alt="vision background"
+            width={800}
+            height={400}
+            src="/gradient/gl.png"
+            className="h-full w-full"
+          />
+        </div>
+
+        <div className="container">
+          <h2 className="title text-center">Blogs</h2>
+          <div className="flex flex-col items-center space-y-10">
+            {/* Header Text */}
+            <div className="text-secondary">
+              <p className="subTitle text-center">
+                At Orso, we are more than a cybersecurity provider – we&apos;re
+                your trusted partner in building a resilient digital
+                environment. Our mission is to empower businesses to operate
+                securely in today&apos;s complex and ever-changing threat
+                landscape. We specialize in delivering end-to-end security
+                solutions.
+              </p>
+            </div>
+
+            {/* Dynamic Blog Cards */}
+            <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+              {currentBlogs.map((blog) => (
+                <Card
+                  key={blog.id}
+                  className="overflow-hidden border-0 bg-[#000000] shadow-none"
+                >
                   <Link href={`/blogs/1`} className="block">
-                    <h3 className="cardTitle mb-2 hover:text-[#D80100]">
-                      {blog.title}
-                    </h3>
+                    <div className="relative aspect-[16/9] w-full overflow-hidden">
+                      <Image
+                        src={blog.imageUrl || "/placeholder.svg"}
+                        alt={blog.title}
+                        fill
+                        className="object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
                   </Link>
-                  {/* <p className="text-gray-500 text-sm mb-2">{blog.date}</p> */}
-                  <p className="subTitle">{blog.excerpt}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardContent className="px-0 py-5">
+                    <Link href={`/blogs/1`} className="block">
+                      <h3 className="cardTitle mb-2 hover:text-[#D80100]">
+                        {blog.title}
+                      </h3>
+                    </Link>
+                    {/* <p className="text-gray-500 text-sm mb-2">{blog.date}</p> */}
+                    <p className="subTitle">{blog.excerpt}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-          {/* Pagination Controls */}
-          <div className="flex items-center justify-center gap-2 pt-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={prevPage}
-              disabled={currentPage === 1}
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-
-            {Array.from({ length: totalPages }).map((_, index) => (
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-center gap-2 pt-4">
               <Button
-                key={index}
-                variant={currentPage === index + 1 ? "default" : "outline"}
-                size="sm"
-                onClick={() => goToPage(index + 1)}
-                aria-label={`Page ${index + 1}`}
-                aria-current={currentPage === index + 1 ? "page" : undefined}
+                variant="outline"
+                size="icon"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
               >
-                {index + 1}
+                <ChevronLeft className="h-4 w-4" />
               </Button>
-            ))}
 
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-              aria-label="Next page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <Button
+                  key={index}
+                  variant={currentPage === index + 1 ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => goToPage(index + 1)}
+                  aria-label={`Page ${index + 1}`}
+                  aria-current={currentPage === index + 1 ? "page" : undefined}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
