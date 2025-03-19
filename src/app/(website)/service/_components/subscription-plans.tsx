@@ -71,18 +71,18 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="w-full bg-black text-white">
+    <div className="w-full text-white">
       <div className="container mx-auto px-4 py-16 backdrop-blur-md">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold">{planData.title}</h1>
           <p>{planData.description}</p>
         </div>
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold">Subscription</h1>
+          <h1 className="mt-16 text-4xl font-bold">Subscription</h1>
           <p className="mx-auto mt-4 max-w-3xl">
-            At Orso, we are more than a cybersecurity provider - we're your
+            At Orso, we are more than a cybersecurity provider - we&apos;re your
             trusted partner in building a resilient digital environment. Our
-            mission is to empower businesses to operate securely in today's
+            mission is to empower businesses to operate securely in today&apos;s
             complex and ever-changing threat landscape. We specialize in
             delivering end-to-end security solutions.
           </p>

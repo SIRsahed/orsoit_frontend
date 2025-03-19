@@ -25,8 +25,8 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="relative pb-20">
-      <nav className="fixed top-0 z-50 w-full bg-[#4C0000]/30 shadow-md shadow-orange-700 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 w-full">
+      <nav className="w-full bg-[#4C0000]/30 shadow-md shadow-orange-700 backdrop-blur-lg">
         <div className="mx-auto flex h-[80px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
@@ -101,6 +101,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-    </div>
+    </header>
   );
 }
