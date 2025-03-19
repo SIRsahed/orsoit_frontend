@@ -4,7 +4,7 @@ import LearnMore from "./_components/_components/LearnMore";
 import VisionSection from "./vision";
 import TestimonialSection from "./_components/_components/TestimonialSection";
 import NewsletterSection from "./_components/_components/NewsletterSection";
-// import CarouselPages from "./_components/_components/CarouselPages";
+import CarouselPages from "./_components/_components/CarouselPages";
 
 const Page = () => {
   // Capitalize the component name to follow the convention
@@ -21,7 +21,7 @@ const Page = () => {
         <VisionSection />
       </div>
       <div>
-        {/* <CarouselPages /> */}
+        <CarouselPages />
       </div>
       <div>
         <TestimonialSection />

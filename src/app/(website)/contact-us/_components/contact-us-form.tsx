@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import Image from "next/image";
 
 // Define the form validation schema with Zod
 const formSchema = z.object({
@@ -46,146 +47,164 @@ export default function ContactUsForm() {
 
   return (
     <div className="mt-[30px] flex w-full flex-col md:mt-[80px]">
-      <div className="container mb-[30px] flex flex-col md:mb-[80px] lg:flex-row">
-        {/* Left section with title and contact icons */}
-        <div className="flex w-full flex-col p-8 lg:w-1/2">
-          <h3 className="mb-8 text-xl font-medium text-gray-500">
-            WE ARE BASED IN ALABAMA, USA
-          </h3>
-          <h2 className="title">Let&apos;s Connect!</h2>
-          <p className="subTitle">
-            Your thoughts, questions, and feedback are what help us grow and
-            improve Teak. Whether you&apos;ve encountered an issue, have a
-            suggestion, or just want to share your experience, we&apos;re here
-            to listen, Reach out to us using the form below or through any of
-            the other contact methods provided. Let&apos;s make your bookmarking
-            experience even better, together.
-          </p>
-          <div className="mt-8 flex flex-col space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
-                <Phone className="h-5 w-5 text-red-400" />
+      <div className="">
+        
+        <div className="absolute left-0 top-0 z-0">
+                <Image
+                  src="/images/c-1.png" // Update with your image path
+                  alt="Left Side Image"
+                  width={800} // Adjust width as needed
+                  height={200} // Adjust height as needed
+                  className="h-full w-full object-cover opacity-70" // Adjust opacity for subtle effect
+                />
               </div>
-              <p className="text-[20px] font-[500] text-primary">Phone:</p>
-              <p className="text-[16px] font-[400] text-primary">
-                +12545625889
+
+        <div className="container">
+          <div className="mb-[30px] flex flex-col md:mb-[80px] lg:flex-row">
+            {/* Left section with title and contact icons */}
+            <div className="flex w-full flex-col p-8 lg:w-1/2">
+              <h3 className="mb-8 text-xl font-medium text-gray-500">
+                WE ARE BASED IN ALABAMA, USA
+              </h3>
+              <h2 className="title">Let&apos;s Connect!</h2>
+              <p className="subTitle">
+                Your thoughts, questions, and feedback are what help us grow and
+                improve Teak. Whether you&apos;ve encountered an issue, have a
+                suggestion, or just want to share your experience, we&apos;re
+                here to listen, Reach out to us using the form below or through
+                any of the other contact methods provided. Let&apos;s make your
+                bookmarking experience even better, together.
               </p>
+              <div className="mt-8 flex flex-col space-y-6">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
+                    <Phone className="h-5 w-5 text-red-400" />
+                  </div>
+                  <p className="text-[20px] font-[500] text-primary">Phone:</p>
+                  <p className="text-[16px] font-[400] text-primary">
+                    +12545625889
+                  </p>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
+                    <Mail className="h-5 w-5 text-red-400" />
+                  </div>
+                  <p className="pl-2 text-[20px] font-[500] text-primary">
+                    Example@gmail.com
+                  </p>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
+                    <Clock className="h-5 w-5 text-red-400" />
+                  </div>
+                  <p className="pl-2 text-[20px] font-[500] text-primary">
+                    +12545625889
+                  </p>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
+                    <MapPin className="h-5 w-5 text-red-400" />
+                  </div>
+                  <p className="pl-2 text-[20px] font-[500] text-primary">
+                    25 street California USA
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
-                <Mail className="h-5 w-5 text-red-400" />
-              </div>
-              <p className="pl-2 text-[20px] font-[500] text-primary">
-                Example@gmail.com
-              </p>
-            </div>
+            {/* Right section with form */}
+            <div className="w-full rounded-lg bg-[#0A0A0B] p-8 text-white lg:w-1/2">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Alex"
+                            {...field}
+                            className="h-[56px] border-[#737373] bg-transparent text-white"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="flex items-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
-                <Clock className="h-5 w-5 text-red-400" />
-              </div>
-              <p className="pl-2 text-[20px] font-[500] text-primary">
-                +12545625889
-              </p>
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="+1"
+                            {...field}
+                            className="h-[56px] border-[#737373] bg-transparent text-white"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="flex items-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-red-200">
-                <MapPin className="h-5 w-5 text-red-400" />
-              </div>
-              <p className="pl-2 text-[20px] font-[500] text-primary">
-                25 street California USA
-              </p>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="example@gmail.com"
+                            {...field}
+                            className="h-[56px] border-[#737373] bg-transparent text-white"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Any Question? Please write below</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Please include any notes for our team"
+                            {...field}
+                            className="min-h-[120px] border-[#737373] bg-transparent text-white"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-[260px] bg-red-600 text-white hover:bg-red-700"
+                  >
+                    Contact Us
+                  </Button>
+                </form>
+              </Form>
             </div>
           </div>
-        </div>
-
-        {/* Right section with form */}
-        <div className="w-full rounded-lg bg-[#0A0A0B] p-8 text-white lg:w-1/2">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Alex"
-                        {...field}
-                        className="h-[56px] border-[#737373] bg-transparent text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="+1"
-                        {...field}
-                        className="h-[56px] border-[#737373] bg-transparent text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="example@gmail.com"
-                        {...field}
-                        className="h-[56px] border-[#737373] bg-transparent text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Any Question? Please write below</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Please include any notes for our team"
-                        {...field}
-                        className="min-h-[120px] border-[#737373] bg-transparent text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-[260px] bg-red-600 text-white hover:bg-red-700"
-              >
-                Contact Us
-              </Button>
-            </form>
-          </Form>
         </div>
       </div>
 
