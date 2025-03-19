@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,6 +26,7 @@ import {
 import { useState } from "react";
 import Image from "next/image";
 
+// Modified schema to handle file uploads properly
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -31,13 +34,14 @@ const formSchema = z.object({
   country: z.string().optional(),
   requirements: z.string().optional(),
   budget: z.string().optional(),
-  file: z.instanceof(FileList).optional(),
+  file: z.any().optional(), // Changed from FileList to any
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CustomWorkForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,9 +64,21 @@ export default function CustomWorkForm() {
     setTimeout(() => {
       setIsSubmitting(false);
       form.reset();
+      setFileName(null);
       alert("Form submitted successfully!");
     }, 1500);
   }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setFileName(files[0].name);
+      form.setValue("file", files);
+    } else {
+      setFileName(null);
+      form.setValue("file", undefined);
+    }
+  };
 
   return (
     <div className="relative">
@@ -194,7 +210,7 @@ export default function CustomWorkForm() {
                           <SelectValue placeholder="-" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="h-[56px] border-[#737373] bg-transparent text-white">
+                      <SelectContent className="border-[#737373] bg-gray-900 text-white">
                         <SelectItem value="less-5k">
                           Less than $5,000
                         </SelectItem>
@@ -222,21 +238,14 @@ export default function CustomWorkForm() {
                   <Input
                     type="file"
                     className="h-[47px] border-none text-white file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-white"
-                    onChange={(e) =>
-                      form.setValue("file", e.target.files || undefined)
-                    }
+                    onChange={handleFileChange}
                   />
                 </div>
+                {fileName && (
+                  <p className="text-sm text-white">Selected: {fileName}</p>
+                )}
               </div>
 
-              {/* <div className="flex items-start space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded border border-gray-300">
-              <div className="h-4 w-4 border border-gray-300"></div>
-            </div>
-            <div className="rounded bg-pink-100 p-2 text-sm text-pink-900">
-              I&apos;m not a robot
-            </div>
-          </div> */}
               <div className="flex justify-end">
                 <Button
                   type="submit"
