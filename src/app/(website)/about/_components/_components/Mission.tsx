@@ -3,15 +3,6 @@ import Image from "next/image";
 const MissionSection = () => {
   return (
     <section className=" mt-28 text-white">
-      {/* <div className="absolute top-4 right-0 z-0  pointer-events-none h-[1500px] w-[1500px]">
-        <Image
-          alt="vision background"
-          width={800}
-          height={400}
-          src="/images/mis-1.png"
-          className="object-cover h-full w-auto ml-auto"
-        />
-      </div> */}
       <div>
         <div className="flex flex-col items-center lg:flex-row lg:gap-14 lg:px-8 container mx-auto">
           <div className="mb-8 lg:mb-0 lg:w-1/2 lg:pr-8">
@@ -23,7 +14,7 @@ const MissionSection = () => {
               className="rounded-lg shadow-lg"
             />
           </div>
-          <div className="text-center lg:w-1/2 lg:text-start">
+          <div className="lg:w-1/2 text-start">
             <h2 className="mb-6 text-3xl font-bold">OUR MISSION</h2>
             <p className="mb-4 text-lg">
               At ORSO, our mission is to empower businesses and individuals by
