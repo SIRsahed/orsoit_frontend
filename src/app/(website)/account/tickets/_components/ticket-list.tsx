@@ -88,7 +88,7 @@ export function TicketsList() {
               <TableCell className="text-white">{ticket.date}</TableCell>
               <TableCell className="text-white">{ticket.status}</TableCell>
               <TableCell>
-                <button className="text-red-600 hover:text-red-500">
+                <button className="text-base text-[#D80100] hover:text-[#D80100]/80">
                   View Details
                 </button>
               </TableCell>
