@@ -39,7 +39,9 @@ export function AccountSidebar() {
   return (
     <div className="bg-black] w-64 border-r border-neutral-800">
       <div className="p-6">
-        <h2 className="mb-6 text-xl font-bold text-white">Navigation</h2>
+        <h2 className="mb-6 text-[26px] font-bold text-white md:text-[30px]">
+          Navigation
+        </h2>
         <nav className="space-y-[10px]">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
@@ -48,11 +50,19 @@ export function AccountSidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex h-[45px] w-[210px] items-center rounded-md px-3 py-2 text-base font-medium",
+                  "flex h-[45px] w-[205px] items-center rounded-md px-3 py-2 text-base font-medium transition",
                   isActive
-                    ? "bg-[#D80100] text-white"
+                    ? "text-white"
                     : "bg-neutral-800 text-white hover:bg-neutral-700 hover:text-white",
                 )}
+                style={
+                  isActive
+                    ? {
+                        background:
+                          "linear-gradient(170.34deg, #D80100 -4.69%, #200C0D 97.46%)",
+                      }
+                    : {}
+                }
               >
                 <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
                 {item.name}

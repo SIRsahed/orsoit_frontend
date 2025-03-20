@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const rooms = [
   {
@@ -49,19 +50,18 @@ export function RoomsList() {
             </div>
             <div>
               <h3 className="text-sm font-medium text-white">Room {room.id}</h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-base text-neutral-400">
                 Manage your space, settings, and preferences
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col items-center gap-3 space-x-4">
             <div className="text-right">
-              <p className="text-xs text-neutral-400">Last active</p>
               <p className="text-xs text-neutral-400">{room.lastActive}</p>
             </div>
-            <Button variant="destructive" size="sm" className="rounded-md">
-              Enter Room
-            </Button>
+            <Link href={`/account/my-rooms/${room.id}`}>
+              <Button variant={"outline"}>Enter Room</Button>
+            </Link>
           </div>
         </div>
       ))}

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative flex h-[650px] w-full flex-col items-center justify-center bg-black">
+    <section className="relative flex h-[70vh] w-full flex-col items-center justify-center bg-black">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image
