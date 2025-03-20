@@ -183,13 +183,13 @@ export default function CyberSecurityCarousel() {
   return (
     <div className="relative mx-auto w-full p-6">
       {/* Absolutely positioned image */}
-      <div className="absolute left-0 top-1/4 z-0">
+      <div className="absolute left-0 top-0 z-0">
         <Image
           src="/images/c-1.png" // Update with your image path
           alt="Left Side Image"
           width={800} // Adjust width as needed
           height={200} // Adjust height as needed
-          className="h-full w-full object-cover opacity-30" // Adjust opacity for subtle effect
+          className="h-full w-full object-cover opacity-90" // Adjust opacity for subtle effect
         />
       </div>
       <div className="container">
@@ -246,13 +246,13 @@ export default function CyberSecurityCarousel() {
                       <Facebook size={20} />
                     </button> */}
 
-                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                      <button className="flex h-[30px] w-[30px] items-center justify-center rounded-sm bg-[#D8010040] text-red-600 transition-colors hover:text-red-400">
                         <Facebook size={15} />
                       </button>
-                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                      <button className="flex h-[30px] w-[30px] items-center justify-center rounded-sm bg-[#D8010040] text-red-600 transition-colors hover:text-red-400">
                         <Twitter size={20} />
                       </button>
-                      <button className="flex h-[30px] w-[30px] items-center justify-center bg-[#D8010040] text-red-600 transition-colors hover:text-red-400 rounded-sm">
+                      <button className="flex h-[30px] w-[30px] items-center justify-center rounded-sm bg-[#D8010040] text-red-600 transition-colors hover:text-red-400">
                         <Instagram size={20} />
                       </button>
                     </div>
