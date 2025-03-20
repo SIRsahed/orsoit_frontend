@@ -136,12 +136,12 @@ export function SubscriptionPlan() {
               <TableCell>
                 <span
                   className={cn(
-                    "rounded-md px-3 py-1 text-sm font-medium text-white",
+                    "inline-block h-[30px] w-[90px] rounded-md px-2 py-1 text-center text-sm font-medium text-white",
                     plan.plan === "Basic"
-                      ? "bg-blue-600"
+                      ? "bg-[#2165FF]" // Solid color for Basic
                       : plan.plan === "Pro"
-                        ? "bg-gradient-to-r from-red-900 to-red-800"
-                        : "bg-gradient-to-r from-red-900 to-red-800",
+                        ? "bg-[linear-gradient(170.34deg,#D80100_-4.69%,#200C0D_97.46%)]" // Gradient for Pro
+                        : "bg-[linear-gradient(148.79deg,#D80100_7.56%,#EB3E3E_53.78%,#3A0305_100%)]", // Gradient for Enterprise
                   )}
                 >
                   {plan.plan}
@@ -151,7 +151,7 @@ export function SubscriptionPlan() {
               <TableCell className="text-white">{plan.expiringIn}</TableCell>
               <TableCell className="text-white">{plan.amount}</TableCell>
               <TableCell>
-                <button className="text-red-600 hover:text-red-500">
+                <button className="text-[16px] text-[#D80100] hover:text-[#D80100]/80">
                   Unsubscribe
                 </button>
               </TableCell>

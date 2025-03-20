@@ -123,12 +123,12 @@ export default function NotificationList() {
           {notifications.map((notification) => (
             <TableRow
               key={notification.id}
-              className="border-t hover:bg-gray-50"
+              className="border-t hover:bg-gray-900"
             >
               <TableCell className="p-4">
                 <div className="flex items-start gap-4">
                   <div className="mt-1 flex-shrink-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700">
                       <Bell className="h-4 w-4 text-yellow-500" />
                     </div>
                   </div>
