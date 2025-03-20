@@ -19,7 +19,7 @@ const VisionSection = () => {
         <div className="lg:flex gap-14 items-center">
           {/* Left content column */}
           <div className="lg:w-1/2 mb-8 lg:mb-0 lg:pr-8">
-            <div className="text-center lg:text-start mt-10 lg:mt-0">
+            <div className="text-start mt-10 lg:mt-0">
               <h2 className="text-3xl font-bold mb-6">OUR VISION</h2>
               <p className="text-lg mb-4">
                 At [Your Company Name], our vision is to be a global leader in cybersecurity, creating a secure digital

@@ -4,13 +4,6 @@ import React from "react";
 const TestimonialSection = () => {
   return (
     <div className="relative">
-      {/* <div className="absolute w-[500px] h-[800px] right-0 bottom-0">
-        <Image 
-          fill
-          alt="image"
-          src="/images/mis-1.png"
-        />
-      </div> */}
       <div className="container relative mx-auto flex max-w-7xl flex-col items-center justify-center px-4 lg:py-16">
         <div className="text-center">
           <h2 className="mb-4 text-base font-bold text-white">Testimonial</h2>
@@ -80,17 +73,6 @@ const TestimonialSection = () => {
               </div>
             </div>
 
-            {/* <div className="flex items-center gap-5 rounded-md bg-[#301a1a] p-4 opacity-100">
-              <div className="h-16 w-16 flex-shrink-0 rounded-full bg-red-600 md:h-20 md:w-20"></div>
-              <div className="w-full">
-                <p className="mb-1 text-lg text-white md:text-[24px]">Nofa</p>
-                <p className="text-sm text-white md:text-base">
-                  Sr. Security Analyst, <br />
-                  Allsafe Security Expert
-                </p>
-              </div>
-            </div> */}
-
             <div className="flex items-center gap-5 rounded-md bg-[#FFFFFF1A] p-4 opacity-100 backdrop-blur-xl">
               <div className="relative h-16 w-16 flex-shrink-0 rounded-full bg-red-600 md:h-20 md:w-20">
                 <Image
@@ -109,17 +91,6 @@ const TestimonialSection = () => {
                 </p>
               </div>
             </div>
-
-            {/* <div className="flex items-center gap-5 rounded-md bg-[#301a1a] p-4 opacity-100">
-              <div className="h-16 w-16 flex-shrink-0 rounded-full bg-red-600 md:h-20 md:w-20"></div>
-              <div className="w-full">
-                <p className="mb-1 text-lg text-white md:text-[24px]">Nofa</p>
-                <p className="text-sm text-white md:text-base">
-                  Sr. Security Analyst, <br />
-                  Allsafe Security Expert
-                </p>
-              </div>
-            </div> */}
 
             <div className="flex items-center gap-5 rounded-md bg-[#FFFFFF1A] p-4 opacity-100 backdrop-blur-xl">
               <div className="relative h-16 w-16 flex-shrink-0 rounded-full bg-red-600 md:h-20 md:w-20">
