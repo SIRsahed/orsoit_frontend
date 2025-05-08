@@ -3,15 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Menu } from "lucide-react";
+import {  Menu, LogOut, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const isAuthenticated = status === "authenticated";
 
   const isActive = (path: string) => {
     return pathname === path;
@@ -24,6 +35,16 @@ export default function Navbar() {
     { href: "/contact-us", label: "Contact Us" },
     { href: "/account", label: "Account" },
   ];
+
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (!session?.user?.name) return "U";
+    const nameParts = session.user.name.split(" ");
+    if (nameParts.length >= 2) {
+      return `${nameParts[0][0]}${nameParts[1][0]}`;
+    }
+    return nameParts[0][0];
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -83,22 +104,104 @@ export default function Navbar() {
                       {link.label}
                     </Link>
                   ))}
+
+                  {/* Mobile Auth Section */}
+                  {!isAuthenticated ? (
+                    <Button
+                      variant="outline"
+                      className="mt-4 border-red-500 text-white hover:bg-red-800 hover:text-white"
+                      onClick={() => signIn()}
+                    >
+                      Login
+                    </Button>
+                  ) : (
+                    <div className="mt-4 space-y-2">
+                      <Link
+                        href="/dashboard"
+                        className="block text-lg font-medium text-white hover:text-red-400"
+                        onClick={() => setOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <Button
+                        variant="outline"
+                        className="w-full border-red-500 text-white hover:bg-red-800 hover:text-white"
+                        onClick={() => signOut()}
+                      >
+                        Logout
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
 
-            <Button variant="ghost" size="icon" className="text-white">
+            {/* <Button variant="ghost" size="icon" className="text-white">
               <Bell className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center space-x-2">
-              <span className="hidden text-sm text-white md:block">
-                Alex Rocks
-              </span>
-              <Avatar>
-                <AvatarImage src="/avatar.png" />
-                <AvatarFallback>AR</AvatarFallback>
-              </Avatar>
-            </div>
+            </Button> */}
+
+            {/* User Authentication Section */}
+            {!isAuthenticated ? (
+              <Button
+                variant="outline"
+                className="hidden border-red-500 text-white hover:bg-red-800 hover:text-white md:flex"
+                onClick={() => signIn()}
+              >
+                Login
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex cursor-pointer items-center space-x-2">
+                    <span className="hidden text-sm text-white md:block">
+                      {session.user.name}
+                      {session.user.role && (
+                        <span className="ml-1 text-xs text-red-300">
+                          ({session.user.role})
+                        </span>
+                      )}
+                    </span>
+                    <Avatar>
+                      <AvatarImage
+                        src={session.user.image || "/avatar.png"}
+                        alt={session.user.name || "User"}
+                      />
+                      <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                    <ChevronDown className="h-4 w-4 text-white" />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                      <User className="h-4 w-4 text-red-700" />
+                    </div>
+                    <div className="flex flex-col space-y-1 text-left">
+                      <p className="text-sm font-medium leading-none">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer">
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
+                    onClick={() => signOut()}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </nav>

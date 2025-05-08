@@ -3,17 +3,7 @@ import "../globals.css";
 import Navbar from "@/components/shared/navbar";
 import Footer from "@/components/shared/footer";
 import NewsletterSection from "@/components/shared/NewsletterSection";
-
-// const geistSans = localFont({
-//   src: "../fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
+import SessionWrapper from "./session-wrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,16 +12,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`bg-[#000000] antialiased`}>
-        <Navbar />
-        {children}
-        <NewsletterSection />
-        <Footer />
+      <body className="bg-[#000000] antialiased">
+        <SessionWrapper>
+          <Navbar />
+          {children}
+          <NewsletterSection />
+          <Footer />
+        </SessionWrapper>
       </body>
     </html>
   );
