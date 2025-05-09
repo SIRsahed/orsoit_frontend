@@ -1,0 +1,40 @@
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
+import DashboardHeader from "@/components/shared/dashboard-header";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Orso Solutions",
+  description: "Cybersecurity solutions dashboard",
+  generator: "v0.dev",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`${inter.className} bg-[#0F0F0F] text-white`}>
+      <SidebarProvider>
+        <div className="flex min-h-screen">
+          <AppSidebar />
+          <div className="w-[85.8vw] flex-1">
+            <div className="sticky top-0 z-10 flex">
+              <DashboardHeader />
+            </div>
+
+            {children}
+          </div>
+        </div>
+        <Toaster position="top-right" theme="dark" />
+      </SidebarProvider>
+    </div>
+  );
+}
