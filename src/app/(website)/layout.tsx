@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import "../globals.css";
-import Navbar from "@/components/shared/navbar";
-import Footer from "@/components/shared/footer";
-import NewsletterSection from "@/components/shared/NewsletterSection";
 import SessionWrapper from "./session-wrapper";
+import LayoutVisibilityWrapper from "@/components/shared/LayoutVisibilityWrapper";
+import { QueryProvider } from "@/providers/query-provider";
+import { SocketProvider } from "@/providers/socket-provider";
+import "../globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,10 +19,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-[#000000] antialiased">
         <SessionWrapper>
-          <Navbar />
-          {children}
-          <NewsletterSection />
-          <Footer />
+          <QueryProvider>
+            <SocketProvider>
+              <LayoutVisibilityWrapper>{children}</LayoutVisibilityWrapper>
+            </SocketProvider>
+          </QueryProvider>
         </SessionWrapper>
       </body>
     </html>
