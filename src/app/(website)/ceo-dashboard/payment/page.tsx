@@ -12,7 +12,7 @@ export default function PaymentPage() {
     <div className="flex min-h-screen flex-col">
       <main className="flex-1 p-6">
         <h2 className="mb-6 text-2xl font-bold">Transactions</h2>
-        <PaymentStats />
+        {/* <PaymentStats /> */}
         <PaymentsList />
       </main>
     </div>

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function PaymentStats() {
   const stats = [
@@ -8,18 +8,18 @@ export default function PaymentStats() {
     { title: "Succeed", value: "110", variant: "success" },
     { title: "Refunded", value: "0", variant: "warning" },
     { title: "Failed", value: "0", variant: "danger" },
-  ]
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => (
-        <Card key={stat.title} className="bg-[#1A1A1A] border-[#222]">
+        <Card key={stat.title} className="border-[#222] bg-[#1A1A1A]">
           <CardContent className="p-6">
             <h3 className="text-sm font-medium text-gray-400">{stat.title}</h3>
-            <p className="text-2xl font-bold mt-1">{stat.value}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{stat.value}</p>
           </CardContent>
         </Card>
       ))}
     </div>
-  )
+  );
 }

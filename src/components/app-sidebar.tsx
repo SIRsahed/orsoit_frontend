@@ -76,7 +76,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent className="bg-black px-4 py-2">
-        <SidebarMenu className="flex flex-col gap-2">
+        <SidebarMenu className="flex list-none flex-col gap-2">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             return (
