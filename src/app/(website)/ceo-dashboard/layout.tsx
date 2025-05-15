@@ -25,7 +25,7 @@ export default function RootLayout({
       <SidebarProvider>
         <div className="flex min-h-screen">
           <AppSidebar />
-          <div className="w-auto flex-1 md:w-[84vw] xl:w-[85.8vw]">
+          <div className="flex-1 md:w-[calc(100vw-270px)]">
             <div className="sticky top-0 z-10 flex">
               <DashboardHeader />
             </div>

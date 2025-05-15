@@ -60,7 +60,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar className="border-none">
+    <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
           href="/ceo-dashboard/dashboard"
