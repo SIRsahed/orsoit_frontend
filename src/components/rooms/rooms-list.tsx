@@ -17,7 +17,7 @@ import Link from "next/link";
 
 export default function RoomPage() {
   const { roomId } = useParams();
-  
+
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const { socket, joinRoom, isConnected } = useSocket();
@@ -31,6 +31,8 @@ export default function RoomPage() {
     queryFn: () => fetchMessages(roomId as string),
     enabled: !!roomId,
   });
+  
+  console.log(messagesData, "messagesData");
 
   const sendMessageMutation = useMutation({
     mutationFn: sendMessage,
