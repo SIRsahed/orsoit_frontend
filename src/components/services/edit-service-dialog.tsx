@@ -35,7 +35,16 @@ const formSchema = z.object({
   image: z.any().optional(),
 });
 
-export default function EditServiceDialog({ service }) {
+
+export interface Service {
+  _id: string;
+  name: string;
+  description: string;
+  image: string;
+}
+
+
+export default function EditServiceDialog({ service }: { service: Service }) {
   const [open, setOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -66,7 +75,7 @@ export default function EditServiceDialog({ service }) {
   }, [open, imagePreview]);
 
   const mutation = useMutation({
-    mutationFn: (values) => updateService(service._id, values),
+    mutationFn: (values: z.infer<typeof formSchema>) => updateService(service._id, values),
     onSuccess: () => {
       toast.success("Service updated successfully");
       queryClient.invalidateQueries({ queryKey: ["services"] });

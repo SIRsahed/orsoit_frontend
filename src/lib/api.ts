@@ -181,13 +181,13 @@ export async function deleteService(id: string) {
 }
 
 // Subscription Plans API
-export async function fetchSubscriptionPlans() {
+export async function fetchSubscriptionPlans({ serviceId }: { serviceId: string }) {
   try {
-    const response = await api.get("/subscription-plans");
+    const response = await api.get(`/services-plans/one/${serviceId}`);
     return response.data;
   } catch (error: any) {
     throw new Error(
-      error.response?.data?.message || "Failed to fetch subscription plans",
+      error.response?.data?.message || "No subscription plan found",
     );
   }
 }

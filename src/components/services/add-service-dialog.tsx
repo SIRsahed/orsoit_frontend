@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createService } from "@/lib/api";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -150,9 +151,11 @@ export default function AddServiceDialog() {
                   <FormControl>
                     {imagePreview ? (
                       <div className="relative overflow-hidden rounded-lg">
-                        <img
+                        <Image
                           src={imagePreview || "/placeholder.svg"}
                           alt="Preview"
+                          width={600}
+                          height={500}
                           className="h-48 w-full object-cover"
                         />
                         <Button
