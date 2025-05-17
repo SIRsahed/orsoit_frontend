@@ -9,6 +9,7 @@ const HIDDEN_ROUTES = [
   "/ceo-dashboard",
   "/admin-dashboard",
   "/customer-dashboard",
+  "/admin"
 ];
 
 export default function LayoutVisibilityWrapper({
