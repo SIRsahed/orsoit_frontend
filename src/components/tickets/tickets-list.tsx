@@ -8,16 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { fetchTickets, fetchAdminUsers, assignTicket, createRoom } from "@/lib/api"
-import { useSession } from "next-auth/react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useRouter } from "next/navigation"
 
 export default function TicketsList() {
-  const { data: session } = useSession()
   const router = useRouter()
   const queryClient = useQueryClient()
   const [entriesPerPage, setEntriesPerPage] = useState("10")
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1) \
   const [viewTicket, setViewTicket] = useState<any>(null)
   const [selectedAdmin, setSelectedAdmin] = useState("")
 
@@ -121,70 +119,70 @@ export default function TicketsList() {
             <tbody>
               {isLoading
                 ? Array(5)
-                    .fill(0)
-                    .map((_, i) => (
-                      <tr key={i} className="border-b border-[#222] animate-pulse">
-                        <td className="py-3 px-4">
-                          <div className="h-4 bg-[#333] rounded w-16"></div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="h-4 bg-[#333] rounded w-24"></div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="h-4 bg-[#333] rounded w-24"></div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="h-4 bg-[#333] rounded w-16"></div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="h-4 bg-[#333] rounded w-16"></div>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="h-8 bg-[#333] rounded w-16 mx-auto"></div>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="h-8 bg-[#333] rounded w-24 mx-auto"></div>
-                        </td>
-                      </tr>
-                    ))
-                : tickets?.data?.map((ticket, index) => (
-                    <tr key={ticket._id} className="border-b border-[#222]">
-                      <td className="py-3 px-4">#{index + 125}</td>
-                      <td className="py-3 px-4">{ticket.name}</td>
+                  .fill(0)
+                  .map((_, i) => (
+                    <tr key={i} className="border-b border-[#222] animate-pulse">
                       <td className="py-3 px-4">
-                        {new Date(ticket.createdAt).toLocaleDateString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                        <div className="h-4 bg-[#333] rounded w-16"></div>
                       </td>
-                      <td className="py-3 px-4">$125.00</td>
-                      <td className="py-3 px-4">10:00 AM</td>
-                      <td className="py-3 px-4 text-center">
-                        <Button
-                          variant="secondary"
-                          className="bg-[#0F0F0F] hover:bg-[#1A1A1A]"
-                          onClick={() => setViewTicket(ticket)}
-                        >
-                          View
-                        </Button>
+                      <td className="py-3 px-4">
+                        <div className="h-4 bg-[#333] rounded w-24"></div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="h-4 bg-[#333] rounded w-24"></div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="h-4 bg-[#333] rounded w-16"></div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="h-4 bg-[#333] rounded w-16"></div>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <Select>
-                          <SelectTrigger className="w-32 bg-blue-600 text-white border-none">
-                            <SelectValue placeholder="Admin" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#1A1A1A] border-[#333]">
-                            {admins?.data?.map((admin) => (
-                              <SelectItem key={admin._id} value={admin._id}>
-                                {admin.firstName} {admin.lastName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="h-8 bg-[#333] rounded w-16 mx-auto"></div>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <div className="h-8 bg-[#333] rounded w-24 mx-auto"></div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                : tickets?.data?.map((ticket, index) => (
+                  <tr key={ticket._id} className="border-b border-[#222]">
+                    <td className="py-3 px-4">#{index + 125}</td>
+                    <td className="py-3 px-4">{ticket.name}</td>
+                    <td className="py-3 px-4">
+                      {new Date(ticket.createdAt).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="py-3 px-4">$125.00</td>
+                    <td className="py-3 px-4">10:00 AM</td>
+                    <td className="py-3 px-4 text-center">
+                      <Button
+                        variant="secondary"
+                        className="bg-[#0F0F0F] hover:bg-[#1A1A1A]"
+                        onClick={() => setViewTicket(ticket)}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <Select>
+                        <SelectTrigger className="w-32 bg-blue-600 text-white border-none">
+                          <SelectValue placeholder="Admin" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#1A1A1A] border-[#333]">
+                          {admins?.data?.map((admin) => (
+                            <SelectItem key={admin._id} value={admin._id}>
+                              {admin.firstName} {admin.lastName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -217,9 +215,8 @@ export default function TicketsList() {
                   key={pageNumber}
                   variant="outline"
                   size="sm"
-                  className={`h-8 w-8 p-0 ${
-                    pageNumber === currentPage ? "bg-red-600 border-red-600 text-white" : "bg-[#0F0F0F] border-[#333]"
-                  }`}
+                  className={`h-8 w-8 p-0 ${pageNumber === currentPage ? "bg-red-600 border-red-600 text-white" : "bg-[#0F0F0F] border-[#333]"
+                    }`}
                   onClick={() => setCurrentPage(pageNumber)}
                 >
                   {pageNumber}
