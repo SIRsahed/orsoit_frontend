@@ -78,7 +78,6 @@ export default function ChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     if (!userId) return;
 
@@ -116,7 +115,7 @@ export default function ChatPage() {
           roomId: message.roomId,
           userId: {
             _id: message.userId,
-            firstName: "User", 
+            firstName: "User",
             lastName: "",
             phoneNumber: "",
             email: "",
@@ -509,7 +508,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-black text-white">
+    <div className="flex h-[calc(100vh-75px)] bg-black text-white">
       {/* Mobile menu button */}
       <div className="fixed right-4 top-4 z-50 md:hidden">
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -607,7 +606,7 @@ export default function ChatPage() {
         {selectedRoom ? (
           <>
             {/* Chat header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 p-4">
+            <div className="ml-5 flex items-center justify-between border-b border-zinc-800 bg-zinc-900 p-2">
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
