@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PaymentStats from "@/components/payment/payment-stats";
+
 import PaymentsList from "@/components/payment/payments-list";
 
 export const metadata: Metadata = {
