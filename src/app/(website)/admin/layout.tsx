@@ -32,7 +32,7 @@ export default function RootLayout({
                         {children}
                     </div>
                 </div>
-                <Toaster position="top-right" theme="dark" />
+                {/* <Toaster position="top-right" theme="dark" /> */}
             </SidebarProvider>
         </div>
     );

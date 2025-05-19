@@ -1,6 +1,12 @@
 import AddSubscriptionDialog from '@/components/subscription/add-subscription-dialog'
 import SubscriptionList from '@/components/subscription/subscription-list'
+import { Metadata } from 'next';
 import React from 'react'
+
+export const metadata: Metadata = {
+  title: "Plan Management | Orso Solutions",
+  description: "Manage users",
+};
 
 export default function page({ params }: { params: { serviceId: string } }) {
 
@@ -12,7 +18,7 @@ export default function page({ params }: { params: { serviceId: string } }) {
         <div className="flex justify-between items-start pb-10">
           <div className="">
             <h3>Manage Subscription</h3>
-            <p>You can change your plan any time by upgrade your plan</p>
+            <p>You can change your plan any time by upgrading your plan</p>
           </div>
           <div className="">
             <AddSubscriptionDialog serviceId={params.serviceId} />
