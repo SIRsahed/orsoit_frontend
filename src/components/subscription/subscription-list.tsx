@@ -9,16 +9,27 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchSubscriptionPlans } from '@/lib/api'
 import { Check } from 'lucide-react'
 import EditSubscriptionDialog from './edit-subscription-dialog'
+import DeletePlanDialog from './delete-plan-dialog';
 
 
 export interface Subscription {
-    subscriptionPlanId: []
     _id: string
     planName: string
     price: number
     description: string
     features: string[]
+    subscriptionPlanId: [subscriptionPlanId]
     data: []
+}
+
+
+export interface subscriptionPlanId {
+    _id: string,
+    planName: string,
+    price: 839,
+    description: string,
+    features: string[]
+
 }
 
 
@@ -40,7 +51,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
     }
 
 
-    console.log(subscriptions?.data)
+    console.log(subscriptions)
 
     return (
         <div className="">
@@ -68,7 +79,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                 : (
                     <div className="">
                         <div className="text-center py-10">
-                            <h2 className='text-5xl font-bold pb-4'>Subscription</h2>
+                            <h2 className='text-4xl font-bold pb-4'>Subscription Plans of <span className='capitalize'>{subscriptions?.data[0]?.services[0]?.serviceId?.name}</span></h2>
                             <p className='text-sm text-[#E6E6E6]'>At Orso, we are more than a cybersecurity provider - we&apos;re your trusted partner in building a resilient digital environment. Our mission is to empower businesses to operate securely in today&apos;s complex and ever-changing threat landscape. We specialize in delivering end-to-end security solutions.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -88,9 +99,9 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                                 <span className='text-base pl-1 text-white'>/Month</span>
                                             </h4>
                                             <p className="text-lg pb-8">{subscription?.subscriptionPlanId[0]?.description}</p>
-                                            <ul className='list-none'>
+                                            <ul className='list-none p-0 space-y-1 min-h-24'>
                                                 {
-                                                    subscription?.subscriptionPlanId?.map((sub: string[]) => (
+                                                    subscription?.subscriptionPlanId?.map((sub: subscriptionPlanId) => (
                                                         sub?.features?.map((feature: string) => (
                                                             <li key={feature} className='flex gap-2 items-center'>
                                                                 <Check className='h-5 w-5 rounded-full bg-primary p-1' />
@@ -103,6 +114,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                         </CardContent>
                                         <CardFooter className="flex justify-center gap-4 border-t border-[#222] p-4">
                                             <EditSubscriptionDialog subscription={subscription} />
+                                            <DeletePlanDialog infoId={subscription?._id} planId={subscription?.subscriptionPlanId[0]?._id} />
                                         </CardFooter>
                                     </Card>
                                 ))

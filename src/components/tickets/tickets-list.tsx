@@ -15,7 +15,7 @@ export default function TicketsList() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [entriesPerPage, setEntriesPerPage] = useState("10")
-  const [currentPage, setCurrentPage] = useState(1) \
+  const [currentPage, setCurrentPage] = useState(1) 
   const [viewTicket, setViewTicket] = useState<any>(null)
   const [selectedAdmin, setSelectedAdmin] = useState("")
 
