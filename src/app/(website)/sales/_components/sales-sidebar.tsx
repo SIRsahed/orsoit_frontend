@@ -4,15 +4,10 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  LayoutDashboard,
-  DoorOpen,
-  Users,
-  Wrench,
   WrenchIcon as WrenchScrewdriver,
-  CreditCard,
-  Ticket,
   Settings,
   LogOut,
+  ArrowDown,
 } from "lucide-react";
 
 import {
@@ -24,46 +19,38 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-export function AppSidebar() {
+export function SalesSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
     {
-      href: "/ceo/dashboard",
+      href: "/admin/dashboard",
       label: "Dashboard",
-      icon: LayoutDashboard,
-    },
-    { href: "/ceo/rooms", label: "Rooms", icon: DoorOpen },
-    {
-      href: "/ceo/user-management",
-      label: "User Management",
-      icon: Users,
     },
     {
-      href: "/ceo/services",
-      label: "Services",
-      icon: Wrench,
+      href: "/admin/tickets",
+      label: "Tickets",
+      icon: ArrowDown,
     },
     {
-      href: "/ceo/custom-services",
-      label: "Custom Services",
-      icon: WrenchScrewdriver,
+      href: "/admin/rooms",
+      label: "Rooms",
     },
-    { href: "/ceo/payment", label: "Payment", icon: CreditCard },
-    { href: "/ceo/tickets", label: "Tickets", icon: Ticket },
     {
-      href: "/ceo/account-settings",
-      label: "Account settings",
-      icon: Settings,
+      href: "/admin/account",
+      label: "Account",
     },
-    { href: "/ceo/logout", label: "Log out", icon: LogOut },
+    {
+      href: "/admin/logout",
+      label: "Log out",
+    },
   ];
 
   return (
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/ceo/dashboard"
+          href="/sales/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image
@@ -90,9 +77,12 @@ export function AppSidebar() {
                       : "bg-[#151515] !text-white hover:bg-[#252525]"
                   }`}
                 >
-                  <Link href={item.href} className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5" />
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-between gap-3"
+                  >
                     <span>{item.label}</span>
+                    {item.icon && <item.icon className="h-4 w-4" />}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

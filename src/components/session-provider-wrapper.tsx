@@ -1,20 +1,24 @@
 "use client";
 
+import type React from "react";
+
 import { SessionProvider } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-export default function SessionWrapper({
+export function SessionProviderWrapper({
   children,
+  session: initialSession,
 }: {
   children: React.ReactNode;
+  session: any;
 }) {
-  const [sessionState, setSessionState] = useState<any>(null);
+  const [session, setSession] = useState(initialSession);
 
-  // Listen for session update events
+  // Create a custom event to listen for session updates
   useEffect(() => {
     // Function to handle session update events
     const handleSessionUpdate = (event: CustomEvent) => {
-      setSessionState(event.detail.session);
+      setSession(event.detail.session);
     };
 
     // Add event listener for session updates
@@ -26,5 +30,5 @@ export default function SessionWrapper({
     };
   }, []);
 
-  return <SessionProvider session={sessionState}>{children}</SessionProvider>;
+  return <SessionProvider session={session}>{children}</SessionProvider>;
 }
