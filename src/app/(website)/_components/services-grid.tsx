@@ -7,19 +7,20 @@ import { useQuery } from "@tanstack/react-query";
 import { CuboidIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 
 interface Service {
   name: string;
   description: string;
-  image:string;
+  image: string;
   _id: string
 }
 
 
 export function ServicesGrid() {
 
-
+  const pathname = usePathname()
 
   const { data: services } = useQuery({
     queryKey: ['services'],
@@ -37,24 +38,29 @@ export function ServicesGrid() {
         <Image src="/gradient/gr.png" alt="services-bg" fill />
       </div>
       {/* Content */}
-      <div className="container z-20 mx-auto mb-20 mt-10 text-center">
-        <h1 className="mb-6 text-[46px] font-bold leading-[60px] tracking-tight text-white md:text-[56px]">
-          YOUR 1 IT SECURITY AND SERVICE PROVIDERS
-        </h1>
-        <p className="mx-auto mb-8 text-base text-white/90 md:text-lg">
-          At Orso, we are dedicated to protecting your business in the
-          ever-evolving digital landscape. From proactive threat assessments to
-          building tailor-made security solutions, our expert team delivers
-          cutting-edge strategies to safeguard your assets. Whether you&apos;re
-          a startup or an enterprise, we&apos;ve got you covered.
-        </p>
-        <Link
-          href="/service"
-          className="inline-block min-w-[250px] bg-red-600 px-8 py-3 text-center font-medium text-white transition-colors duration-200 hover:bg-red-700"
-        >
-          Explore More
-        </Link>
-      </div>
+
+      {
+        pathname !== "/service" && (
+          <div className="container z-20 mx-auto mb-20 mt-10 text-center">
+            <h1 className="mb-6 text-[46px] font-bold leading-[60px] tracking-tight text-white md:text-[56px]">
+              YOUR 1 IT SECURITY AND SERVICE PROVIDERS
+            </h1>
+            <p className="mx-auto mb-8 text-base text-white/90 md:text-lg">
+              At Orso, we are dedicated to protecting your business in the
+              ever-evolving digital landscape. From proactive threat assessments to
+              building tailor-made security solutions, our expert team delivers
+              cutting-edge strategies to safeguard your assets. Whether you&apos;re
+              a startup or an enterprise, we&apos;ve got you covered.
+            </p>
+            <Link
+              href="/service"
+              className="inline-block min-w-[250px] bg-red-600 px-8 py-3 text-center font-medium text-white transition-colors duration-200 hover:bg-red-700"
+            >
+              Explore More
+            </Link>
+          </div>
+        )
+      }
       <div className="container mx-auto space-y-8">
         <div className="text-center">
           <h2 className="title">Orso Services</h2>

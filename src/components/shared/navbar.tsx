@@ -25,7 +25,7 @@ export default function Navbar() {
   const isAuthenticated = status === "authenticated";
 
   const isActive = (path: string) => {
-    return pathname === path;
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   const navLinks = [

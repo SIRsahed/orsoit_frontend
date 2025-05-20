@@ -1,7 +1,7 @@
 "use client"
 
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardFooter } from '../ui/card'
 import { Skeleton } from '../ui/skeleton'
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ import EditSubscriptionDialog from './edit-subscription-dialog'
 import DeletePlanDialog from './delete-plan-dialog';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
+import { SubscriptionDialog } from '@/app/(website)/service/_components/subscription-dialog';
 
 
 export interface Subscription {
@@ -37,6 +38,7 @@ export interface subscriptionPlanId {
 
 export default function SubscriptionList({ serviceId }: { serviceId: string }) {
 
+    const [selectedPlan, setSelectedPlan] = useState({});
     const pathname = usePathname()
 
     const {
@@ -55,7 +57,14 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
     }
 
 
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     console.log(subscriptions)
+
+    const handleOpenDialog = (plan: subscriptionPlanId) => {
+        setDialogOpen(true);
+        setSelectedPlan(plan)
+    }
 
     return (
         <div className="">
@@ -128,9 +137,15 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                                     :
 
                                                     <div className=''>
-                                                        <Button>
+                                                        <Button
+                                                            onClick={() => handleOpenDialog(subscription?.subscriptionPlanId[0])}
+                                                        >
                                                             Buy Plan
                                                         </Button>
+                                                        <SubscriptionDialog
+                                                            planData={selectedPlan}
+                                                            isOpen={dialogOpen}
+                                                            onClose={() => setDialogOpen(false)} />
                                                     </div>
                                             }
                                         </CardFooter>

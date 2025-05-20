@@ -1,7 +1,7 @@
 import React from "react";
-import { ServicesGrid } from "./_components/services-grid";
 import { Faq } from "./_components/faq";
 import GlobalClients from "./_components/global-clients";
+import { ServicesGrid } from "../_components/services-grid";
 
 const page = () => {
   return (
