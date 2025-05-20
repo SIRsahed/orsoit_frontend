@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {  Menu, LogOut, User, ChevronDown } from "lucide-react";
+import { Menu, LogOut, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,8 +21,70 @@ export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    userType: "",
+    image: "",
+  });
 
   const isAuthenticated = status === "authenticated";
+
+  // Fetch user data from API
+  const fetchUserData = async () => {
+    if (!session?.user?.id || !session?.user?.accessToken) return;
+
+    try {
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const response = await fetch(
+        `${baseUrl}/single/user/${session.user.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserData({
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || "",
+          userType: data.userType || "",
+          image: data.abator || session.user.image || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserData();
+    }
+  }, [session, isAuthenticated]);
+
+  // Listen for profile update events
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleStorageChange = (event: any) => {
+      if (event.key === "profile-updated") {
+        // Refetch user data when profile is updated
+        if (isAuthenticated && session?.user?.id) {
+          fetchUserData();
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [session, isAuthenticated]);
 
   const isActive = (path: string) => {
     return pathname === path;
@@ -38,12 +100,19 @@ export default function Navbar() {
 
   // Get user initials for avatar fallback
   const getUserInitials = () => {
-    if (!session?.user?.name) return "U";
-    const nameParts = session.user.name.split(" ");
-    if (nameParts.length >= 2) {
-      return `${nameParts[0][0]}${nameParts[1][0]}`;
-    }
-    return nameParts[0][0];
+    if (!userData.firstName && !userData.lastName) return "U";
+    const firstInitial = userData.firstName ? userData.firstName[0] : "";
+    const lastInitial = userData.lastName ? userData.lastName[0] : "";
+    return `${firstInitial}${lastInitial}`;
+  };
+
+  // Get full name
+  const getFullName = () => {
+    return (
+      `${userData.firstName} ${userData.lastName}`.trim() ||
+      session?.user?.name ||
+      "User"
+    );
   };
 
   return (
@@ -136,10 +205,6 @@ export default function Navbar() {
               </SheetContent>
             </Sheet>
 
-            {/* <Button variant="ghost" size="icon" className="text-white">
-              <Bell className="h-5 w-5" />
-            </Button> */}
-
             {/* User Authentication Section */}
             {!isAuthenticated ? (
               <Button
@@ -154,17 +219,17 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <div className="flex cursor-pointer items-center space-x-2">
                     <span className="hidden text-sm text-white md:block">
-                      {session.user.name}
-                      {session.user.role && (
+                      {getFullName()}
+                      {userData.userType && (
                         <span className="ml-1 text-xs text-red-300">
-                          ({session.user.role})
+                          ({userData.userType})
                         </span>
                       )}
                     </span>
                     <Avatar>
                       <AvatarImage
-                        src={session.user.image || "/avatar.png"}
-                        alt={session.user.name || "User"}
+                        src={userData.image || "/avatar.png"}
+                        alt={getFullName()}
                       />
                       <AvatarFallback>{getUserInitials()}</AvatarFallback>
                     </Avatar>
@@ -178,10 +243,10 @@ export default function Navbar() {
                     </div>
                     <div className="flex flex-col space-y-1 text-left">
                       <p className="text-sm font-medium leading-none">
-                        {session.user.name}
+                        {getFullName()}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {session.user.email}
+                        {userData.email || session?.user?.email}
                       </p>
                     </div>
                   </div>

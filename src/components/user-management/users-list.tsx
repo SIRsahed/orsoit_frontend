@@ -29,14 +29,16 @@ interface User {
   abator: string; // Assuming 'abator' is a typo and should be 'avatar'
   about: string;
   address: string;
-  coupons: any[]; // Or a more specific type if known
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  coupons: any[];
   createdAt: string;
   email: string;
   emailVerified: boolean;
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  subscriptions: any[]; // Or a more specific type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscriptions: any[];
   updatedAt: string;
   userType: "customer" | string; //  if there are other possible values
   _id: string;
