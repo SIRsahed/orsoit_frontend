@@ -122,6 +122,7 @@ export default function CustomServicesList() {
       return data;
     } catch (error) {
       setUserError((prev) => ({ ...prev, [userId]: true }));
+      console.error("Error fetching user data:", error);
       return null;
     } finally {
       setUserLoading((prev) => ({ ...prev, [userId]: false }));

@@ -31,7 +31,7 @@ export default function RoomPage() {
     queryFn: () => fetchMessages(roomId as string),
     enabled: !!roomId,
   });
-  
+
   console.log(messagesData, "messagesData");
 
   const sendMessageMutation = useMutation({
@@ -133,7 +133,8 @@ export default function RoomPage() {
             <p>No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          messagesData?.data?.map((msg) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          messagesData?.data?.map((msg: any) => {
             const isCurrentUser = msg.userId._id === session?.user?.id;
             return (
               <div

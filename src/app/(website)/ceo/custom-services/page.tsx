@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import CustomServicesList from "@/components/services/custom-services-list";
-import DashboardHeader from "@/components/shared/dashboard-header";
 
 export const metadata: Metadata = {
   title: "Custom Services | Orso Solutions",

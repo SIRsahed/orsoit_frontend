@@ -3,12 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  WrenchIcon as WrenchScrewdriver,
-  Settings,
-  LogOut,
-  ArrowDown,
-} from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
 import {
   Sidebar,

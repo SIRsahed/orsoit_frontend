@@ -8,6 +8,7 @@ export default function SessionWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sessionState, setSessionState] = useState<any>(null);
 
   // Listen for session update events
@@ -17,11 +18,12 @@ export default function SessionWrapper({
       setSessionState(event.detail.session);
     };
 
-    // Add event listener for session updates
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.addEventListener("session-update" as any, handleSessionUpdate);
 
     // Clean up event listener
     return () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       window.removeEventListener("session-update" as any, handleSessionUpdate);
     };
   }, []);

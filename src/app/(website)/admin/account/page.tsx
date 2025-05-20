@@ -1,5 +1,4 @@
 import React from "react";
-import AccountSettingsPage from "../../ceo/account-settings/page";
 import AccountSettingsForm from "../../account/settings/_components/account-settings";
 
 export default function page() {

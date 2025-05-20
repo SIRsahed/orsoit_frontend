@@ -1,7 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 import DashboardHeader from "@/components/shared/dashboard-header";

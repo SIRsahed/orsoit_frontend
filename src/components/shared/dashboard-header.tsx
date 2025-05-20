@@ -63,11 +63,12 @@ export default function DashboardHeader() {
     if (session?.user?.id) {
       fetchUserData();
     }
-  }, [session]);
+  }, [session, fetchUserData]);
 
   // Listen for profile update events
   useEffect(() => {
-    const handleStorageChange = (event) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleStorageChange = (event: any) => {
       if (event.key === "profile-updated") {
         // Refetch user data when profile is updated
         if (session?.user?.id) {

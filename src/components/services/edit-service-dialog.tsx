@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { updateService } from "@/lib/api";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -35,14 +36,12 @@ const formSchema = z.object({
   image: z.any().optional(),
 });
 
-
 export interface Service {
   _id: string;
   name: string;
   description: string;
   image: string;
 }
-
 
 export default function EditServiceDialog({ service }: { service: Service }) {
   const [open, setOpen] = useState(false);
@@ -75,7 +74,8 @@ export default function EditServiceDialog({ service }: { service: Service }) {
   }, [open, imagePreview]);
 
   const mutation = useMutation({
-    mutationFn: (values: z.infer<typeof formSchema>) => updateService(service._id, values),
+    mutationFn: (values: z.infer<typeof formSchema>) =>
+      updateService(service._id, values),
     onSuccess: () => {
       toast.success("Service updated successfully");
       queryClient.invalidateQueries({ queryKey: ["services"] });
@@ -162,16 +162,18 @@ export default function EditServiceDialog({ service }: { service: Service }) {
                     <p className="mb-2 text-sm text-gray-400">
                       New Image Preview:
                     </p>
-                    <img
+                    <Image
                       src={imagePreview || "/placeholder.svg"}
                       alt="Preview"
                       className="h-40 w-40 object-contain"
+                      fill
                     />
                   </div>
                 ) : service.image ? (
                   <div className="mb-4">
                     <p className="mb-2 text-sm text-gray-400">Current Image:</p>
-                    <img
+                    <Image
+                      fill
                       src={service.image || "/placeholder.svg"}
                       alt={service.name}
                       className="h-40 w-40 object-contain"

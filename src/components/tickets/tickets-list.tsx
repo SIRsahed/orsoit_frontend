@@ -28,12 +28,13 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function TicketsList() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [entriesPerPage, setEntriesPerPage] = useState("10")
-  const [currentPage, setCurrentPage] = useState(1) 
-  const [viewTicket, setViewTicket] = useState<any>(null)
-  const [selectedAdmin, setSelectedAdmin] = useState("")
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [entriesPerPage, setEntriesPerPage] = useState("10");
+  const [currentPage, setCurrentPage] = useState(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [viewTicket, setViewTicket] = useState<any>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState("");
 
   const { data: tickets, isLoading } = useQuery({
     queryKey: ["tickets", currentPage, entriesPerPage],
@@ -173,7 +174,8 @@ export default function TicketsList() {
                         </td>
                       </tr>
                     ))
-                : tickets?.data?.map((ticket, index) => (
+                : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  tickets?.data?.map((ticket: any, index: number) => (
                     <tr key={ticket._id} className="border-b border-[#222]">
                       <td className="px-4 py-3">#{index + 125}</td>
                       <td className="px-4 py-3">{ticket.name}</td>
@@ -204,7 +206,8 @@ export default function TicketsList() {
                             <SelectValue placeholder="Admin" />
                           </SelectTrigger>
                           <SelectContent className="border-[#333] bg-[#1A1A1A]">
-                            {admins?.data?.map((admin) => (
+                            
+                            {admins?.data?.map((admin: any) => (
                               <SelectItem key={admin._id} value={admin._id}>
                                 {admin.firstName} {admin.lastName}
                               </SelectItem>
