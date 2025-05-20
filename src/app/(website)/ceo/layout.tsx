@@ -1,7 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
@@ -11,8 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Orso Solutions",
-  description: "Cybersecurity solutions dashboard",
-  generator: "v0.dev",
+  description: "Cybersecurity solutions dashboard"
 };
 
 export default function RootLayout({
@@ -32,7 +30,6 @@ export default function RootLayout({
             {children}
           </div>
         </div>
-        <Toaster position="top-right" theme="dark" />
       </SidebarProvider>
     </div>
   );

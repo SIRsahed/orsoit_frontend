@@ -29,15 +29,15 @@ export default function EditSubscriptionDialog({ subscription }: { subscription:
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            planName: subscription.planName,
-            description: subscription.description,
-            price: subscription.price,
-            features: subscription.features,
+            planName: subscription.subscriptionPlanId[0]?.planName,
+            description: subscription.subscriptionPlanId[0]?.description,
+            price: subscription.subscriptionPlanId[0]?.price,
+            features: subscription.subscriptionPlanId[0]?.features,
         },
     })
 
     const mutation = useMutation({
-        mutationFn: (values: z.infer<typeof formSchema>) => updateSubscriptionPlan(subscription._id, values),
+        mutationFn: (values: z.infer<typeof formSchema>) => updateSubscriptionPlan(subscription?.subscriptionPlanId[0]._id, values),
         onSuccess: () => {
             toast.success("Subscription updated successfully")
             queryClient.invalidateQueries({ queryKey: ["subscriptions"] })

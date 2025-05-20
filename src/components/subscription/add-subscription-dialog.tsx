@@ -59,7 +59,7 @@ export default function AddSubscriptionDialog({ serviceId }: { serviceId: string
         onError: (error) => {
             toast.error("Failed to add subscription")
             console.error(error)
-        }, 
+        },
     })
 
 
