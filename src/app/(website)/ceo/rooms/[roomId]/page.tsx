@@ -130,7 +130,7 @@ export default function RoomPage() {
             <p>No messages yet. Start the conversation!</p>
           </div>
         ) : (
-          messagesData?.data?.map((msg) => {
+          messagesData?.data?.map((msg:any) => {
             const isCurrentUser = msg.userId._id === session?.user?.id
             return (
               <div key={msg._id} className={`message-container ${isCurrentUser ? "items-end" : "items-start"}`}>
