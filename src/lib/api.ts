@@ -75,6 +75,16 @@ export async function fetchUsers(page = 1, limit = 10) {
 }
 
 
+export async function changePassword(data: any) {
+  try {
+    const response = await api.post("/auth/change-password", data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to change password");
+  }
+}
+
+
 export async function fetchSingleUser(userId: string) {
   try {
     const response = await api.get(`/single/user/${userId}`);
