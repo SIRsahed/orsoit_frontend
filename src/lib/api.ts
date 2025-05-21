@@ -1,6 +1,8 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 // Create axios instance
@@ -71,6 +73,17 @@ export async function fetchUsers(page = 1, limit = 10) {
     throw new Error(error.response?.data?.message || "Failed to fetch users");
   }
 }
+
+
+export async function fetchSingleUser(userId: string) {
+  try {
+    const response = await api.get(`/single/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user");
+  }
+}
+
 
 export async function fetchAdminUsers() {
   try {
@@ -267,6 +280,17 @@ export async function fetchTicket(id: string) {
   }
 }
 
+
+export async function fetchUserTickets(userId: string) {
+  try {
+    const response = await api.get(`/tickets/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user tickets");
+  }
+}
+
+
 export async function createTicket(data: any) {
   try {
     const formData = new FormData();
@@ -311,6 +335,19 @@ export async function fetchRooms() {
     throw new Error(error.response?.data?.message || "Failed to fetch rooms");
   }
 }
+
+
+
+// Fetch user rooms
+export async function fetchUserRooms(userId: string) {
+  try {
+    const response = await api.get(`/rooms/user?userId=${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user rooms");
+  }
+}
+
 
 export async function createRoom(data: {
   userId: string;

@@ -16,6 +16,7 @@ export default function TicketsList() {
   const queryClient = useQueryClient()
   const [entriesPerPage, setEntriesPerPage] = useState("10")
   const [currentPage, setCurrentPage] = useState(1) 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [viewTicket, setViewTicket] = useState<any>(null)
   const [selectedAdmin, setSelectedAdmin] = useState("")
 

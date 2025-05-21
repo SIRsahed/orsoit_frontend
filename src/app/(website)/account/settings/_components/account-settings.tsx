@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -20,13 +20,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSingleUser, updateProfile } from "@/lib/api";
+import { useSession } from "next-auth/react";
 
 const profileFormSchema = z.object({
-  fullName: z.string().min(2, {
+  firstName: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  lastName: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
@@ -38,6 +41,7 @@ const profileFormSchema = z.object({
     message: "Address must be at least 5 characters.",
   }),
   about: z.string().optional(),
+  userId: z.string(),
 });
 
 const passwordFormSchema = z
@@ -64,23 +68,53 @@ export default function AccountSettingsForm() {
   const [profileImage, setProfileImage] = useState<string>(
     "/placeholder.svg?height=200&width=200",
   );
+
+
+  const [loading, setLoading] = useState(false);
+
+  const session = useSession()
+
+  const userId = String(session?.data?.user?.id)
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
+  const { data: userDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => fetchSingleUser(userId)
+  })
+
 
   // Profile form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      fullName: "Alex rocks",
-      username: "@alexrocks",
-      email: "alexrocks@example.com",
-      phone: "(+33)7 75 55 65 33",
-      address: "New York City,USA street 5,home 258/B",
-      about:
-        "I am a consulter for a small hotel business. I currently working with team based work.",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      address: "",
+      about: "",
+      userId: userId
     },
   });
+
+
+  useEffect(() => {
+    if (userDetails) {
+      profileForm.reset({
+        firstName: userDetails.firstName || "",
+        lastName: userDetails.lastName || "",
+        email: userDetails.email || "",
+        phone: userDetails.phoneNumber || "",
+        address: userDetails.address || "",
+        about: userDetails.about || "",
+        userId: userId
+      });
+    }
+  }, [userDetails, profileForm, userId]);
 
   // Password form
   const passwordForm = useForm<PasswordFormValues>({
@@ -93,8 +127,11 @@ export default function AccountSettingsForm() {
   });
 
   function onProfileSubmit(data: ProfileFormValues) {
+    setLoading(true)
+    updateProfile(data)
     toast.success("Your profile has been updated successfully.");
     console.log(data);
+    setLoading(false)
   }
 
   function onPasswordSubmit(data: PasswordFormValues) {
@@ -128,13 +165,12 @@ export default function AccountSettingsForm() {
             <div className="col-span-2 space-y-6">
               <FormField
                 control={profileForm.control}
-                name="fullName"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Alex rocks"
                         {...field}
                         className="border-gray-700 bg-black"
                       />
@@ -143,16 +179,14 @@ export default function AccountSettingsForm() {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={profileForm.control}
-                name="username"
+                name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Last Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="@alexrocks"
                         {...field}
                         className="border-gray-700 bg-black"
                       />
@@ -170,7 +204,6 @@ export default function AccountSettingsForm() {
                     <FormLabel>Email address</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="alexrocks@example.com"
                         {...field}
                         className="border-gray-700 bg-black"
                       />
@@ -266,7 +299,7 @@ export default function AccountSettingsForm() {
             type="submit"
             className="bg-red-600 text-white hover:bg-red-700"
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </form>
       </Form>

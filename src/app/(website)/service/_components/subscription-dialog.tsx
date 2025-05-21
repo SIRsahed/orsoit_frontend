@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -60,6 +60,9 @@ export function SubscriptionDialog({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl border-0 bg-[#1A1A1A] p-0 text-white">
+        <DialogHeader className="text-2xl font-semibold sr-only">
+          Subscribe to {planData?.planName}
+        </DialogHeader>
         <div className="flex flex-col md:flex-row">
           {/* Left side - Form */}
           <div className="p-6 md:w-1/2">
@@ -104,7 +107,7 @@ export function SubscriptionDialog({
                 className="mt-4 w-full bg-red-600 hover:bg-red-700"
               >
                 {loading ? "Loading Payment ..." : "Confirm and Pay"}
-                
+
               </Button>
             </div>
           </div>

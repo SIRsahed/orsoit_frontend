@@ -143,6 +143,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                                             Buy Plan
                                                         </Button>
                                                         <SubscriptionDialog
+                                                            // @ts-expect-error typeError
                                                             planData={selectedPlan}
                                                             isOpen={dialogOpen}
                                                             onClose={() => setDialogOpen(false)} />
