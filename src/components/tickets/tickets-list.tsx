@@ -206,7 +206,8 @@ export default function TicketsList() {
                             <SelectValue placeholder="Admin" />
                           </SelectTrigger>
                           <SelectContent className="border-[#333] bg-[#1A1A1A]">
-                            {admins?.data?.map((admin: any) => (
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                            admins?.data?.map((admin: any) => (
                               <SelectItem key={admin._id} value={admin._id}>
                                 {admin.firstName} {admin.lastName}
                               </SelectItem>
@@ -329,6 +330,7 @@ export default function TicketsList() {
                   <h3 className="mb-1 text-sm font-medium">Attachments</h3>
                   <div className="flex gap-2">
                     {viewTicket.attachments.map(
+                      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                       (attachment: any, index: number) => (
                         <div key={index} className="rounded bg-[#222] p-2">
                           <p className="text-xs text-gray-400">ORSO PDF</p>
@@ -350,7 +352,8 @@ export default function TicketsList() {
                       <SelectValue placeholder="Select Admin" />
                     </SelectTrigger>
                     <SelectContent className="border-[#333] bg-[#1A1A1A]">
-                      {admins?.data?.map((admin: any) => (
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                      admins?.data?.map((admin: any) => (
                         <SelectItem key={admin._id} value={admin._id}>
                           {admin.firstName} {admin.lastName}
                         </SelectItem>
