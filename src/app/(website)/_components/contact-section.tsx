@@ -16,6 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -32,7 +35,17 @@ const formSchema = z.object({
   }),
 });
 
+// Define the API request interface
+interface ContactFormRequest {
+  name: string;
+  phoneNumber: string;
+  email: string;
+  question: string;
+}
+
 export default function ContactSection() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,9 +56,51 @@ export default function ContactSection() {
     },
   });
 
+  // Set up the mutation with TanStack Query
+  const contactMutation = useMutation({
+    mutationFn: async (data: ContactFormRequest) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/contact-us`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast.success("Thank you for contacting us. We'll get back to you soon.");
+      form.reset();
+      setIsSubmitting(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Something went wrong. Please try again.");
+      setIsSubmitting(false);
+    },
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Here you would typically send the form data to your backend
+    setIsSubmitting(true);
+
+    // Map form data to API request format
+    const contactRequest: ContactFormRequest = {
+      name: values.name,
+      phoneNumber: values.phone,
+      email: values.email,
+      question: values.details,
+    };
+
+    // Execute the mutation
+    contactMutation.mutate(contactRequest);
   }
 
   return (
@@ -196,8 +251,9 @@ export default function ContactSection() {
               <Button
                 type="submit"
                 className="w-full max-w-xs bg-primary py-6 text-white hover:bg-red-600"
+                disabled={isSubmitting}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </div>
           </form>

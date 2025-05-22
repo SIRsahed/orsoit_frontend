@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
 // Define the form validation schema with Zod
 const formSchema = z.object({
@@ -27,7 +30,17 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+// Define the API request interface
+interface ContactFormRequest {
+  name: string;
+  phoneNumber: string;
+  email: string;
+  question: string;
+}
+
 export default function ContactUsForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Initialize the form with react-hook-form and zod validation
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -39,25 +52,66 @@ export default function ContactUsForm() {
     },
   });
 
+  // Set up the mutation with TanStack Query
+  const contactMutation = useMutation({
+    mutationFn: async (data: ContactFormRequest) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/contact-us`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast.success("Your message has been sent successfully.");
+      form.reset();
+      setIsSubmitting(false);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Something went wrong. Please try again.");
+      setIsSubmitting(false);
+    },
+  });
+
   // Handle form submission
   function onSubmit(data: FormValues) {
-    // Handle form submission logic here
-    console.log(data);
+    setIsSubmitting(true);
+
+    // Map form data to API request format
+    const contactRequest: ContactFormRequest = {
+      name: data.name,
+      phoneNumber: data.phone,
+      email: data.email,
+      question: data.message,
+    };
+
+    // Execute the mutation
+    contactMutation.mutate(contactRequest);
   }
 
   return (
     <div className="mt-[30px] flex w-full flex-col md:mt-[80px]">
-      <div className="">
-        
+      <div className="relative">
         <div className="absolute left-0 top-0 z-0">
-                <Image
-                  src="/images/c-1.png" // Update with your image path
-                  alt="Left Side Image"
-                  width={800} // Adjust width as needed
-                  height={200} // Adjust height as needed
-                  className="h-full w-full object-cover opacity-70" // Adjust opacity for subtle effect
-                />
-              </div>
+          <Image
+            src="/images/c-1.png" // Update with your image path
+            alt="Left Side Image"
+            width={800} // Adjust width as needed
+            height={200} // Adjust height as needed
+            className="h-full w-full object-cover opacity-70" // Adjust opacity for subtle effect
+          />
+        </div>
 
         <div className="container">
           <div className="mb-[30px] flex flex-col md:mb-[80px] lg:flex-row">
@@ -130,7 +184,7 @@ export default function ContactUsForm() {
                         <FormLabel>Name</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Alex"
+                            placeholder="Name"
                             {...field}
                             className="h-[56px] border-[#737373] bg-transparent text-white"
                           />
@@ -148,7 +202,7 @@ export default function ContactUsForm() {
                         <FormLabel>Phone</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="+1"
+                            placeholder="Phone Number"
                             {...field}
                             className="h-[56px] border-[#737373] bg-transparent text-white"
                           />
@@ -167,7 +221,7 @@ export default function ContactUsForm() {
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="example@gmail.com"
+                            placeholder="Email"
                             {...field}
                             className="h-[56px] border-[#737373] bg-transparent text-white"
                           />
@@ -198,8 +252,9 @@ export default function ContactUsForm() {
                   <Button
                     type="submit"
                     className="w-[260px] bg-red-600 text-white hover:bg-red-700"
+                    disabled={isSubmitting}
                   >
-                    Contact Us
+                    {isSubmitting ? "Submitting..." : "Contact Us"}
                   </Button>
                 </form>
               </Form>

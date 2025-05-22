@@ -310,8 +310,8 @@ export default function PaymentsList() {
                         **** {payment.stripeSessionId.slice(-4)}
                       </span>
                     </td>
-                    <td className="px-4 py-3">{`${payment.userId.firstName} ${payment.userId.lastName}`}</td>
-                    <td className="px-4 py-3">{payment.userId.email}</td>
+                    <td className="px-4 py-3">{`${payment?.userId?.firstName} ${payment?.userId?.lastName}`}</td>
+                    <td className="px-4 py-3">{payment?.userId?.email}</td>
                     <td className="px-4 py-3">
                       {new Date(payment.createdAt).toLocaleDateString("en-US", {
                         day: "2-digit",
