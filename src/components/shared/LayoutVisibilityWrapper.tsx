@@ -6,10 +6,11 @@ import Footer from "@/components/shared/footer";
 import NewsletterSection from "@/components/shared/NewsletterSection";
 
 const HIDDEN_ROUTES = [
-  "/ceo-dashboard",
-  "/admin-dashboard",
+  "/ceo",
+  "/admin",
+  "/sales",
   "/customer-dashboard",
-  "/admin"
+  "/admin",
 ];
 
 export default function LayoutVisibilityWrapper({

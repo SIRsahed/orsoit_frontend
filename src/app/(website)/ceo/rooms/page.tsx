@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { io, type Socket } from "socket.io-client";
+import Image from "next/image";
 
 // Update the types
 interface User {
@@ -105,7 +106,7 @@ export default function ChatPage() {
   // Listen for new messages
   useEffect(() => {
     if (!socket) return;
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleReceiveMessage = (message: any) => {
       console.log("Received message:", message);
 
@@ -720,7 +721,8 @@ export default function ChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
-                                  <img
+                                  <Image
+                                  fill
                                     src={
                                       message.attachmentFile ||
                                       "/placeholder.svg"

@@ -29,41 +29,41 @@ export function AppSidebar() {
 
   const menuItems = [
     {
-      href: "/ceo-dashboard/dashboard",
+      href: "/ceo/dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
     },
-    { href: "/ceo-dashboard/rooms", label: "Rooms", icon: DoorOpen },
+    { href: "/ceo/rooms", label: "Rooms", icon: DoorOpen },
     {
-      href: "/ceo-dashboard/user-management",
+      href: "/ceo/user-management",
       label: "User Management",
       icon: Users,
     },
     {
-      href: "/ceo-dashboard/services",
+      href: "/ceo/services",
       label: "Services",
       icon: Wrench,
     },
     {
-      href: "/ceo-dashboard/custom-services",
+      href: "/ceo/custom-services",
       label: "Custom Services",
       icon: WrenchScrewdriver,
     },
-    { href: "/ceo-dashboard/payment", label: "Payment", icon: CreditCard },
-    { href: "/ceo-dashboard/tickets", label: "Tickets", icon: Ticket },
+    { href: "/ceo/payment", label: "Payment", icon: CreditCard },
+    { href: "/ceo/tickets", label: "Tickets", icon: Ticket },
     {
-      href: "/ceo-dashboard/account-settings",
+      href: "/ceo/account-settings",
       label: "Account settings",
       icon: Settings,
     },
-    { href: "/ceo-dashboard/logout", label: "Log out", icon: LogOut },
+    { href: "/ceo/logout", label: "Log out", icon: LogOut },
   ];
 
   return (
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/ceo-dashboard/dashboard"
+          href="/ceo/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image

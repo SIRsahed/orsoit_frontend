@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
@@ -204,7 +205,11 @@ export async function deleteService(id: string) {
 }
 
 // Subscription Plans API
-export async function fetchSubscriptionPlans({ serviceId }: { serviceId: string }) {
+export async function fetchSubscriptionPlans({
+  serviceId,
+}: {
+  serviceId: string;
+}) {
   try {
     const response = await api.get(`/services-plans/one/${serviceId}`);
     return response.data;
@@ -416,5 +421,65 @@ export async function sendMessage(data: {
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Failed to send message");
+  }
+}
+
+export async function fetchCustomServices() {
+  try {
+    const response = await api.get("/custom-services");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch custom services",
+    );
+  }
+}
+
+export async function createCustomService(data: FormData) {
+  try {
+    const response = await api.post("/custom-services", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to create custom service",
+    );
+  }
+}
+
+export async function approveCustomService(id: string, status: boolean) {
+  try {
+    const response = await api.put("/custom-service", {
+      id,
+      status: status.toString(),
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to update custom service status",
+    );
+  }
+}
+
+export async function deleteCustomService(id: string) {
+  try {
+    const response = await api.delete(`/custom-service/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to delete custom service",
+    );
+  }
+}
+
+export async function fetchUserById(userId: string) {
+  try {
+    const response = await api.get(`/single/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user");
   }
 }

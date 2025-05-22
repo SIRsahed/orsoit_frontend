@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-export function AdminSidebar() {
+export function SalesSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
@@ -45,7 +45,7 @@ export function AdminSidebar() {
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/ceo/dashboard"
+          href="/sales/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image
