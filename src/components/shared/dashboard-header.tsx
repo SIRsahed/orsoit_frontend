@@ -30,8 +30,7 @@ export default function DashboardHeader() {
     if (!session?.user?.id || !session?.user?.accessToken) return;
 
     try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(
         `${baseUrl}/single/user/${session.user.id}`,
         {
@@ -63,7 +62,7 @@ export default function DashboardHeader() {
     if (session?.user?.id) {
       fetchUserData();
     }
-  }, [session, fetchUserData]);
+  }, [session]);
 
   // Listen for profile update events
   useEffect(() => {

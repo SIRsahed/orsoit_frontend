@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowDown } from "lucide-react";
+import { LayoutDashboard, LogOut, PackagePlus } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,33 +19,20 @@ export function SalesSidebar() {
 
   const menuItems = [
     {
-      href: "/admin/dashboard",
+      href: "/sales/dashboard",
       label: "Dashboard",
+      icon: LayoutDashboard,
     },
-    {
-      href: "/admin/tickets",
-      label: "Tickets",
-      icon: ArrowDown,
-    },
-    {
-      href: "/admin/rooms",
-      label: "Rooms",
-    },
-    {
-      href: "/admin/account",
-      label: "Account",
-    },
-    {
-      href: "/admin/logout",
-      label: "Log out",
-    },
+    { href: "/sales/coupon", label: "Coupons", icon: PackagePlus },
+
+    { href: "/sales/logout", label: "Log out", icon: LogOut },
   ];
 
   return (
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/sales/dashboard"
+          href="/ceo/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image
@@ -60,7 +47,7 @@ export function SalesSidebar() {
       <SidebarContent className="bg-black px-4 py-2">
         <SidebarMenu className="flex list-none flex-col gap-2">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname.includes(item.href);
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -72,12 +59,9 @@ export function SalesSidebar() {
                       : "bg-[#151515] !text-white hover:bg-[#252525]"
                   }`}
                 >
-                  <Link
-                    href={item.href}
-                    className="flex items-center justify-between gap-3"
-                  >
+                  <Link href={item.href} className="flex items-center gap-3">
+                    <item.icon className="h-5 w-5" />
                     <span>{item.label}</span>
-                    {item.icon && <item.icon className="h-4 w-4" />}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
