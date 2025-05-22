@@ -3,7 +3,7 @@
 import type React from "react";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,12 +31,22 @@ interface User {
   _id: string;
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   email: string;
   userType: string;
-  abator?: string; // Add the avatar field
+  abator?: string;
+  password?: string;
+  emailVerified?: boolean;
+  subscriptions?: any[];
+  coupons?: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+  about?: string;
+  address?: string;
 }
 
+// Update the Room interface to include the new lastMessage format
 interface Room {
   _id: string;
   userId: User;
@@ -46,7 +56,13 @@ interface Room {
   roomStatus: string;
   createdAt: string;
   updatedAt: string;
-  lastMessage?: string;
+  lastMessage?: {
+    msg: string;
+    sender: {
+      _id: string;
+      firstName: string;
+    };
+  };
   lastMessageTime?: string;
   unreadCount?: number;
 }
@@ -59,6 +75,7 @@ interface Message {
   attachmentFile?: string;
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 export default function ChatPage() {
@@ -104,90 +121,87 @@ export default function ChatPage() {
   }, [userId]);
 
   // Listen for new messages
+  const handleReceiveMessage = (message: Message) => {
+    console.log("Received message:", message);
+
+    if (selectedRoom && message.roomId === selectedRoom._id) {
+      // Simply add the message to the list - it already has the full user object
+      setMessages((prevMessages) => [...prevMessages, message]);
+    }
+
+    // Update the room's last message
+    setRooms((prevRooms) => {
+      const updatedRooms = prevRooms.map((room) => {
+        if (room._id === message.roomId) {
+          const isCurrentUser = message.userId._id === userId;
+          const unreadCount =
+            isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
+              ? 0
+              : (room.unreadCount || 0) + 1;
+
+          return {
+            ...room,
+            lastMessage: {
+              msg: message.message,
+              sender: {
+                _id: message.userId._id,
+                firstName: message.userId.firstName,
+              },
+            },
+            lastMessageTime: message.createdAt,
+            unreadCount,
+          };
+        }
+        return room;
+      });
+
+      // Sort rooms by last message time
+      return [...updatedRooms].sort(
+        (a, b) =>
+          new Date(b.lastMessageTime || b.updatedAt).getTime() -
+          new Date(a.lastMessageTime || a.updatedAt).getTime(),
+      );
+    });
+
+    // Also update filtered rooms
+    setFilteredRooms((prevRooms) => {
+      const updatedRooms = prevRooms.map((room) => {
+        if (room._id === message.roomId) {
+          const isCurrentUser = message.userId._id === userId;
+          const unreadCount =
+            isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
+              ? 0
+              : (room.unreadCount || 0) + 1;
+
+          return {
+            ...room,
+            lastMessage: {
+              msg: message.message,
+              sender: {
+                _id: message.userId._id,
+                firstName: message.userId.firstName,
+              },
+            },
+            lastMessageTime: message.createdAt,
+            unreadCount,
+          };
+        }
+        return room;
+      });
+
+      // Sort rooms by last message time
+      return [...updatedRooms].sort(
+        (a, b) =>
+          new Date(b.lastMessageTime || b.updatedAt).getTime() -
+          new Date(a.lastMessageTime || a.updatedAt).getTime(),
+      );
+    });
+  };
+
   useEffect(() => {
     if (!socket) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleReceiveMessage = (message: any) => {
-      console.log("Received message:", message);
 
-      if (selectedRoom && message.roomId === selectedRoom._id) {
-        const formattedMessage = {
-          _id: message._id || Date.now().toString(),
-          roomId: message.roomId,
-          userId: {
-            _id: message.userId,
-            firstName: "User",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            userType: "",
-          },
-          message: message.message,
-          attachmentFile: message.attachmentFile,
-          createdAt: message.createdAt || new Date().toISOString(),
-          updatedAt: message.updatedAt || new Date().toISOString(),
-        };
-
-        setMessages((prevMessages) => [...prevMessages, formattedMessage]);
-      }
-
-      // Update the room's last message
-      setRooms((prevRooms) => {
-        const updatedRooms = prevRooms.map((room) => {
-          if (room._id === message.roomId) {
-            const isCurrentUser = message.userId === userId;
-            const unreadCount =
-              isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
-                ? 0
-                : (room.unreadCount || 0) + 1;
-
-            return {
-              ...room,
-              lastMessage: message.message,
-              lastMessageTime: message.createdAt || new Date().toISOString(),
-              unreadCount,
-            };
-          }
-          return room;
-        });
-
-        // Sort rooms by last message time
-        return [...updatedRooms].sort(
-          (a, b) =>
-            new Date(b.lastMessageTime || b.updatedAt).getTime() -
-            new Date(a.lastMessageTime || a.updatedAt).getTime(),
-        );
-      });
-
-      // Also update filtered rooms
-      setFilteredRooms((prevRooms) => {
-        const updatedRooms = prevRooms.map((room) => {
-          if (room._id === message.roomId) {
-            const isCurrentUser = message.userId === userId;
-            const unreadCount =
-              isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
-                ? 0
-                : (room.unreadCount || 0) + 1;
-
-            return {
-              ...room,
-              lastMessage: message.message,
-              lastMessageTime: message.createdAt || new Date().toISOString(),
-              unreadCount,
-            };
-          }
-          return room;
-        });
-
-        // Sort rooms by last message time
-        return [...updatedRooms].sort(
-          (a, b) =>
-            new Date(b.lastMessageTime || b.updatedAt).getTime() -
-            new Date(a.lastMessageTime || a.updatedAt).getTime(),
-        );
-      });
-    };
-
+    // Now we can directly use the message with full user object
     socket.on("receiveMessage", handleReceiveMessage);
 
     return () => {
@@ -285,6 +299,7 @@ export default function ChatPage() {
     }
   }, [searchQuery, rooms]);
 
+  // Update the fetchMessages function to handle the new lastMessage format
   const fetchMessages = async (roomId: string) => {
     if (!token) return;
 
@@ -304,17 +319,19 @@ export default function ChatPage() {
         // Update the last message for this room
         if (data.data.length > 0) {
           const lastMsg = data.data[data.data.length - 1];
-          const truncatedMessage =
-            lastMsg.message.length > 20
-              ? lastMsg.message.substring(0, 20) + "..."
-              : lastMsg.message;
 
           setRooms((prevRooms) =>
             prevRooms.map((room) =>
               room._id === roomId
                 ? {
                     ...room,
-                    lastMessage: truncatedMessage,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
+                    },
                     lastMessageTime: lastMsg.createdAt,
                     unreadCount: 0,
                   }
@@ -328,7 +345,13 @@ export default function ChatPage() {
               room._id === roomId
                 ? {
                     ...room,
-                    lastMessage: truncatedMessage,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
+                    },
                     lastMessageTime: lastMsg.createdAt,
                     unreadCount: 0,
                   }
@@ -448,7 +471,7 @@ export default function ChatPage() {
   };
 
   const getInitials = (user: User) => {
-    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+    return `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`.toUpperCase();
   };
 
   const getRoomInitials = (roomName: string) => {
@@ -531,6 +554,7 @@ export default function ChatPage() {
                         setSidebarOpen(false);
                       }}
                     >
+                      {/* Update the room list rendering in the mobile view */}
                       <CardContent className="p-3">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 bg-red-900">
@@ -553,7 +577,16 @@ export default function ChatPage() {
                               </Badge>
                             </div>
                             <p className="truncate text-sm text-zinc-300">
-                              You: {room.lastMessage || "No messages yet"}
+                              {room.lastMessage ? (
+                                <>
+                                  {room.lastMessage.sender?._id === userId
+                                    ? "You"
+                                    : room.lastMessage.sender?.firstName}
+                                  : {room.lastMessage.msg}
+                                </>
+                              ) : (
+                                "No messages yet"
+                              )}
                             </p>
                           </div>
                         </div>
@@ -614,12 +647,11 @@ export default function ChatPage() {
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
                           {selectedRoom.userId.abator ? (
-                            <img
+                            <AvatarImage
                               src={
                                 selectedRoom.userId.abator || "/placeholder.svg"
                               }
                               alt={`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
-                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <AvatarFallback>
@@ -637,13 +669,12 @@ export default function ChatPage() {
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
                           {selectedRoom.adminId.abator ? (
-                            <img
+                            <AvatarImage
                               src={
                                 selectedRoom.adminId.abator ||
                                 "/placeholder.svg"
                               }
                               alt={`${selectedRoom.adminId.firstName} ${selectedRoom.adminId.lastName}`}
-                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <AvatarFallback>
@@ -689,10 +720,9 @@ export default function ChatPage() {
                       >
                         <Avatar className="h-10 w-10">
                           {message.userId.abator ? (
-                            <img
+                            <AvatarImage
                               src={message.userId.abator || "/placeholder.svg"}
                               alt={`${message.userId.firstName} ${message.userId.lastName}`}
-                              className="h-full w-full object-cover"
                             />
                           ) : (
                             <AvatarFallback>
@@ -734,7 +764,6 @@ export default function ChatPage() {
                                   <img
                                     src={
                                       message.attachmentFile ||
-                                      "/placeholder.svg" ||
                                       "/placeholder.svg"
                                     }
                                     alt="Attachment"
@@ -848,6 +877,7 @@ export default function ChatPage() {
                 }`}
                 onClick={() => setSelectedRoom(room)}
               >
+                {/* Update the room list rendering in the desktop view */}
                 <CardContent className="relative p-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 bg-red-900">
@@ -866,10 +896,24 @@ export default function ChatPage() {
                         </Badge>
                       </div>
                       <p className="truncate text-sm text-zinc-300">
-                        You: {room.lastMessage || "No messages yet"}
+                        {room.lastMessage ? (
+                          <>
+                            {room.lastMessage.sender?._id === userId
+                              ? "You"
+                              : room.lastMessage.sender?.firstName}
+                            : {room.lastMessage.msg}
+                          </>
+                        ) : (
+                          "No messages yet"
+                        )}
                       </p>
                     </div>
                   </div>
+                  {room.unreadCount && room.unreadCount > 0 && (
+                    <Badge className="absolute bottom-3 right-3 bg-red-600 text-white">
+                      {room.unreadCount}
+                    </Badge>
+                  )}
                 </CardContent>
               </Card>
             ))}

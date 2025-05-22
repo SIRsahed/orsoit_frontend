@@ -86,18 +86,62 @@
 
 // export default NewsletterSection;
 
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import type React from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const NewsletterSection = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/newsletter/subscribe`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to subscribe");
+      }
+
+      toast.success("You have successfully subscribed to our newsletter.");
+
+      setEmail("");
+    } catch (error) {
+      toast.error("Failed to subscribe. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative mx-auto mt-[100px] flex h-[auto] min-h-[569px] w-full items-center justify-center">
       <div className="absolute inset-0">
         <Image
           src="/images/subscribe.png"
-          layout="fill"
-          objectFit="cover"
-          alt="subscribe-image"
+          fill
+          sizes="100vw"
+          style={{ objectFit: "cover" }}
+          alt="Newsletter subscription background"
+          priority
         />
       </div>
 
@@ -112,16 +156,25 @@ const NewsletterSection = () => {
           Subscribe to our newsletter and be the first to discover the latest
           CBD tips, exclusive discounts, and wellness news.
         </p>
-        <div className="flex flex-col md:flex-row">
+        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row">
           <input
             type="email"
             placeholder="Enter Your Email"
             className="mb-2 flex-grow rounded-l-md bg-white px-4 py-2 text-black focus:outline-none md:mb-0 md:rounded-r-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            aria-label="Email address"
+            required
           />
-          <button className="rounded-r-md bg-red-600 px-6 py-2 text-white hover:bg-red-700 md:rounded-l-none">
-            Subscribe
+          <button
+            type="submit"
+            className="rounded-r-md bg-red-600 px-6 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70 md:rounded-l-none"
+            disabled={isLoading}
+          >
+            {isLoading ? "Subscribing..." : "Subscribe"}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

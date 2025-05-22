@@ -35,23 +35,35 @@ interface UserType {
   email: string;
   userType: string;
   abator?: string;
+  password?: string;
+  emailVerified?: boolean;
+  subscriptions?: any[];
+  coupons?: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+  about?: string;
+  address?: string;
 }
 
+// Update the AdminRoom interface to include the new lastMessage format
 interface AdminRoom {
   _id: string;
-  userId: string; // Just the ID, not the full object
-  adminId: string; // Just the ID, not the full object
+  userId: UserType; // Now contains the full user object
+  adminId: UserType; // Now contains the full admin object
   roomName: string;
   ticketId: string;
   roomStatus: string;
   createdAt: string;
   updatedAt: string;
-  lastMessage?: string;
+  lastMessage?: {
+    msg: string;
+    sender: {
+      _id: string;
+      firstName: string;
+    };
+  };
   __v: number;
-}
-
-interface RoomWithUserDetails extends AdminRoom {
-  userDetails?: UserType;
   unreadCount?: number;
 }
 
@@ -63,6 +75,7 @@ interface Message {
   attachmentFile?: string;
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 export default function AdminChatPage() {
@@ -70,11 +83,9 @@ export default function AdminChatPage() {
   const adminId = session?.user?.id;
   const token = session?.user?.accessToken;
 
-  const [rooms, setRooms] = useState<RoomWithUserDetails[]>([]);
-  const [filteredRooms, setFilteredRooms] = useState<RoomWithUserDetails[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<RoomWithUserDetails | null>(
-    null,
-  );
+  const [rooms, setRooms] = useState<AdminRoom[]>([]);
+  const [filteredRooms, setFilteredRooms] = useState<AdminRoom[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<AdminRoom | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -82,7 +93,6 @@ export default function AdminChatPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [userCache, setUserCache] = useState<Record<string, UserType>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -113,32 +123,21 @@ export default function AdminChatPage() {
   // Listen for new messages
   useEffect(() => {
     if (!socket) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleReceiveMessage = (message: any) => {
+
+    // Now we can directly use the message with full user object
+    const handleReceiveMessage = (message: Message) => {
       console.log("Received message:", message);
 
       if (selectedRoom && message.roomId === selectedRoom._id) {
-        // Fetch user details if not in cache
-        fetchUserIfNeeded(message.userId).then((userDetails) => {
-          const formattedMessage = {
-            _id: message._id || Date.now().toString(),
-            roomId: message.roomId,
-            userId: userDetails,
-            message: message.message,
-            attachmentFile: message.attachmentFile,
-            createdAt: message.createdAt || new Date().toISOString(),
-            updatedAt: message.updatedAt || new Date().toISOString(),
-          };
-
-          setMessages((prevMessages) => [...prevMessages, formattedMessage]);
-        });
+        // Simply add the message to the list - it already has the full user object
+        setMessages((prevMessages) => [...prevMessages, message]);
       }
 
       // Update the room's last message
       setRooms((prevRooms) => {
         const updatedRooms = prevRooms.map((room) => {
           if (room._id === message.roomId) {
-            const isCurrentUser = message.userId === adminId;
+            const isCurrentUser = message.userId._id === adminId;
             const unreadCount =
               isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
                 ? 0
@@ -146,8 +145,14 @@ export default function AdminChatPage() {
 
             return {
               ...room,
-              lastMessage: message.message,
-              updatedAt: message.createdAt || new Date().toISOString(),
+              lastMessage: {
+                msg: message.message,
+                sender: {
+                  _id: message.userId._id,
+                  firstName: message.userId.firstName,
+                },
+              },
+              updatedAt: message.createdAt,
               unreadCount,
             };
           }
@@ -165,7 +170,7 @@ export default function AdminChatPage() {
       setFilteredRooms((prevRooms) => {
         const updatedRooms = prevRooms.map((room) => {
           if (room._id === message.roomId) {
-            const isCurrentUser = message.userId === adminId;
+            const isCurrentUser = message.userId._id === adminId;
             const unreadCount =
               isCurrentUser || (selectedRoom && selectedRoom._id === room._id)
                 ? 0
@@ -173,8 +178,14 @@ export default function AdminChatPage() {
 
             return {
               ...room,
-              lastMessage: message.message,
-              updatedAt: message.createdAt || new Date().toISOString(),
+              lastMessage: {
+                msg: message.message,
+                sender: {
+                  _id: message.userId._id,
+                  firstName: message.userId.firstName,
+                },
+              },
+              updatedAt: message.createdAt,
               unreadCount,
             };
           }
@@ -235,25 +246,15 @@ export default function AdminChatPage() {
         const roomsData = await roomsResponse.json();
 
         if (roomsData.success) {
-          // Process rooms and fetch user details for each room
-          const roomsWithPromises = roomsData.data.map(
-            async (room: AdminRoom) => {
-              // Fetch user details for this room
-              const userDetails = await fetchUserIfNeeded(room.userId);
-
-              return {
-                ...room,
-                userDetails,
-                unreadCount: 0,
-              };
-            },
-          );
-
-          const processedRooms = await Promise.all(roomsWithPromises);
+          // Process rooms - now we have the full user objects directly
+          const processedRooms = roomsData.data.map((room: AdminRoom) => ({
+            ...room,
+            unreadCount: 0, // Initialize unread count
+          }));
 
           // Sort rooms by last message time (newest first)
           const sortedRooms = processedRooms.sort(
-            (a: RoomWithUserDetails, b: RoomWithUserDetails) =>
+            (a: AdminRoom, b: AdminRoom) =>
               new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
           );
 
@@ -290,10 +291,10 @@ export default function AdminChatPage() {
       const filtered = rooms.filter(
         (room) =>
           room.roomName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          room.userDetails?.firstName
+          room.userId.firstName
             .toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          room.userDetails?.lastName
+          room.userId.lastName
             .toLowerCase()
             .includes(searchQuery.toLowerCase()),
       );
@@ -301,53 +302,7 @@ export default function AdminChatPage() {
     }
   }, [searchQuery, rooms]);
 
-  const fetchUserIfNeeded = async (userId: string): Promise<UserType> => {
-    // Check if we already have this user in cache
-    if (userCache[userId]) {
-      return userCache[userId];
-    }
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        // Add to cache
-        setUserCache((prev) => ({
-          ...prev,
-          [userId]: data.data,
-        }));
-        return data.data;
-      }
-
-      // Return a default user if fetch fails
-      return {
-        _id: userId,
-        firstName: "Unknown",
-        lastName: "User",
-        email: "",
-        userType: "user",
-      };
-    } catch (error) {
-      console.error(`Error fetching user ${userId}:`, error);
-      // Return a default user if fetch fails
-      return {
-        _id: userId,
-        firstName: "Unknown",
-        lastName: "User",
-        email: "",
-        userType: "user",
-      };
-    }
-  };
-
+  // Update the fetchMessages function to handle the new lastMessage format
   const fetchMessages = async (roomId: string) => {
     if (!token) return;
 
@@ -367,17 +322,19 @@ export default function AdminChatPage() {
         // Update the last message for this room
         if (data.data.length > 0) {
           const lastMsg = data.data[data.data.length - 1];
-          const truncatedMessage =
-            lastMsg.message.length > 20
-              ? lastMsg.message.substring(0, 20) + "..."
-              : lastMsg.message;
 
           setRooms((prevRooms) =>
             prevRooms.map((room) =>
               room._id === roomId
                 ? {
                     ...room,
-                    lastMessage: truncatedMessage,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
+                    },
                     updatedAt: lastMsg.createdAt,
                     unreadCount: 0,
                   }
@@ -391,7 +348,13 @@ export default function AdminChatPage() {
               room._id === roomId
                 ? {
                     ...room,
-                    lastMessage: truncatedMessage,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
+                    },
                     updatedAt: lastMsg.createdAt,
                     unreadCount: 0,
                   }
@@ -503,10 +466,10 @@ export default function AdminChatPage() {
                   room.roomName
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()) ||
-                  room.userDetails?.firstName
+                  room.userId?.firstName
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()) ||
-                  room.userDetails?.lastName
+                  room.userId?.lastName
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase()),
               ),
@@ -521,7 +484,7 @@ export default function AdminChatPage() {
 
   const getInitials = (user?: UserType) => {
     if (!user) return "??";
-    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+    return `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`.toUpperCase();
   };
 
   const getRoomInitials = (roomName: string) => {
@@ -604,30 +567,25 @@ export default function AdminChatPage() {
                         setSidebarOpen(false);
                       }}
                     >
+                      {/* Update the room list rendering in the mobile view */}
                       <CardContent className="p-3">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 bg-red-900">
-                            {room.userDetails?.abator ? (
+                            {room.userId.abator ? (
                               <AvatarImage
-                                src={
-                                  room.userDetails.abator || "/placeholder.svg"
-                                }
-                                alt={`${room.userDetails.firstName} ${room.userDetails.lastName}`}
+                                src={room.userId.abator || "/placeholder.svg"}
+                                alt={`${room.userId.firstName} ${room.userId.lastName}`}
                               />
                             ) : (
                               <AvatarFallback>
-                                {room.userDetails
-                                  ? getInitials(room.userDetails)
-                                  : getRoomInitials(room.roomName)}
+                                {getRoomInitials(room.roomName)}
                               </AvatarFallback>
                             )}
                           </Avatar>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between">
                               <p className="truncate font-medium">
-                                {room.userDetails
-                                  ? `${room.userDetails.firstName} ${room.userDetails.lastName}`
-                                  : room.roomName}
+                                {room.roomName}
                               </p>
                               <Badge
                                 variant="outline"
@@ -637,7 +595,16 @@ export default function AdminChatPage() {
                               </Badge>
                             </div>
                             <p className="truncate text-sm text-zinc-300">
-                              {room.lastMessage || "No messages yet"}
+                              {room.lastMessage ? (
+                                <>
+                                  {room?.lastMessage?.sender?._id === adminId
+                                    ? "You"
+                                    : room.lastMessage?.sender?.firstName}
+                                  : {room.lastMessage.msg}
+                                </>
+                              ) : (
+                                "No messages yet"
+                              )}
                             </p>
                           </div>
                         </div>
@@ -683,32 +650,24 @@ export default function AdminChatPage() {
                   <Menu className="h-5 w-5" />
                 </Button>
                 <Avatar className="h-8 w-8">
-                  {selectedRoom.userDetails?.abator ? (
+                  {selectedRoom.userId.abator ? (
                     <AvatarImage
-                      src={
-                        selectedRoom.userDetails.abator || "/placeholder.svg"
-                      }
-                      alt={`${selectedRoom.userDetails.firstName} ${selectedRoom.userDetails.lastName}`}
+                      src={selectedRoom.userId.abator || "/placeholder.svg"}
+                      alt={`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
                     />
                   ) : (
                     <AvatarFallback>
-                      {selectedRoom.userDetails
-                        ? getInitials(selectedRoom.userDetails)
-                        : getRoomInitials(selectedRoom.roomName)}
+                      {getInitials(selectedRoom.userId)}
                     </AvatarFallback>
                   )}
                 </Avatar>
                 <div>
                   <h2 className="text-xl font-semibold">
-                    {selectedRoom.userDetails
-                      ? `${selectedRoom.userDetails.firstName} ${selectedRoom.userDetails.lastName}`
-                      : selectedRoom.roomName}
+                    {`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
                   </h2>
-                  {selectedRoom.userDetails && (
-                    <p className="text-xs text-zinc-400">
-                      {selectedRoom.userDetails.userType}
-                    </p>
-                  )}
+                  <p className="text-xs text-zinc-400">
+                    {selectedRoom.userId.userType}
+                  </p>
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -720,71 +679,67 @@ export default function AdminChatPage() {
                   </PopoverTrigger>
                   <PopoverContent className="w-80 border-zinc-800 bg-zinc-900 text-white">
                     <div className="space-y-2">
-                      {selectedRoom.userDetails && (
-                        <div className="space-y-2">
-                          <div className="flex flex-col items-center gap-2 p-2">
-                            <Avatar className="h-16 w-16">
-                              {selectedRoom.userDetails.abator ? (
-                                <AvatarImage
-                                  src={
-                                    selectedRoom.userDetails.abator ||
-                                    "/placeholder.svg"
-                                  }
-                                  alt={`${selectedRoom.userDetails.firstName} ${selectedRoom.userDetails.lastName}`}
-                                />
-                              ) : (
-                                <AvatarFallback>
-                                  {getInitials(selectedRoom.userDetails)}
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <div className="text-center">
-                              <p className="font-medium">{`${selectedRoom.userDetails.firstName} ${selectedRoom.userDetails.lastName}`}</p>
-                              <p className="text-sm text-zinc-400">
-                                {selectedRoom.userDetails.userType}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="space-y-1 rounded-md bg-zinc-800 p-3">
-                            <div className="flex justify-between">
-                              <span className="text-sm text-zinc-400">
-                                Email:
-                              </span>
-                              <span className="text-sm">
-                                {selectedRoom.userDetails.email}
-                              </span>
-                            </div>
-                            {selectedRoom.userDetails.phoneNumber && (
-                              <div className="flex justify-between">
-                                <span className="text-sm text-zinc-400">
-                                  Phone:
-                                </span>
-                                <span className="text-sm">
-                                  {selectedRoom.userDetails.phoneNumber}
-                                </span>
-                              </div>
+                      <div className="space-y-2">
+                        <div className="flex flex-col items-center gap-2 p-2">
+                          <Avatar className="h-16 w-16">
+                            {selectedRoom.userId.abator ? (
+                              <AvatarImage
+                                src={
+                                  selectedRoom.userId.abator ||
+                                  "/placeholder.svg"
+                                }
+                                alt={`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
+                              />
+                            ) : (
+                              <AvatarFallback>
+                                {getInitials(selectedRoom.userId)}
+                              </AvatarFallback>
                             )}
-                            <div className="flex justify-between">
-                              <span className="text-sm text-zinc-400">
-                                Room ID:
-                              </span>
-                              <span className="text-sm">
-                                {selectedRoom._id}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-sm text-zinc-400">
-                                Created:
-                              </span>
-                              <span className="text-sm">
-                                {new Date(
-                                  selectedRoom.createdAt,
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
+                          </Avatar>
+                          <div className="text-center">
+                            <p className="font-medium">{`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}</p>
+                            <p className="text-sm text-zinc-400">
+                              {selectedRoom.userId.userType}
+                            </p>
                           </div>
                         </div>
-                      )}
+                        <div className="space-y-1 rounded-md bg-zinc-800 p-3">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-zinc-400">
+                              Email:
+                            </span>
+                            <span className="text-sm">
+                              {selectedRoom.userId.email}
+                            </span>
+                          </div>
+                          {selectedRoom.userId.phoneNumber && (
+                            <div className="flex justify-between">
+                              <span className="text-sm text-zinc-400">
+                                Phone:
+                              </span>
+                              <span className="text-sm">
+                                {selectedRoom.userId.phoneNumber}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span className="text-sm text-zinc-400">
+                              Room ID:
+                            </span>
+                            <span className="text-sm">{selectedRoom._id}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-zinc-400">
+                              Created:
+                            </span>
+                            <span className="text-sm">
+                              {new Date(
+                                selectedRoom.createdAt,
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -973,29 +928,24 @@ export default function AdminChatPage() {
                 }`}
                 onClick={() => setSelectedRoom(room)}
               >
+                {/* Update the room list rendering in the desktop view */}
                 <CardContent className="relative p-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 bg-red-900">
-                      {room.userDetails?.abator ? (
+                      {room.userId.abator ? (
                         <AvatarImage
-                          src={room.userDetails.abator || "/placeholder.svg"}
-                          alt={`${room.userDetails.firstName} ${room.userDetails.lastName}`}
+                          src={room.userId.abator || "/placeholder.svg"}
+                          alt={`${room.userId.firstName} ${room.userId.lastName}`}
                         />
                       ) : (
                         <AvatarFallback>
-                          {room.userDetails
-                            ? getInitials(room.userDetails)
-                            : getRoomInitials(room.roomName)}
+                          {getRoomInitials(room.roomName)}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="truncate font-medium">
-                          {room.userDetails
-                            ? `${room.userDetails.firstName} ${room.userDetails.lastName}`
-                            : room.roomName}
-                        </p>
+                        <p className="truncate font-medium">{room.roomName}</p>
                         <Badge
                           variant="outline"
                           className="ml-2 border-red-800 bg-red-900 text-white"
@@ -1004,7 +954,16 @@ export default function AdminChatPage() {
                         </Badge>
                       </div>
                       <p className="truncate text-sm text-zinc-300">
-                        {room.lastMessage || "No messages yet"}
+                        {room.lastMessage ? (
+                          <>
+                            {room.lastMessage.sender?._id === adminId
+                              ? "You"
+                              : room.lastMessage.sender?.firstName}
+                            : {room.lastMessage.msg}
+                          </>
+                        ) : (
+                          "No messages yet"
+                        )}
                       </p>
                     </div>
                   </div>
