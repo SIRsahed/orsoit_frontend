@@ -2,9 +2,7 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Create axios instance
 const api = axios.create({
@@ -481,5 +479,69 @@ export async function fetchUserById(userId: string) {
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Failed to fetch user");
+  }
+}
+
+// Coupons API
+export async function fetchCoupons() {
+  try {
+    const response = await api.get("/coupons");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch coupons");
+  }
+}
+
+export async function fetchCouponById(id: string) {
+  try {
+    const response = await api.get(`/coupons/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch coupon");
+  }
+}
+
+export async function createCoupon(data: {
+  userID: string;
+  title: string;
+  discount: number;
+  code: string;
+  applicableServices: string[];
+  activeFrom: string;
+  expireIn: string;
+}) {
+  try {
+    const response = await api.post("/coupons", data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to create coupon");
+  }
+}
+
+export async function updateCoupon(
+  id: string,
+  data: Partial<{
+    title: string;
+    discount: number;
+    code: string;
+    applicableServices: string[];
+    activeFrom: string;
+    expireIn: string;
+  }>,
+) {
+  try {
+    const response = await api.put(`/coupons/${id}`, data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to update coupon");
+  }
+}
+
+export async function deleteCoupon(id: string) {
+  try {
+    const response = await api.delete(`/coupons/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to delete coupon");
   }
 }

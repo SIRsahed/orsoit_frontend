@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Users, ShoppingCart, DollarSign, BarChart } from "lucide-react";
+import { Users, ShoppingCart, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchUsers, fetchRevenue } from "@/lib/api";
@@ -12,11 +12,20 @@ export default function DashboardStats() {
     queryFn: () => fetchUsers(),
   });
 
+  interface Revenue {
+    month: string;
+    value: number;
+  }
+
   const { data: revenue, isLoading: isLoadingRevenue } = useQuery({
     queryKey: ["revenue"],
     queryFn: () => fetchRevenue("monthly"),
   });
-
+  const totalRevenue =
+    revenue?.data?.reduce(
+      (sum: number, item: Revenue) => sum + item.value,
+      0,
+    ) ?? 0;
   const stats = [
     {
       title: "Total Users",
@@ -31,23 +40,17 @@ export default function DashboardStats() {
       color: "bg-red-600",
     },
     {
-      title: "Total Revenue",
-      value: revenue?.data?.[0]?.totalRevenue
-        ? `$${revenue.data[0].totalRevenue.toLocaleString()}`
-        : "$0",
+      title: "Yearly Revenue",
+      value: totalRevenue,
       icon: DollarSign,
-      color: "bg-red-600",
-    },
-    {
-      title: "Conversion Rate",
-      value: "40.76%",
-      icon: BarChart,
       color: "bg-red-600",
     },
   ];
 
+  console.log(revenue?.data);
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
       {stats.map((stat, index) => (
         <Card
           key={index}
