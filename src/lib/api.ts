@@ -73,6 +73,27 @@ export async function fetchUsers(page = 1, limit = 10) {
   }
 }
 
+
+export async function changePassword(data: any) {
+  try {
+    const response = await api.post("/auth/change-password", data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to change password");
+  }
+}
+
+
+export async function fetchSingleUser(userId: string) {
+  try {
+    const response = await api.get(`/single/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user");
+  }
+}
+
+
 export async function fetchAdminUsers() {
   try {
     const response = await api.get("/admin-users");
@@ -272,6 +293,17 @@ export async function fetchTicket(id: string) {
   }
 }
 
+
+export async function fetchUserTickets(userId: string) {
+  try {
+    const response = await api.get(`/tickets/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user tickets");
+  }
+}
+
+
 export async function createTicket(data: any) {
   try {
     const formData = new FormData();
@@ -316,6 +348,19 @@ export async function fetchRooms() {
     throw new Error(error.response?.data?.message || "Failed to fetch rooms");
   }
 }
+
+
+
+// Fetch user rooms
+export async function fetchUserRooms(userId: string) {
+  try {
+    const response = await api.get(`/rooms/user?userId=${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch user rooms");
+  }
+}
+
 
 export async function createRoom(data: {
   userId: string;

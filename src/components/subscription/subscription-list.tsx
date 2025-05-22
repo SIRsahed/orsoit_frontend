@@ -1,7 +1,7 @@
 "use client"
 
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardFooter } from '../ui/card'
 import { Skeleton } from '../ui/skeleton'
 import { toast } from 'sonner';
@@ -10,6 +10,9 @@ import { fetchSubscriptionPlans } from '@/lib/api'
 import { Check } from 'lucide-react'
 import EditSubscriptionDialog from './edit-subscription-dialog'
 import DeletePlanDialog from './delete-plan-dialog';
+import { usePathname } from 'next/navigation';
+import { Button } from '../ui/button';
+import { SubscriptionDialog } from '@/app/(website)/service/_components/subscription-dialog';
 
 
 export interface Subscription {
@@ -35,6 +38,9 @@ export interface subscriptionPlanId {
 
 export default function SubscriptionList({ serviceId }: { serviceId: string }) {
 
+    const [selectedPlan, setSelectedPlan] = useState({});
+    const pathname = usePathname()
+
     const {
         data: subscriptions,
         isLoading,
@@ -51,7 +57,14 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
     }
 
 
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     console.log(subscriptions)
+
+    const handleOpenDialog = (plan: subscriptionPlanId) => {
+        setDialogOpen(true);
+        setSelectedPlan(plan)
+    }
 
     return (
         <div className="">
@@ -79,7 +92,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                 : (
                     <div className="">
                         <div className="text-center py-10">
-                            <h2 className='text-4xl font-bold pb-4'>Subscription Plans of <span className='capitalize'>{subscriptions?.data[0]?.services[0]?.serviceId?.name}</span></h2>
+                            <h2 className='text-xl lg:text-4xl font-bold pb-4 text-white'>Subscription Plans of <span className='capitalize'>{subscriptions?.data[0]?.services[0]?.serviceId?.name}</span></h2>
                             <p className='text-sm text-[#E6E6E6]'>At Orso, we are more than a cybersecurity provider - we&apos;re your trusted partner in building a resilient digital environment. Our mission is to empower businesses to operate securely in today&apos;s complex and ever-changing threat landscape. We specialize in delivering end-to-end security solutions.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -112,15 +125,37 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                                 }
                                             </ul>
                                         </CardContent>
-                                        <CardFooter className="flex justify-center gap-4 border-t border-[#222] p-4">
-                                            <EditSubscriptionDialog subscription={subscription} />
-                                            <DeletePlanDialog infoId={subscription?._id} planId={subscription?.subscriptionPlanId[0]?._id} />
+                                        <CardFooter className="flex justify-center">
+                                            {
+                                                pathname.includes("ceo-dashboard") ? (
+                                                    <div className="flex justify-center gap-4 border-t border-[#222] p-4">
+                                                        <EditSubscriptionDialog subscription={subscription} />
+                                                        <DeletePlanDialog infoId={subscription?._id} planId={subscription?.subscriptionPlanId[0]?._id} />
+                                                    </div>
+                                                )
+
+                                                    :
+
+                                                    <div className=''>
+                                                        <Button
+                                                            onClick={() => handleOpenDialog(subscription?.subscriptionPlanId[0])}
+                                                        >
+                                                            Buy Plan
+                                                        </Button>
+                                                        <SubscriptionDialog
+                                                            // @ts-expect-error typeError
+                                                            planData={selectedPlan}
+                                                            isOpen={dialogOpen}
+                                                            onClose={() => setDialogOpen(false)} />
+                                                    </div>
+                                            }
                                         </CardFooter>
                                     </Card>
                                 ))
 
                             )
                                 :
+
                                 (
                                     <p className='text-center text-2xl font-bold mt-10'>No subscriptions plan found</p>
                                 )

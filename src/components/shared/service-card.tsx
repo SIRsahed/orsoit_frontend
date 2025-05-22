@@ -1,15 +1,16 @@
 "use client";
 
 import type React from "react";
-import { useRouter } from "next/navigation";
 import { CuboidIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
 interface ServiceCardProps {
+  id: string;
   title: string;
   description: string;
+  image?: string;
   icon?: React.ReactNode;
   plans?: {
     basic: {
@@ -34,17 +35,8 @@ export function ServiceCard({
   title,
   description,
   icon,
-  plans,
+  id
 }: ServiceCardProps) {
-  const router = useRouter();
-
-  const handleSeePlans = () => {
-    // Encode the plans data to pass as URL parameters
-    const encodedData = encodeURIComponent(
-      JSON.stringify({ title, description, plans }),
-    );
-    router.push(`/service/${encodeURIComponent(title)}?data=${encodedData}`);
-  };
 
   return (
     <div className="relative z-10 h-[390px] w-[370px]">
@@ -68,24 +60,14 @@ export function ServiceCard({
             <p className="cardSubTitle max-w-[280px]">{description}</p>
           </div>
           <div>
-            {plans ? (
+            <Link href={`/service/${id}`}>
               <Button
                 className="bg-primary text-white transition-colors hover:bg-red-600"
                 size="lg"
-                onClick={handleSeePlans}
               >
                 See Plans
               </Button>
-            ) : (
-              <Link href="/service/custom">
-                <Button
-                  className="bg-primary text-white transition-colors hover:bg-red-600"
-                  size="lg"
-                >
-                  See Plans
-                </Button>
-              </Link>
-            )}
+            </Link>
           </div>
         </div>
       </div>

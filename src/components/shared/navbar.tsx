@@ -87,7 +87,7 @@ export default function Navbar() {
   }, [session, isAuthenticated]);
 
   const isActive = (path: string) => {
-    return pathname === path;
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   const navLinks = [

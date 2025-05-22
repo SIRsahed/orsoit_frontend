@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Cog, Home, LogOut, Bell, CreditCard, Ticket } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 const navigation = [
   {
@@ -69,7 +70,9 @@ export function AccountSidebar() {
               </Link>
             );
           })}
-          <button className="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-neutral-300 hover:bg-neutral-700 hover:text-white">
+          <button 
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-neutral-300 hover:bg-neutral-700 hover:text-white">
             <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
             Log out
           </button>

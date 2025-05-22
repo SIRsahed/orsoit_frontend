@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Eye, EyeOff } from "lucide-react";
+import type React from "react"
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import Image from "next/image";
+import { useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Eye, EyeOff } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Separator } from "@/components/ui/separator"
+import { toast } from "sonner"
+import Image from "next/image"
+import { useQuery } from "@tanstack/react-query"
+import { fetchSingleUser, updateProfile, changePassword } from "@/lib/api"
+import { useSession } from "next-auth/react"
+import { useQueryClient } from "@tanstack/react-query"
+
 
 const profileFormSchema = z.object({
-  fullName: z.string().min(2, {
+  firstName: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  lastName: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
@@ -38,49 +38,80 @@ const profileFormSchema = z.object({
     message: "Address must be at least 5 characters.",
   }),
   about: z.string().optional(),
-});
+  userId: z.string(),
+})
 
 const passwordFormSchema = z
   .object({
-    currentPassword: z.string().min(8, {
+    currentPassword: z.string(),
+    newPassword: z.string().min(6, {
       message: "Password must be at least 8 characters.",
     }),
-    newPassword: z.string().min(8, {
-      message: "Password must be at least 8 characters.",
-    }),
-    confirmPassword: z.string().min(8, {
+    confirmPassword: z.string().min(6, {
       message: "Password must be at least 8 characters.",
     }),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  });
+  })
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
-type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+type ProfileFormValues = z.infer<typeof profileFormSchema>
+type PasswordFormValues = z.infer<typeof passwordFormSchema>
 
 export default function AccountSettingsForm() {
-  const [profileImage, setProfileImage] = useState<string>(
-    "/placeholder.svg?height=200&width=200",
-  );
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [profileImage, setProfileImage] = useState<string>("/placeholder.svg?height=200&width=200")
+
+  const [loading, setLoading] = useState(false)
+
+  const session = useSession()
+
+  const userId = String(session?.data?.user?.id)
+
+  const queryClient = useQueryClient()
+
+  const [showCurrentPassword, setShowCurrentPasswordState] = useState(false)
+  const [showNewPassword, setShowNewPasswordState] = useState(false)
+  const [showConfirmPassword, setShowConfirmPasswordState] = useState(false)
+
+  const { data: userDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => fetchSingleUser(userId),
+  })
 
   // Profile form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      fullName: "Alex rocks",
-      username: "@alexrocks",
-      email: "alexrocks@example.com",
-      phone: "(+33)7 75 55 65 33",
-      address: "New York City,USA street 5,home 258/B",
-      about:
-        "I am a consulter for a small hotel business. I currently working with team based work.",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      address: "",
+      about: "",
+      userId: userId,
     },
-  });
+  })
+
+  useEffect(() => {
+    if (userDetails) {
+      console.log("User details loaded:", userDetails)
+      profileForm.reset({
+        firstName: userDetails.firstName || "",
+        lastName: userDetails.lastName || "",
+        email: userDetails.email || "",
+        phone: userDetails.phoneNumber || "",
+        address: userDetails.address || "",
+        about: userDetails.about || "",
+        userId: userId,
+      })
+
+      // Set profile image if available in user details
+      if (userDetails.abator) {
+        setProfileImage(userDetails.abator)
+      }
+    }
+  }, [userDetails, profileForm, userId])
 
   // Password form
   const passwordForm = useForm<PasswordFormValues>({
@@ -90,28 +121,79 @@ export default function AccountSettingsForm() {
       newPassword: "",
       confirmPassword: "",
     },
-  });
+  })
 
   function onProfileSubmit(data: ProfileFormValues) {
-    toast.success("Your profile has been updated successfully.");
-    console.log(data);
+    setLoading(true)
+
+    // Get the file input element
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+    const imageFile = fileInput && fileInput.files && fileInput.files[0]
+
+    // Create a data object that matches what updateProfile expects
+    const profileData = {
+      ...data,
+      // Only add abator if a file is selected
+      abator: imageFile || undefined,
+    }
+
+    console.log("Submitting with userId:", userId)
+
+    // Call the API with the data object (not FormData)
+    updateProfile(profileData)
+      .then(() => {
+        toast.success("Your profile has been updated successfully.")
+      })
+      .catch((error) => {
+        toast.error("Failed to update profile: " + (error.message || "Unknown error"))
+      })
+      .finally(() => {
+        setLoading(false)
+        queryClient.invalidateQueries({ queryKey: ["userDetails"] })
+      })
   }
 
   function onPasswordSubmit(data: PasswordFormValues) {
-    toast.success("Your password has been updated successfully.");
-    console.log(data);
+    // Check if userId is available
+    if (!userId) {
+      toast.error("User ID is required. Please try again after reloading the page.")
+      return
+    }
+
+    const passwordData = {
+      userId: userId,
+      oldPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    }
+
+    console.log("Changing password with userId:", userId)
+
+    setLoading(true)
+
+    // Call the changePassword function from api.ts
+    changePassword(passwordData)
+      .then(() => {
+        toast.success("Your password has been updated successfully.")
+        passwordForm.reset()
+      })
+      .catch((error) => {
+        toast.error("Failed to update password: " + (error.message || "Missing userId"))
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e) => {
         if (e.target?.result) {
-          setProfileImage(e.target.result as string);
+          setProfileImage(e.target.result as string)
         }
-      };
-      reader.readAsDataURL(file);
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -120,42 +202,30 @@ export default function AccountSettingsForm() {
       <h1 className="text-3xl font-bold text-primary">Account Settings</h1>
 
       <Form {...profileForm}>
-        <form
-          onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 gap-8 text-primary md:grid-cols-3">
             <div className="col-span-2 space-y-6">
               <FormField
                 control={profileForm.control}
-                name="fullName"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Alex rocks"
-                        {...field}
-                        className="border-gray-700 bg-black"
-                      />
+                      <Input {...field} className="border-gray-700 bg-black" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={profileForm.control}
-                name="username"
+                name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="@alexrocks"
-                        {...field}
-                        className="border-gray-700 bg-black"
-                      />
+                      <Input {...field} className="border-gray-700 bg-black" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -169,11 +239,7 @@ export default function AccountSettingsForm() {
                   <FormItem>
                     <FormLabel>Email address</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="alexrocks@example.com"
-                        {...field}
-                        className="border-gray-700 bg-black"
-                      />
+                      <Input {...field} className="border-gray-700 bg-black" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,11 +253,7 @@ export default function AccountSettingsForm() {
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="(+33)7 75 55 65 33"
-                        {...field}
-                        className="border-gray-700 bg-black"
-                      />
+                      <Input placeholder="(+33)7 75 55 65 33" {...field} className="border-gray-700 bg-black" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -245,11 +307,7 @@ export default function AccountSettingsForm() {
                 />
               </div>
               <div className="relative">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-gray-700 hover:bg-gray-800"
-                >
+                <Button type="button" variant="outline" className="border-gray-700 hover:bg-gray-800">
                   Upload Image
                 </Button>
                 <input
@@ -262,11 +320,8 @@ export default function AccountSettingsForm() {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="bg-red-600 text-white hover:bg-red-700"
-          >
-            Save Changes
+          <Button type="submit" className="bg-red-600 text-white hover:bg-red-700">
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </form>
       </Form>
@@ -274,39 +329,28 @@ export default function AccountSettingsForm() {
       <Separator className="my-8 bg-gray-700" />
 
       <Form {...passwordForm}>
-        <form
-          onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
           <div className="max-w-2xl space-y-6">
             <FormField
               control={passwordForm.control}
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-400">
-                    Current Password
-                  </FormLabel>
+                  <FormLabel className="text-gray-400">Current Password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         placeholder="Enter your current password"
                         type={showCurrentPassword ? "text" : "password"}
                         {...field}
-                        className="border-gray-700 bg-black pr-10"
+                        className="border-gray-700 bg-black pr-10 text-white"
                       />
                       <button
                         type="button"
                         className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
-                        onClick={() =>
-                          setShowCurrentPassword(!showCurrentPassword)
-                        }
+                        onClick={() => setShowCurrentPasswordState(!showCurrentPassword)}
                       >
-                        {showCurrentPassword ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
+                        {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </FormControl>
@@ -321,27 +365,21 @@ export default function AccountSettingsForm() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-400">
-                      New Password
-                    </FormLabel>
+                    <FormLabel className="text-gray-400">New Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           placeholder="Enter your new password"
                           type={showNewPassword ? "text" : "password"}
                           {...field}
-                          className="border-gray-700 bg-black pr-10"
+                          className="border-gray-700 bg-black pr-10 text-white"
                         />
                         <button
                           type="button"
                           className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
-                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          onClick={() => setShowNewPasswordState(!showNewPassword)}
                         >
-                          {showNewPassword ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
+                          {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </FormControl>
@@ -355,29 +393,21 @@ export default function AccountSettingsForm() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-400">
-                      Confirm New Password
-                    </FormLabel>
+                    <FormLabel className="text-gray-400">Confirm New Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           placeholder="Enter your confirm new password"
                           type={showConfirmPassword ? "text" : "password"}
                           {...field}
-                          className="border-gray-700 bg-black pr-10"
+                          className="border-gray-700 bg-black pr-10 text-white"
                         />
                         <button
                           type="button"
                           className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
-                          onClick={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
+                          onClick={() => setShowConfirmPasswordState(!showConfirmPassword)}
                         >
-                          {showConfirmPassword ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
+                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
                     </FormControl>
@@ -387,15 +417,12 @@ export default function AccountSettingsForm() {
               />
             </div>
 
-            <Button
-              type="submit"
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
+            <Button type="submit" className="bg-red-600 text-white hover:bg-red-700">
               Save Changes
             </Button>
           </div>
         </form>
       </Form>
     </div>
-  );
+  )
 }
