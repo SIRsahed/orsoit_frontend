@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { io, type Socket } from "socket.io-client";
-import Image from "next/image";
 
 // Update the types
 interface User {
@@ -35,6 +34,7 @@ interface User {
   phoneNumber: string;
   email: string;
   userType: string;
+  abator?: string; // Add the avatar field
 }
 
 interface Room {
@@ -222,7 +222,7 @@ export default function ChatPage() {
       if (!token) return;
 
       try {
-        // First fetch all rooms
+        // Fetch all rooms
         const roomsResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/rooms`,
           {
@@ -234,43 +234,15 @@ export default function ChatPage() {
         const roomsData = await roomsResponse.json();
 
         if (roomsData.success) {
-          const roomsWithLastMessages = await Promise.all(
-            roomsData.data.map(async (room: Room) => {
-              try {
-                // Fetch last message for each room
-                const messageResponse = await fetch(
-                  `${process.env.NEXT_PUBLIC_API_URL}/receive-message?roomId=${room._id}&limit=1`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                  },
-                );
-                const messageData = await messageResponse.json();
-
-                if (messageData.success && messageData.data.length > 0) {
-                  const lastMessage = messageData.data[0];
-                  return {
-                    ...room,
-                    lastMessage: lastMessage.message,
-                    lastMessageTime: lastMessage.createdAt,
-                    unreadCount: 0, // You might want to fetch unread count from an API
-                  };
-                }
-
-                return room;
-              } catch (error) {
-                console.error(
-                  `Error fetching messages for room ${room._id}:`,
-                  error,
-                );
-                return room;
-              }
-            }),
-          );
+          // Process rooms data - now the API directly provides lastMessage and updatedAt
+          const processedRooms = roomsData.data.map((room: Room) => ({
+            ...room,
+            lastMessageTime: room.updatedAt, // Use updatedAt as the lastMessageTime
+            unreadCount: 0, // You might want to fetch unread count from an API
+          }));
 
           // Sort rooms by last message time (newest first)
-          const sortedRooms = roomsWithLastMessages.sort(
+          const sortedRooms = processedRooms.sort(
             (a: Room, b: Room) =>
               new Date(b.lastMessageTime || b.updatedAt).getTime() -
               new Date(a.lastMessageTime || a.updatedAt).getTime(),
@@ -493,8 +465,14 @@ export default function ChatPage() {
   };
 
   const getTimeAgo = (dateString: string) => {
+    if (!dateString) return "";
+
     const now = new Date();
     const date = new Date(dateString);
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) return "";
+
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / (1000 * 60));
 
@@ -505,7 +483,10 @@ export default function ChatPage() {
     if (diffHours < 24) return `${diffHours}h`;
 
     const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d`;
+    if (diffDays < 7) return `${diffDays}d`;
+
+    // For older messages, return the actual date
+    return date.toLocaleDateString();
   };
 
   return (
@@ -632,9 +613,19 @@ export default function ChatPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback>
-                            {getInitials(selectedRoom.userId)}
-                          </AvatarFallback>
+                          {selectedRoom.userId.abator ? (
+                            <img
+                              src={
+                                selectedRoom.userId.abator || "/placeholder.svg"
+                              }
+                              alt={`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {getInitials(selectedRoom.userId)}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div>
                           <p className="text-sm font-medium">{`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}</p>
@@ -645,9 +636,20 @@ export default function ChatPage() {
                       </div>
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback>
-                            {getInitials(selectedRoom.adminId)}
-                          </AvatarFallback>
+                          {selectedRoom.adminId.abator ? (
+                            <img
+                              src={
+                                selectedRoom.adminId.abator ||
+                                "/placeholder.svg"
+                              }
+                              alt={`${selectedRoom.adminId.firstName} ${selectedRoom.adminId.lastName}`}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {getInitials(selectedRoom.adminId)}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div>
                           <p className="text-sm font-medium">{`${selectedRoom.adminId.firstName} ${selectedRoom.adminId.lastName}`}</p>
@@ -686,9 +688,17 @@ export default function ChatPage() {
                         className={`flex ${isCurrentUser ? "flex-row-reverse" : "flex-row"} max-w-[80%] gap-2`}
                       >
                         <Avatar className="h-10 w-10">
-                          <AvatarFallback>
-                            {getInitials(message.userId)}
-                          </AvatarFallback>
+                          {message.userId.abator ? (
+                            <img
+                              src={message.userId.abator || "/placeholder.svg"}
+                              alt={`${message.userId.firstName} ${message.userId.lastName}`}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {getInitials(message.userId)}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div
                           className={`flex flex-col ${isCurrentUser ? "items-end" : "items-start"}`}
@@ -721,10 +731,10 @@ export default function ChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
-                                  <Image
-                                  fill
+                                  <img
                                     src={
                                       message.attachmentFile ||
+                                      "/placeholder.svg" ||
                                       "/placeholder.svg"
                                     }
                                     alt="Attachment"
@@ -860,11 +870,6 @@ export default function ChatPage() {
                       </p>
                     </div>
                   </div>
-                  {room.unreadCount && room.unreadCount > 0 && (
-                    <Badge className="absolute bottom-3 right-3 bg-red-600 text-white">
-                      {room.unreadCount}
-                    </Badge>
-                  )}
                 </CardContent>
               </Card>
             ))}
