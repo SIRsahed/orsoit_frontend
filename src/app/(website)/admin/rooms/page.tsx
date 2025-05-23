@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,9 @@ interface UserType {
   abator?: string;
   password?: string;
   emailVerified?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions?: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coupons?: any[];
   createdAt: string;
   updatedAt: string;
@@ -99,7 +101,7 @@ export default function AdminChatPage() {
   useEffect(() => {
     if (!adminId) return;
 
-    const socketInstance = io("http://localhost:5000");
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
 
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
@@ -272,11 +274,6 @@ export default function AdminChatPage() {
   }, [token, adminId]);
 
   // Fetch messages when a room is selected
-  useEffect(() => {
-    if (selectedRoom && token) {
-      fetchMessages(selectedRoom._id);
-    }
-  }, [selectedRoom, token]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -303,70 +300,77 @@ export default function AdminChatPage() {
   }, [searchQuery, rooms]);
 
   // Update the fetchMessages function to handle the new lastMessage format
-  const fetchMessages = async (roomId: string) => {
-    if (!token) return;
+  const fetchMessages = useCallback(
+    async (roomId: string) => {
+      if (!token) return;
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/receive-message?roomId=${roomId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/receive-message?roomId=${roomId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
-      const data = await response.json();
-      if (data.success) {
-        setMessages(data.data);
+        );
+        const data = await response.json();
 
-        // Update the last message for this room
-        if (data.data.length > 0) {
-          const lastMsg = data.data[data.data.length - 1];
+        if (data.success) {
+          setMessages(data.data);
 
-          setRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room._id === roomId
-                ? {
-                    ...room,
-                    lastMessage: {
-                      msg: lastMsg.message,
-                      sender: {
-                        _id: lastMsg.userId._id,
-                        firstName: lastMsg.userId.firstName,
+          if (data.data.length > 0) {
+            const lastMsg = data.data[data.data.length - 1];
+
+            setRooms((prevRooms) =>
+              prevRooms.map((room) =>
+                room._id === roomId
+                  ? {
+                      ...room,
+                      lastMessage: {
+                        msg: lastMsg.message,
+                        sender: {
+                          _id: lastMsg.userId._id,
+                          firstName: lastMsg.userId.firstName,
+                        },
                       },
-                    },
-                    updatedAt: lastMsg.createdAt,
-                    unreadCount: 0,
-                  }
-                : room,
-            ),
-          );
+                      updatedAt: lastMsg.createdAt,
+                      unreadCount: 0,
+                    }
+                  : room,
+              ),
+            );
 
-          // Also update filtered rooms
-          setFilteredRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room._id === roomId
-                ? {
-                    ...room,
-                    lastMessage: {
-                      msg: lastMsg.message,
-                      sender: {
-                        _id: lastMsg.userId._id,
-                        firstName: lastMsg.userId.firstName,
+            setFilteredRooms((prevRooms) =>
+              prevRooms.map((room) =>
+                room._id === roomId
+                  ? {
+                      ...room,
+                      lastMessage: {
+                        msg: lastMsg.message,
+                        sender: {
+                          _id: lastMsg.userId._id,
+                          firstName: lastMsg.userId.firstName,
+                        },
                       },
-                    },
-                    updatedAt: lastMsg.createdAt,
-                    unreadCount: 0,
-                  }
-                : room,
-            ),
-          );
+                      updatedAt: lastMsg.createdAt,
+                      unreadCount: 0,
+                    }
+                  : room,
+              ),
+            );
+          }
         }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
       }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
+    },
+    [token, setMessages, setRooms, setFilteredRooms],
+  );
+  useEffect(() => {
+    if (selectedRoom && token) {
+      fetchMessages(selectedRoom._id);
     }
-  };
+  }, [selectedRoom, token, fetchMessages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -812,6 +816,7 @@ export default function AdminChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={
                                       message.attachmentFile ||

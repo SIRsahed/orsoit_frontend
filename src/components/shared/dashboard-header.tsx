@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Settings, ChevronDown, User, LogOut } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,7 +62,7 @@ export default function DashboardHeader() {
     }
   }, [session]);
 
-  // Listen for profile update events
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleStorageChange = (event: any) => {
@@ -101,9 +99,9 @@ export default function DashboardHeader() {
       <h1 className="text-xl font-bold">Dashboard</h1>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-white">
+        {/* <Button variant="ghost" size="icon" className="text-white">
           <Bell className="h-5 w-5" />
-        </Button>
+        </Button> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -127,9 +125,6 @@ export default function DashboardHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="flex items-center justify-start gap-2 p-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-                <User className="h-4 w-4 text-red-700" />
-              </div>
               <div className="flex flex-col space-y-1 text-left">
                 <p className="text-sm font-medium leading-none">
                   {getFullName()}
@@ -139,13 +134,13 @@ export default function DashboardHeader() {
                 </p>
               </div>
             </div>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/account-settings" className="w-full">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Account Settings</span>
               </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"

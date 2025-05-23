@@ -201,7 +201,8 @@ export default function EditCouponDialog({
                 <FormItem>
                   <FormLabel>Service</FormLabel>
                   <div className="space-y-2">
-                    {servicesData?.data?.map((service: any) => (
+                    {// eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    servicesData?.data?.map((service: any) => (
                       <div
                         key={service._id}
                         className="flex items-center space-x-2"

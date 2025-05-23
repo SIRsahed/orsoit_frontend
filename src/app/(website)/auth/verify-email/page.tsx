@@ -103,7 +103,7 @@ export default function VerifyOTPPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/verify-email",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email`,
         {
           method: "POST",
           headers: {
@@ -143,7 +143,7 @@ export default function VerifyOTPPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/auth/resend-verification",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/resend-verification`,
         {
           method: "POST",
           headers: {

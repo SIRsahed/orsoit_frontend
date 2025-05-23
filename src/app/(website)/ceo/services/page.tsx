@@ -17,8 +17,9 @@ export default function ServicesPage() {
         </div>
         <p className="mb-8 text-gray-400">
           Have questions or need assistance? Our team is here to help! Whether
-          you&apos;re looking for cybersecurity solutions, have a security concern,
-          or just want to learn more about our services, feel free to reach out.
+          you&apos;re looking for cybersecurity solutions, have a security
+          concern, or just want to learn more about our services, feel free to
+          reach out.
         </p>
         <ServicesList />
       </main>

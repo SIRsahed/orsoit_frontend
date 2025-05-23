@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, LogOut, User, ChevronDown } from "lucide-react";
@@ -32,12 +32,13 @@ export default function Navbar() {
   const isAuthenticated = status === "authenticated";
 
   // Fetch user data from API
-  const fetchUserData = async () => {
+
+  // Define the function once
+  const fetchUserData = useCallback(async () => {
     if (!session?.user?.id || !session?.user?.accessToken) return;
 
     try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(
         `${baseUrl}/single/user/${session.user.id}`,
         {
@@ -62,20 +63,19 @@ export default function Navbar() {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-  };
+  }, [session]);
 
+  // First effect: Initial fetch on authentication
   useEffect(() => {
     if (isAuthenticated) {
       fetchUserData();
     }
-  }, [session, isAuthenticated]);
+  }, [isAuthenticated, fetchUserData]);
 
-  // Listen for profile update events
+  // Second effect: Refetch on profile update via localStorage
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleStorageChange = (event: any) => {
+    const handleStorageChange = (event: StorageEvent) => {
       if (event.key === "profile-updated") {
-        // Refetch user data when profile is updated
         if (isAuthenticated && session?.user?.id) {
           fetchUserData();
         }
@@ -84,7 +84,7 @@ export default function Navbar() {
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [session, isAuthenticated]);
+  }, [isAuthenticated, session, fetchUserData]);
 
   const isActive = (path: string) => {
     return pathname === path || pathname.startsWith(`${path}/`);
@@ -95,7 +95,9 @@ export default function Navbar() {
     { href: "/about", label: "About" },
     { href: "/service", label: "Service" },
     { href: "/contact-us", label: "Contact Us" },
-    { href: "/account", label: "Account" },
+    ...(session?.user?.role === "customer"
+      ? [{ href: "/account", label: "Account" }]
+      : []),
   ];
 
   // Get user initials for avatar fallback

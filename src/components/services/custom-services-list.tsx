@@ -128,7 +128,7 @@ export default function CustomServicesList() {
       setUserLoading((prev) => ({ ...prev, [userId]: false }));
     }
   };
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchInitialData = async () => {
       if (services?.data) {

@@ -28,13 +28,14 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function TicketsList() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [entriesPerPage, setEntriesPerPage] = useState("10")
-  const [currentPage, setCurrentPage] = useState(1) 
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [entriesPerPage, setEntriesPerPage] = useState("10");
+  const [currentPage, setCurrentPage] = useState(1);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [viewTicket, setViewTicket] = useState<any>(null)
-  const [selectedAdmin, setSelectedAdmin] = useState("")
+  const [viewTicket, setViewTicket] = useState<any>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const { data: tickets, isLoading } = useQuery({
     queryKey: ["tickets", currentPage, entriesPerPage],
@@ -80,6 +81,12 @@ export default function TicketsList() {
       toast.error("Please select an admin");
       return;
     }
+
+    setShowConfirmation(true);
+  };
+
+  const confirmAssignment = () => {
+    setShowConfirmation(false);
 
     assignMutation.mutate({
       ticketId: viewTicket._id,
@@ -201,19 +208,16 @@ export default function TicketsList() {
                         </Button>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Select>
-                          <SelectTrigger className="w-32 border-none bg-blue-600 text-white">
-                            <SelectValue placeholder="Admin" />
-                          </SelectTrigger>
-                          <SelectContent className="border-[#333] bg-[#1A1A1A]">
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-                            admins?.data?.map((admin: any) => (
-                              <SelectItem key={admin._id} value={admin._id}>
-                                {admin.firstName} {admin.lastName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Button
+                          variant="default"
+                          className="w-32 bg-blue-600 text-white hover:bg-blue-700"
+                          onClick={() => {
+                            setViewTicket(ticket);
+                            setSelectedAdmin("");
+                          }}
+                        >
+                          Assign Admin
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -305,7 +309,11 @@ export default function TicketsList() {
 
               <div>
                 <h3 className="mb-1 text-sm font-medium">Service</h3>
-                <p className="text-gray-400">{viewTicket.serviceId}</p>
+                <p className="text-gray-400">
+                  {typeof viewTicket.serviceId === "object"
+                    ? viewTicket.serviceId.name
+                    : "Unknown Service"}
+                </p>
               </div>
 
               <div>
@@ -364,10 +372,43 @@ export default function TicketsList() {
                     className="bg-red-600 hover:bg-red-700"
                     onClick={handleAssignAdmin}
                   >
-                    Go to Room
+                    Assign & Create Room
                   </Button>
                 </div>
               </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+      {showConfirmation && (
+        <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+          <DialogContent className="border-[#222] bg-[#1A1A1A] text-white">
+            <DialogHeader>
+              <DialogTitle>Confirm Assignment</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p>
+                Are you sure you want to assign this ticket to the selected
+                admin?
+              </p>
+              <p className="mt-2 text-sm text-gray-400">
+                This will create a new chat room for communication.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                className="border-[#333] bg-[#0F0F0F]"
+                onClick={() => setShowConfirmation(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-red-600 hover:bg-red-700"
+                onClick={confirmAssignment}
+              >
+                Confirm & Create Room
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

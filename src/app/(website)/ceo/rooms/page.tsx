@@ -37,7 +37,9 @@ interface User {
   abator?: string;
   password?: string;
   emailVerified?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions?: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coupons?: any[];
   createdAt: string;
   updatedAt: string;
@@ -99,7 +101,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (!userId) return;
 
-    const socketInstance = io("http://localhost:5000");
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
 
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
@@ -198,10 +200,10 @@ export default function ChatPage() {
     });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!socket) return;
 
-    // Now we can directly use the message with full user object
     socket.on("receiveMessage", handleReceiveMessage);
 
     return () => {
@@ -761,6 +763,7 @@ export default function ChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={
                                       message.attachmentFile ||

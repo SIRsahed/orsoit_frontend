@@ -29,7 +29,7 @@ interface User {
   abator: string; // Assuming 'abator' is a typo and should be 'avatar'
   about: string;
   address: string;
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coupons: any[];
   createdAt: string;
   email: string;
@@ -44,6 +44,25 @@ interface User {
   _id: string;
   __v: number; //  Consider if this is always present
 }
+
+export const updateUserType = async (userId: string, userType: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/type`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userType }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update user type");
+  }
+
+  return response.json();
+};
 
 export default function UsersList() {
   const [entriesPerPage, setEntriesPerPage] = useState("10");
@@ -72,6 +91,19 @@ export default function UsersList() {
     },
   });
 
+  const updateTypeMutation = useMutation({
+    mutationFn: ({ userId, userType }: { userId: string; userType: string }) =>
+      updateUserType(userId, userType),
+    onSuccess: () => {
+      toast.success("User type updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to update user type");
+      console.error(error);
+    },
+  });
+
   if (error) {
     toast.error("Failed to load users");
   }
@@ -95,6 +127,10 @@ export default function UsersList() {
       setDeleteDialogOpen(false);
       setUserToDelete(null);
     }
+  };
+
+  const handleUserTypeChange = (userId: string, newType: string) => {
+    updateTypeMutation.mutate({ userId, userType: newType });
   };
 
   return (
@@ -154,6 +190,7 @@ export default function UsersList() {
                 <th className="px-4 py-3 text-left font-medium">Plan</th>
                 <th className="px-4 py-3 text-left font-medium">Username</th>
                 <th className="px-4 py-3 text-left font-medium">Email</th>
+                <th className="px-4 py-3 text-left font-medium">User Type</th>
                 <th className="px-4 py-3 text-center font-medium">Action</th>
               </tr>
             </thead>
@@ -175,6 +212,9 @@ export default function UsersList() {
                         <td className="px-4 py-3">
                           <div className="h-4 w-48 rounded bg-[#333]"></div>
                         </td>
+                        <td className="px-4 py-3">
+                          <div className="h-4 w-24 rounded bg-[#333]"></div>
+                        </td>
                         <td className="px-4 py-3 text-center">
                           <div className="mx-auto h-8 w-8 rounded bg-[#333]"></div>
                         </td>
@@ -187,6 +227,22 @@ export default function UsersList() {
                       </td>
                       <td className="px-4 py-3">{user.phoneNumber || "-"}</td>
                       <td className="px-4 py-3">{user.email}</td>
+                      <td className="px-4 py-3">
+                        <Select
+                          value={user.userType}
+                          onValueChange={(value) =>
+                            handleUserTypeChange(user._id, value)
+                          }
+                        >
+                          <SelectTrigger className="w-28 border-[#333] bg-[#0F0F0F]">
+                            <SelectValue placeholder={user.userType} />
+                          </SelectTrigger>
+                          <SelectContent className="border-[#333] bg-[#1A1A1A] text-white">
+                            <SelectItem value="customer">Customer</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <Button
                           variant="ghost"

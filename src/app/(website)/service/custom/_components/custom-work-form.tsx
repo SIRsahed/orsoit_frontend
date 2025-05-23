@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,32 +16,39 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useState } from "react";
 import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-// Modified schema to handle file uploads properly
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().min(10, { message: "Please enter a valid phone number." }),
   country: z.string().optional(),
-  requirements: z.string().optional(),
-  budget: z.string().optional(),
-  file: z.any().optional(), // Changed from FileList to any
+  description: z.string().optional(),
+  price: z.coerce.number().optional(),
+  fileUpload: z.any().optional(),
+  userId: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CustomWorkForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const userId = session?.user?.id;
+  const token = session?.user?.accessToken;
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
+    }
+  }, [status, router]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,35 +57,100 @@ export default function CustomWorkForm() {
       email: "",
       phone: "",
       country: "",
-      requirements: "",
-      budget: "",
+      description: "",
+      price: undefined,
+      userId: userId || "", // Set userId from session
+    },
+  });
+
+  // Update userId in form when session changes
+  useEffect(() => {
+    if (userId) {
+      form.setValue("userId", userId);
+    }
+  }, [userId, form]);
+
+  const submitCustomService = async (data: FormValues) => {
+    const formData = new FormData();
+
+    // Add all text fields to FormData
+    formData.append("name", data.name);
+    formData.append("description", data.description || "");
+    formData.append("country", data.country || "");
+    formData.append("price", data.price?.toString() || "0");
+
+    // Add userId from session
+    if (userId) {
+      formData.append("userId", userId);
+    }
+
+    // Add file if available
+    if (data.fileUpload && data.fileUpload[0]) {
+      formData.append("fileUpload", data.fileUpload[0]);
+    }
+
+    // Make the API request with auth token
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/custom-services`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: formData,
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to submit form");
+    }
+
+    return await response.json();
+  };
+
+  const mutation = useMutation({
+    mutationFn: submitCustomService,
+    onSuccess: () => {
+      toast.success("Form submitted successfully!");
+      form.reset();
+      setFileName(null);
+    },
+    onError: (error) => {
+      toast.error(
+        error.message || "An error occurred while submitting the form",
+      );
     },
   });
 
   function onSubmit(values: FormValues) {
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    console.log(values);
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      form.reset();
-      setFileName(null);
-      alert("Form submitted successfully!");
-    }, 1500);
+    mutation.mutate(values);
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       setFileName(files[0].name);
-      form.setValue("file", files);
+      form.setValue("fileUpload", files);
     } else {
       setFileName(null);
-      form.setValue("file", undefined);
+      form.setValue("fileUpload", undefined);
     }
   };
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  // If not authenticated, don't render the form (will redirect via useEffect)
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <div className="relative">
@@ -175,7 +247,7 @@ export default function CustomWorkForm() {
 
               <FormField
                 control={form.control}
-                name="requirements"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">
@@ -195,35 +267,20 @@ export default function CustomWorkForm() {
 
               <FormField
                 control={form.control}
-                name="budget"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">
-                      Choose a Budget
+                      Estimated Budget
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-[56px] border-[#737373] bg-transparent text-white">
-                          <SelectValue placeholder="-" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="border-[#737373] bg-gray-900 text-white">
-                        <SelectItem value="less-5k">
-                          Less than $5,000
-                        </SelectItem>
-                        <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
-                        <SelectItem value="10k-25k">
-                          $10,000 - $25,000
-                        </SelectItem>
-                        <SelectItem value="25k-50k">
-                          $25,000 - $50,000
-                        </SelectItem>
-                        <SelectItem value="50k-plus">$50,000+</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter your estimated budget"
+                        {...field}
+                        className="h-[56px] border-[#737373] bg-transparent text-white placeholder:text-gray-500"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -231,8 +288,7 @@ export default function CustomWorkForm() {
 
               <div className="space-y-2">
                 <FormLabel className="text-sm font-medium text-white">
-                  Please upload your requirements (text, docs, pdf, zip, png,
-                  jpg)
+                  Please upload any Reference image (png, jpg, jpeg)
                 </FormLabel>
                 <div className="flex h-[56px] items-center rounded-lg border border-gray-600 bg-transparent px-4">
                   <Input
@@ -250,9 +306,9 @@ export default function CustomWorkForm() {
                 <Button
                   type="submit"
                   className="bg-primary px-10 text-white hover:bg-red-600"
-                  disabled={isSubmitting}
+                  disabled={mutation.isPending}
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Now"}
+                  {mutation.isPending ? "Submitting..." : "Submit Now"}
                 </Button>
               </div>
             </form>

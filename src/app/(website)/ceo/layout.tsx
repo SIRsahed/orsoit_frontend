@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Orso Solutions",
-  description: "Cybersecurity solutions dashboard"
+  description: "Cybersecurity solutions dashboard",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
             <div className="sticky top-0 z-10 flex">
               <DashboardHeader />
             </div>
-            {children}
+            <div className="">{children}</div>
           </div>
         </div>
       </SidebarProvider>
