@@ -128,7 +128,7 @@ export default function CustomServicesList() {
       setUserLoading((prev) => ({ ...prev, [userId]: false }));
     }
   };
-// eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const fetchInitialData = async () => {
       if (services?.data) {
@@ -145,6 +145,7 @@ export default function CustomServicesList() {
     };
 
     fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [services?.data]);
 
   const getUserData = (userId: string) => {
@@ -203,99 +204,99 @@ export default function CustomServicesList() {
           <tbody>
             {isLoading
               ? Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <tr
-                      key={i}
-                      className="animate-pulse border-b border-[#222]"
-                    >
-                      <td className="px-4 py-3">
-                        <Skeleton className="h-4 w-32 bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Skeleton className="h-4 w-40 bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Skeleton className="h-4 w-32 bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Skeleton className="h-4 w-24 bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <Skeleton className="flex h-4 w-48 items-center bg-[#333]">
-                          <div className="ml-1 h-4 w-4 rounded-full bg-[#333]"></div>
-                        </Skeleton>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="flex justify-center gap-2">
-                          <Skeleton className="h-8 w-20 bg-[#333]" />
-                          <Skeleton className="h-8 w-20 bg-[#333]" />
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                .fill(0)
+                .map((_, i) => (
+                  <tr
+                    key={i}
+                    className="animate-pulse border-b border-[#222]"
+                  >
+                    <td className="px-4 py-3">
+                      <Skeleton className="h-4 w-32 bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Skeleton className="h-4 w-40 bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Skeleton className="h-4 w-32 bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Skeleton className="h-4 w-24 bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Skeleton className="flex h-4 w-48 items-center bg-[#333]">
+                        <div className="ml-1 h-4 w-4 rounded-full bg-[#333]"></div>
+                      </Skeleton>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex justify-center gap-2">
+                        <Skeleton className="h-8 w-20 bg-[#333]" />
+                        <Skeleton className="h-8 w-20 bg-[#333]" />
+                      </div>
+                    </td>
+                  </tr>
+                ))
               : services?.data?.map((service: CustomService) => {
-                  const userData = getUserData(service.userId);
-                  return (
-                    <tr key={service._id} className="border-b border-[#222]">
-                      <td className="px-4 py-3">{service.name}</td>
-                      <td className="px-4 py-3">{userData?.email || "N/A"}</td>
-                      <td className="px-4 py-3">
-                        {userData?.phoneNumber || "N/A"}
-                      </td>
-                      <td className="px-4 py-3">{service.country}</td>
-                      <td className="px-4 py-3">
-                        <a
-                          href={service.fileUpload}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center text-blue-500 hover:text-blue-400 hover:underline"
+                const userData = getUserData(service.userId);
+                return (
+                  <tr key={service._id} className="border-b border-[#222]">
+                    <td className="px-4 py-3">{service.name}</td>
+                    <td className="px-4 py-3">{userData?.email || "N/A"}</td>
+                    <td className="px-4 py-3">
+                      {userData?.phoneNumber || "N/A"}
+                    </td>
+                    <td className="px-4 py-3">{service.country}</td>
+                    <td className="px-4 py-3">
+                      <a
+                        href={service.fileUpload}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center text-blue-500 hover:text-blue-400 hover:underline"
+                      >
+                        {getFileName(service.fileUpload)}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="ml-1 h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          {getFileName(service.fileUpload)}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="ml-1 h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                            />
-                          </svg>
-                        </a>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-center gap-2">
-                          <Button
-                            className="bg-blue-600 text-white hover:bg-blue-700"
-                            onClick={() => handleAction(service, "approve")}
-                            disabled={service.isApprove}
-                          >
-                            {service.isApprove ? "Approved" : "Approve"}
-                          </Button>
-                          <Button
-                            className="bg-red-600 text-white hover:bg-red-700"
-                            onClick={() => handleAction(service, "deny")}
-                            disabled={!service.isApprove}
-                          >
-                            {!service.isApprove ? "Denied" : "Deny"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="border-red-600 text-red-600 hover:bg-red-900/20"
-                            onClick={() => handleAction(service, "delete")}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                      </a>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          className="bg-blue-600 text-white hover:bg-blue-700"
+                          onClick={() => handleAction(service, "approve")}
+                          disabled={service.isApprove}
+                        >
+                          {service.isApprove ? "Approved" : "Approve"}
+                        </Button>
+                        <Button
+                          className="bg-red-600 text-white hover:bg-red-700"
+                          onClick={() => handleAction(service, "deny")}
+                          disabled={!service.isApprove}
+                        >
+                          {!service.isApprove ? "Denied" : "Deny"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="border-red-600 text-red-600 hover:bg-red-900/20"
+                          onClick={() => handleAction(service, "delete")}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>

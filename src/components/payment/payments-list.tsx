@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Search, Download } from "lucide-react";
+import { Search, Download } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { fetchPayments } from "@/lib/api";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { Checkbox } from "@/components/ui/checkbox";
 
-interface Payment {
+export interface Payment {
   _id: string;
   userId: {
     _id: string;
@@ -29,7 +30,7 @@ interface Payment {
   __v: number;
 }
 
-interface PaymentsResponse {
+export interface PaymentsResponse {
   success: boolean;
   message: string;
   data?: Payment[];
@@ -44,7 +45,7 @@ interface PaymentsResponse {
 export default function PaymentsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  // const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
+  const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
 
   const {
     data: paymentsData,
@@ -54,6 +55,21 @@ export default function PaymentsList() {
     queryKey: ["payments", currentPage],
     queryFn: () => fetchPayments(currentPage, 10),
   });
+
+  const filteredPayments = paymentsData?.data?.filter((payment) => {
+    if (!searchQuery) return true;
+
+    const query = searchQuery.toLowerCase();
+    return (
+      payment.userId.firstName.toLowerCase().includes(query) ||
+      payment.userId.lastName.toLowerCase().includes(query) ||
+      payment.userId.email.toLowerCase().includes(query) ||
+      payment.paymentMethod.toLowerCase().includes(query) ||
+      payment.paymentStatus.toLowerCase().includes(query) ||
+      payment.amount.toString().includes(query) ||
+      payment._id.toLowerCase().includes(query)
+    );
+  }) || [];
 
   if (error) {
     toast.error("Failed to load payments");
@@ -171,32 +187,67 @@ export default function PaymentsList() {
     }
   };
 
-  // const toggleSelectPayment = (paymentId: string) => {
-  //   setSelectedPayments((prev) =>
-  //     prev.includes(paymentId)
-  //       ? prev.filter((id) => id !== paymentId)
-  //       : [...prev, paymentId],
-  //   );
-  // };
+  const handleBulkDownload = async () => {
+    if (selectedPayments.length === 0) {
+      toast.error("Please select payments to download");
+      return;
+    }
 
-  // const toggleSelectAll = () => {
-  //   if (
-  //     paymentsData?.data &&
-  //     selectedPayments.length === paymentsData.data.length &&
-  //     paymentsData.data.length > 0
-  //   ) {
-  //     setSelectedPayments([]);
-  //   } else {
-  //     setSelectedPayments(
-  //       paymentsData?.data?.map((payment) => payment._id) || [],
-  //     );
-  //   }
-  // };
+    try {
+      const selectedPaymentData = filteredPayments.filter(payment =>
+        selectedPayments.includes(payment._id)
+      );
+
+      for (const payment of selectedPaymentData) {
+        await handleDownloadInvoice(payment);
+        // Add a small delay between downloads to prevent browser blocking
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      toast.success(`Downloaded ${selectedPayments.length} payment receipts`);
+      setSelectedPayments([]);
+    } catch (error) {
+      console.error("Error downloading receipts:", error);
+      toast.error("Failed to download some receipts");
+    }
+  };
+
+  const toggleSelectPayment = (paymentId: string) => {
+    setSelectedPayments((prev) =>
+      prev.includes(paymentId)
+        ? prev.filter((id) => id !== paymentId)
+        : [...prev, paymentId],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (
+      filteredPayments &&
+      selectedPayments.length === filteredPayments.length &&
+      filteredPayments.length > 0
+    ) {
+      setSelectedPayments([]);
+    } else {
+      setSelectedPayments(
+        filteredPayments?.map((payment) => payment._id) || [],
+      );
+    }
+  };
 
   return (
     <div className="rounded-lg border border-[#222] bg-[#1A1A1A]">
       <div className="flex items-center justify-between p-4">
-        <div className="text-sm font-medium">Payments</div>
+        <div className="flex items-center gap-4">
+          <div className="text-sm font-medium">Payments</div>
+          {selectedPayments.length > 0 && (
+            <Button
+              onClick={handleBulkDownload}
+              className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 h-8"
+            >
+              Download Selected ({selectedPayments.length})
+            </Button>
+          )}
+        </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
           <Input
@@ -212,7 +263,7 @@ export default function PaymentsList() {
         <table className="w-full">
           <thead>
             <tr className="border-y border-[#333] bg-[#0F0F0F]">
-              {/* <th className="px-4 py-3">
+              <th className="px-4 py-3">
                 <Checkbox
                   checked={
                     paymentsData?.data &&
@@ -220,9 +271,10 @@ export default function PaymentsList() {
                     paymentsData.data.length > 0
                   }
                   onCheckedChange={toggleSelectAll}
+                  className="border-[#999999"
                 />
-              </th> */}
-              <th className="px-4 py-3 text-left font-medium">#</th>
+              </th>
+              {/* <th className="px-4 py-3 text-left font-medium">#</th> */}
               <th className="px-4 py-3 text-left font-medium">Amount</th>
               <th className="px-4 py-3 text-left font-medium">Status</th>
               <th className="px-4 py-3 text-left font-medium">
@@ -237,107 +289,104 @@ export default function PaymentsList() {
           <tbody>
             {isLoading
               ? Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <tr
-                      key={i}
-                      className="animate-pulse border-b border-[#222]"
-                    >
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-4 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-8 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-20 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-6 w-24 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-16 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-32 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-32 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="h-4 w-24 rounded bg-[#333]" />
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="mx-auto h-8 w-8 rounded bg-[#333]" />
-                      </td>
-                    </tr>
-                  ))
-              : paymentsData?.data?.map((payment, index) => (
-                  <tr key={payment._id} className="border-b border-[#222]">
-                    {/* <td className="px-4 py-3">
-                      <Checkbox
-                        checked={selectedPayments.includes(payment._id)}
-                        onCheckedChange={() => toggleSelectPayment(payment._id)}
-                      />
-                    </td> */}
-                    <td className="px-4 py-3">{index + 1}</td>
-                    <td className="px-4 py-3">${payment.amount.toFixed(2)}</td>
+                .fill(0)
+                .map((_, i) => (
+                  <tr
+                    key={i}
+                    className="animate-pulse border-b border-[#222]"
+                  >
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded px-2 py-1 text-xs font-medium ${
-                          payment.paymentStatus === "completed"
-                            ? "bg-green-900 text-green-300"
-                            : payment.paymentStatus === "refunded"
-                              ? "bg-yellow-900 text-yellow-300"
-                              : "bg-red-900 text-red-300"
-                        }`}
-                      >
-                        {payment.paymentStatus === "completed"
-                          ? "Succeeded"
-                          : payment.paymentStatus}
-                      </span>
-                    </td>
-                    <td className="flex items-center gap-2 px-4 py-3">
-                      <span className="text-xs">
-                        **** {payment.stripeSessionId.slice(-4)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">{`${payment?.userId?.firstName} ${payment?.userId?.lastName}`}</td>
-                    {/* <td className="px-4 py-3">{payment?.userId?.email}</td> */}
-                    <td className="px-4 py-3">
-                      {new Date(payment.createdAt).toLocaleDateString("en-US", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
+                      <div className="h-4 w-4 rounded bg-[#333]" />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDownloadInvoice(payment)}
-                          title="Download Receipt"
-                          className="hover:bg-red-900/20 hover:text-red-400"
-                        >
-                          <Download className="h-5 w-5" />
-                        </Button>
-                      </div>
+                      <div className="h-4 w-8 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 w-20 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-6 w-24 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 w-16 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 w-32 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 w-32 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 w-24 rounded bg-[#333]" />
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="mx-auto h-8 w-8 rounded bg-[#333]" />
                     </td>
                   </tr>
-                ))}
+                ))
+              : filteredPayments?.map((payment) => (
+                <tr key={payment._id} className="border-b border-[#222]">
+                  <td className="px-4 py-3 text-center">
+                    <Checkbox
+                      checked={selectedPayments.includes(payment._id)}
+                      onCheckedChange={() => toggleSelectPayment(payment._id)}
+                      className="border-[#999999]"
+                    />
+                  </td>
+                  {/* <td className="px-4 py-3">{index + 1}</td> */}
+                  <td className="px-4 py-3">${payment.amount.toFixed(2)}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded px-2 py-1 text-xs font-medium ${payment.paymentStatus === "completed"
+                        ? "bg-green-900 text-green-300"
+                        : payment.paymentStatus === "refunded"
+                          ? "bg-yellow-900 text-yellow-300"
+                          : "bg-red-900 text-red-300"
+                        }`}
+                    >
+                      {payment.paymentStatus === "completed"
+                        ? "Succeeded"
+                        : payment.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="flex items-center gap-2 px-4 py-3">
+                    <span className="text-xs">
+                      **** {payment.stripeSessionId.slice(-4)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">{`${payment?.userId?.firstName} ${payment?.userId?.lastName}`}</td>
+                  {/* <td className="px-4 py-3">{payment?.userId?.email}</td> */}
+                  <td className="px-4 py-3">
+                    {new Date(payment.createdAt).toLocaleDateString("en-US", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDownloadInvoice(payment)}
+                        title="Download Receipt"
+                        className="hover:bg-red-900/20 hover:text-red-400"
+                      >
+                        <Download className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
 
       <div className="flex items-center justify-between p-4 text-sm">
         <div>
-          Showing {paymentsData?.pagination?.currentPage || 1} to{" "}
-          {Math.min(
-            (paymentsData?.pagination?.currentPage || 1) * 10,
-            paymentsData?.pagination?.totalItems || 0,
-          )}{" "}
-          of {paymentsData?.pagination?.totalItems || 0} entries
+          Showing {filteredPayments.length > 0 ? 1 : 0} to{" "}
+          {filteredPayments.length} of {filteredPayments.length} entries
+          {searchQuery && ` (filtered from ${paymentsData?.pagination?.totalItems || 0} total)`}
         </div>
 
         <div className="flex gap-1">
@@ -360,11 +409,10 @@ export default function PaymentsList() {
                   key={pageNumber}
                   variant="outline"
                   size="sm"
-                  className={`h-8 w-8 p-0 ${
-                    pageNumber === currentPage
-                      ? "border-red-600 bg-red-600 text-white"
-                      : "border-[#333] bg-[#0F0F0F]"
-                  }`}
+                  className={`h-8 w-8 p-0 ${pageNumber === currentPage
+                    ? "border-red-600 bg-red-600 text-white"
+                    : "border-[#333] bg-[#0F0F0F]"
+                    }`}
                   onClick={() => setCurrentPage(pageNumber)}
                 >
                   {pageNumber}

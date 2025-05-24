@@ -32,13 +32,13 @@ export interface subscriptionPlanId {
     price: 839,
     description: string,
     features: string[]
-
 }
 
 
 export default function SubscriptionList({ serviceId }: { serviceId: string }) {
 
     const [selectedPlan, setSelectedPlan] = useState({});
+    const [selectedServiceId, setSelectedServiceId] = useState("");
     const pathname = usePathname()
 
     const { data: session } = useSession()
@@ -61,6 +61,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
     const handleOpenDialog = async (plan: subscriptionPlanId, index: number) => {
         setDialogOpen(true);
         setSelectedPlan(plan)
+        setSelectedServiceId(serviceId)
         await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/subscription-info`,
             {
@@ -68,13 +69,12 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userId: session?.user?.id, subscriptionPlanId: [subscriptions?.data[index]?.subscriptionPlanId[0]._id], services: [{ serviceId }] }),
+                body: JSON.stringify({ userId: session?.user?.id, subscriptionPlanId: [subscriptions?.data?.plans[index]?.subscriptionPlanId[0]._id], services: [{ serviceId }] }),
             }
         ).then((res) => res.json())
             .then((data) => setSubIdForPayment(data?.data?._id))
     }
 
-    console.log(subscriptions)
 
 
     return (
@@ -107,8 +107,8 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                             <p className='text-sm text-[#E6E6E6]'>At Orso, we are more than a cybersecurity provider - we&apos;re your trusted partner in building a resilient digital environment. Our mission is to empower businesses to operate securely in today&apos;s complex and ever-changing threat landscape. We specialize in delivering end-to-end security solutions.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {subscriptions?.data?.length > 0 ? (
-                                subscriptions?.data?.map((subscription: Subscription, index: number) => (
+                            {subscriptions?.data?.plans?.length > 0 ? (
+                                subscriptions?.data?.plans?.map((subscription: Subscription, index: number) => (
                                     <Card
                                         key={subscription._id}
                                         className="overflow-hidden border-[#222] bg-[#1A1A1A] text-white"
@@ -156,6 +156,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                                         <SubscriptionDialog
                                                             // @ts-expect-error typeError
                                                             planData={selectedPlan}
+                                                            serviceId={selectedServiceId}
                                                             subscriptionIdForPayment={subIdForPayment}
                                                             isOpen={dialogOpen}
                                                             onClose={() => setDialogOpen(false)} />

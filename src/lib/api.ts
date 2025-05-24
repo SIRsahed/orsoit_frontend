@@ -557,3 +557,26 @@ export async function deleteCoupon(id: string) {
     throw new Error(error.response?.data?.message || "Failed to delete coupon");
   }
 }
+
+
+
+// Notification API
+export async function fetchNotification(userId: string) {
+  try {
+    const response = await api.get(`/notifications/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to fetch notification");
+  }
+}
+
+
+
+export async function deleteNotification(id: string) {
+  try {
+    const response = await api.delete(`/notifications/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to delete notification");
+  }
+}

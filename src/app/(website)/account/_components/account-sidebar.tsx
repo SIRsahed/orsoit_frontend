@@ -70,7 +70,7 @@ function SidebarContent() {
         })}
         <Button
           onClick={() => setDialogOpen(true)}
-          className="w-full justify-start bg-neutral-800 hover:bg-neutral-600"
+          className="w-full justify-start bg-neutral-800 hover:bg-neutral-700"
         >
           <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
           Logout
