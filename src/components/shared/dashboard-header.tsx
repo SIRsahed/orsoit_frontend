@@ -161,13 +161,13 @@ export default function DashboardHeader() {
                 <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                 Logout
               </Button>
-              <LogoutDialog
-                isOpen={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <LogoutDialog
+          isOpen={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+        />
       </div>
     </header>
   );

@@ -238,6 +238,7 @@ export default function UsersList() {
                             <SelectValue placeholder={user.userType} />
                           </SelectTrigger>
                           <SelectContent className="border-[#333] bg-[#1A1A1A] text-white">
+                            <SelectItem value="ceo">Ceo</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>

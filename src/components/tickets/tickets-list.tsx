@@ -201,7 +201,7 @@ export default function TicketsList() {
                       <td className="px-4 py-3 text-center">
                         <Button
                           variant="secondary"
-                          className="bg-[#0F0F0F] hover:bg-[#1A1A1A]"
+                          className=""
                           onClick={() => setViewTicket(ticket)}
                         >
                           View
@@ -359,7 +359,7 @@ export default function TicketsList() {
                     <SelectTrigger className="flex-1 border-[#333] bg-[#0F0F0F]">
                       <SelectValue placeholder="Select Admin" />
                     </SelectTrigger>
-                    <SelectContent className="border-[#333] bg-[#1A1A1A]">
+                    <SelectContent className="border-[#333]">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                       admins?.data?.map((admin: any) => (
                         <SelectItem key={admin._id} value={admin._id}>

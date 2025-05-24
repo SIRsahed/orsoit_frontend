@@ -914,7 +914,7 @@ export default function ChatPage() {
                   </div>
                   {room.unreadCount && room.unreadCount > 0 && (
                     <Badge className="absolute bottom-3 right-3 bg-red-600 text-white">
-                      {room.unreadCount}
+                      {room.unreadCount == 0 ? "" : room.unreadCount}
                     </Badge>
                   )}
                 </CardContent>

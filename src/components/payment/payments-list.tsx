@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { fetchPayments } from "@/lib/api";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -45,7 +44,7 @@ interface PaymentsResponse {
 export default function PaymentsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
+  // const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
 
   const {
     data: paymentsData,
@@ -172,27 +171,27 @@ export default function PaymentsList() {
     }
   };
 
-  const toggleSelectPayment = (paymentId: string) => {
-    setSelectedPayments((prev) =>
-      prev.includes(paymentId)
-        ? prev.filter((id) => id !== paymentId)
-        : [...prev, paymentId],
-    );
-  };
+  // const toggleSelectPayment = (paymentId: string) => {
+  //   setSelectedPayments((prev) =>
+  //     prev.includes(paymentId)
+  //       ? prev.filter((id) => id !== paymentId)
+  //       : [...prev, paymentId],
+  //   );
+  // };
 
-  const toggleSelectAll = () => {
-    if (
-      paymentsData?.data &&
-      selectedPayments.length === paymentsData.data.length &&
-      paymentsData.data.length > 0
-    ) {
-      setSelectedPayments([]);
-    } else {
-      setSelectedPayments(
-        paymentsData?.data?.map((payment) => payment._id) || [],
-      );
-    }
-  };
+  // const toggleSelectAll = () => {
+  //   if (
+  //     paymentsData?.data &&
+  //     selectedPayments.length === paymentsData.data.length &&
+  //     paymentsData.data.length > 0
+  //   ) {
+  //     setSelectedPayments([]);
+  //   } else {
+  //     setSelectedPayments(
+  //       paymentsData?.data?.map((payment) => payment._id) || [],
+  //     );
+  //   }
+  // };
 
   return (
     <div className="rounded-lg border border-[#222] bg-[#1A1A1A]">
@@ -213,7 +212,7 @@ export default function PaymentsList() {
         <table className="w-full">
           <thead>
             <tr className="border-y border-[#333] bg-[#0F0F0F]">
-              <th className="px-4 py-3">
+              {/* <th className="px-4 py-3">
                 <Checkbox
                   checked={
                     paymentsData?.data &&
@@ -222,7 +221,7 @@ export default function PaymentsList() {
                   }
                   onCheckedChange={toggleSelectAll}
                 />
-              </th>
+              </th> */}
               <th className="px-4 py-3 text-left font-medium">#</th>
               <th className="px-4 py-3 text-left font-medium">Amount</th>
               <th className="px-4 py-3 text-left font-medium">Status</th>
@@ -275,12 +274,12 @@ export default function PaymentsList() {
                   ))
               : paymentsData?.data?.map((payment, index) => (
                   <tr key={payment._id} className="border-b border-[#222]">
-                    <td className="px-4 py-3">
+                    {/* <td className="px-4 py-3">
                       <Checkbox
                         checked={selectedPayments.includes(payment._id)}
                         onCheckedChange={() => toggleSelectPayment(payment._id)}
                       />
-                    </td>
+                    </td> */}
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3">${payment.amount.toFixed(2)}</td>
                     <td className="px-4 py-3">
