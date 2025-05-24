@@ -142,9 +142,8 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors hover:text-red-400 ${
-                  isActive(link.href) ? "text-red-500" : "text-white"
-                }`}
+                className={`transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -170,9 +169,8 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`text-lg font-medium transition-colors hover:text-red-400 ${
-                        isActive(link.href) ? "text-red-500" : "text-white"
-                      }`}
+                      className={`text-lg font-medium transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                        }`}
                       onClick={() => setOpen(false)}
                     >
                       {link.label}
@@ -214,7 +212,7 @@ export default function Navbar() {
                       )}
                       <Button
                         onClick={() => setDialogOpen(true)}
-                        className="!mt-4 w-full justify-start px-0"
+                        className="!mt-4 w-full justify-start px-0 bg-transparent"
                       >
                         <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                         Logout

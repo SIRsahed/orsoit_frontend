@@ -76,6 +76,7 @@ export function SubscriptionPlan() {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {userSubscriptions?.map((plan: any, index: number) => (
             <TableRow
               key={index}
