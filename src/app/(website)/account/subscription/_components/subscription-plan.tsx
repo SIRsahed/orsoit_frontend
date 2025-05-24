@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   Table,
@@ -7,102 +9,59 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchUserSubscriptions } from "@/lib/api";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
-const plans = [
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Pro",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Enterprise",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Pro",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Enterprise",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Pro",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Basic",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Enterprise",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-  {
-    service: "Network Security",
-    plan: "Pro",
-    activatedAt: "8 Sep, 2020",
-    expiringIn: "10 Nov, 2020",
-    amount: "$125.00",
-  },
-];
 
 export function SubscriptionPlan() {
+
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+
+  const { data: userSubscriptions } = useQuery({
+    queryKey: ["userSubscriptions"],
+    queryFn: () => fetchUserSubscriptions(session?.user.id as string),
+    enabled: !!session?.user,
+    select: (data) => data.data,
+  })
+
+  function formatDateOneMonthLater(dateString: string) {
+    const date = new Date(dateString);
+    // Add 1 month
+    const expires = new Date(date);
+    expires.setMonth(expires.getMonth() + 1);
+
+    // Format the new date
+    return expires.toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
+
+
+  const handleUnsubscribe = async (id: string) => {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/unsubscribe`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ _id: id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        queryClient.invalidateQueries({ queryKey: ["userSubscriptions"] })
+        toast.success(data.message)
+      })
+  }
+
+
+
   return (
     <div className="rounded-md">
       <Table>
@@ -127,12 +86,13 @@ export function SubscriptionPlan() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {plans.map((plan, index) => (
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {userSubscriptions?.map((plan: any, index: number) => (
             <TableRow
               key={index}
               className="border-t border-neutral-800 hover:bg-neutral-900/50"
             >
-              <TableCell className="text-white">{plan.service}</TableCell>
+              <TableCell className="text-white">{plan?.services[0]?.serviceId?.name}</TableCell>
               <TableCell>
                 <span
                   className={cn(
@@ -144,14 +104,26 @@ export function SubscriptionPlan() {
                         : "bg-[linear-gradient(148.79deg,#D80100_7.56%,#EB3E3E_53.78%,#3A0305_100%)]", // Gradient for Enterprise
                   )}
                 >
-                  {plan.plan}
+                  {plan?.subscriptionPlanId[0]?.planName}
                 </span>
               </TableCell>
-              <TableCell className="text-white">{plan.activatedAt}</TableCell>
-              <TableCell className="text-white">{plan.expiringIn}</TableCell>
-              <TableCell className="text-white">{plan.amount}</TableCell>
+              <TableCell className="text-white">
+                {new Date(plan.createdAt).toLocaleString("en-US", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </TableCell>
+              <TableCell className="text-white">{formatDateOneMonthLater(plan.createdAt)}</TableCell>
+              <TableCell className="text-white">{plan?.subscriptionPlanId[0]?.price}</TableCell>
               <TableCell>
-                <button className="text-[16px] text-[#D80100] hover:text-[#D80100]/80">
+                <button
+                  onClick={() => handleUnsubscribe(plan._id)}
+                  className="text-[16px] text-[#D80100] hover:text-[#D80100]/80"
+                >
                   Unsubscribe
                 </button>
               </TableCell>

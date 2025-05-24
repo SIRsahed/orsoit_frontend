@@ -14,8 +14,26 @@ interface TickeDetailsDialogProps {
         service: string;
         issueDetails: string
         urgency: string
+        file: string
     };
 }
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getFileType(fileUrl: any) {
+    if (!fileUrl) return "none";
+
+    const extension = fileUrl.split('.').pop().toLowerCase();
+
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
+        return "image";
+    } else if (extension === "pdf") {
+        return "pdf";
+    } else {
+        return extension; // fallback to showing the extension
+    }
+}
+
 
 export function TicketDetailsDialog({
     isOpen,
@@ -99,7 +117,7 @@ export function TicketDetailsDialog({
 
                                     <div className="flex flex-col sm:flex-row sm:items-center">
                                         <span className="font-bold text-white text-xl pr-2">Attachments:</span>
-                                        <span className="text-gray-300">PDF</span>
+                                        <span className="text-gray-300 uppercase">{getFileType(ticketData.file)}</span>
                                     </div>
                                 </div>
                             </div>

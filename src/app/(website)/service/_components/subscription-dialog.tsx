@@ -20,12 +20,14 @@ interface SubscriptionDialogProps {
     features: string[];
     planName: string
   };
+  subscriptionIdForPayment: string
 }
 
 export function SubscriptionDialog({
   isOpen,
   onClose,
   planData,
+  subscriptionIdForPayment
   //   serviceName,
 }: SubscriptionDialogProps) {
 
@@ -34,7 +36,7 @@ export function SubscriptionDialog({
   const session = useSession()
   const router = useRouter()
 
-  const handlePayment = async (price: number, id: string) => {
+  const handlePayment = async (price: number) => {
     setLoading(true)
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/payment-intent`,
@@ -43,7 +45,7 @@ export function SubscriptionDialog({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: session?.data?.user?.id, price: price, subscriptionId: id }),
+        body: JSON.stringify({ userId: session?.data?.user?.id, price: price, subscriptionId: subscriptionIdForPayment }),
       }
     )
 
@@ -56,6 +58,7 @@ export function SubscriptionDialog({
 
   }
 
+  console.log(planData)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -103,7 +106,7 @@ export function SubscriptionDialog({
               </div>
 
               <Button
-                onClick={() => handlePayment(planData?.price, planData?._id)}
+                onClick={() => handlePayment(planData?.price)}
                 className="mt-4 w-full bg-red-600 hover:bg-red-700"
               >
                 {loading ? "Loading Payment ..." : "Confirm and Pay"}
