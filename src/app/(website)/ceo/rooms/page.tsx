@@ -856,7 +856,7 @@ export default function ChatPage() {
       </div>
 
       {/* Right sidebar - Room list (desktop only) */}
-      <div className="flex hidden w-80 flex-col border-l border-zinc-800 md:flex">
+      <div className="hidden w-80 flex-col border-l border-zinc-800 md:flex">
         <div className="border-b border-zinc-800 p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
