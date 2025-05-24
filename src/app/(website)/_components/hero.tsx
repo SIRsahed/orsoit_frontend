@@ -8,9 +8,10 @@ export default function Hero() {
         <Image
           src="/hero.jpg"
           alt="Cybersecurity background"
-          fill
+          width={10000}
+          height={1000}
           priority
-          className="object-cover"
+          className="object-cover h-[70vh] w-full"
         />
       </div>
       {/* r-gradient */}

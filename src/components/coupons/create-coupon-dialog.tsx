@@ -110,10 +110,8 @@ export default function CreateCouponDialog({
       expireIn: values.expireIn.toISOString(),
     };
 
-    console.log(payload);
-
     // Uncomment this when ready to submit to API
-    // mutation.mutate(payload);
+    mutation.mutate(payload);
   }
 
   return (
