@@ -20,6 +20,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+
+
+
   // Redirect authenticated users away from public/auth routes
   if (token && ["/login", "/register", "/verify", "/forgot-password"].includes(pathname)) {
     if (token.role === "admin") {
@@ -27,6 +30,9 @@ export async function middleware(request: NextRequest) {
     }
     if (token.role === "ceo") {
       return NextResponse.redirect(new URL("/ceo", request.url));
+    }
+    if (token.role === "sales") {
+      return NextResponse.redirect(new URL("/sales", request.url));
     }
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -41,6 +47,13 @@ export async function middleware(request: NextRequest) {
   // Protect /ceo/* — only ceo can access
   if (pathname.startsWith("/ceo")) {
     if (!token || token.role !== "ceo") {
+      return NextResponse.redirect(new URL("/403", request.url));
+    }
+  }
+
+  // Protect /sales/* — only sales can access
+  if (pathname.startsWith("/sales")) {
+    if (!token || token.role !== "sales") {
       return NextResponse.redirect(new URL("/403", request.url));
     }
   }

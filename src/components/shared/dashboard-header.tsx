@@ -156,7 +156,7 @@ export default function DashboardHeader() {
             <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
               <Button
                 onClick={() => setDialogOpen(true)}
-                className="w-full justify-start bg-neutral-800"
+                className="w-full justify-start"
               >
                 <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                 Logout

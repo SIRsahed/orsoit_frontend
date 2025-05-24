@@ -133,78 +133,78 @@ export default function CouponsList() {
             <tbody>
               {isLoading
                 ? Array(5)
-                    .fill(0)
-                    .map((_, i) => (
-                      <tr
-                        key={i}
-                        className="animate-pulse border-b border-[#222]"
-                      >
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-32 bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-16 bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-6 w-24 rounded-md bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-16 bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-24 bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-24 bg-[#333]" />
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <div className="flex justify-center gap-2">
-                            <Skeleton className="h-8 w-8 bg-[#333]" />
-                            <Skeleton className="h-8 w-8 bg-[#333]" />
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                : currentCoupons.map((coupon: Coupon) => (
-                    <tr key={coupon._id} className="border-b border-[#222]">
-                      <td className="px-4 py-3">{coupon.title}</td>
-                      <td className="px-4 py-3">{coupon.discount}% OFF</td>
+                  .fill(0)
+                  .map((_, i) => (
+                    <tr
+                      key={i}
+                      className="animate-pulse border-b border-[#222]"
+                    >
                       <td className="px-4 py-3">
-                        <span className="rounded-md bg-green-900 px-3 py-1 text-xs font-medium text-green-300">
-                          {coupon.code}
-                        </span>
+                        <Skeleton className="h-4 w-32 bg-[#333]" />
                       </td>
                       <td className="px-4 py-3">
-                        {getServiceNames(coupon.applicableServices)}
+                        <Skeleton className="h-4 w-16 bg-[#333]" />
                       </td>
                       <td className="px-4 py-3">
-                        {formatDate(coupon.activeFrom)}
+                        <Skeleton className="h-6 w-24 rounded-md bg-[#333]" />
                       </td>
                       <td className="px-4 py-3">
-                        {formatDate(coupon.expireIn)}
+                        <Skeleton className="h-4 w-16 bg-[#333]" />
                       </td>
                       <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-24 bg-[#333]" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Skeleton className="h-4 w-24 bg-[#333]" />
+                      </td>
+                      <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(coupon)}
-                            className="hover:bg-[#222]"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(coupon._id)}
-                            className="hover:bg-[#222]"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
+                          <Skeleton className="h-8 w-8 bg-[#333]" />
+                          <Skeleton className="h-8 w-8 bg-[#333]" />
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                : currentCoupons.map((coupon: Coupon) => (
+                  <tr key={coupon._id} className="border-b border-[#222]">
+                    <td className="px-4 py-3">{coupon.title}</td>
+                    <td className="px-4 py-3">{coupon.discount}% OFF</td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-md bg-green-900 px-3 py-1 text-xs font-medium text-green-300">
+                        {coupon.code}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {getServiceNames(coupon.applicableServices)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {formatDate(coupon.activeFrom)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {formatDate(coupon.expireIn)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(coupon)}
+                          className="hover:bg-[#222]"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(coupon._id)}
+                          className="hover:bg-[#222]"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -235,11 +235,10 @@ export default function CouponsList() {
                     key={pageNumber}
                     variant="outline"
                     size="sm"
-                    className={`h-8 w-8 p-0 ${
-                      pageNumber === currentPage
-                        ? "border-red-600 bg-red-600 text-white"
-                        : "border-[#333] bg-[#0F0F0F]"
-                    }`}
+                    className={`h-8 w-8 p-0 ${pageNumber === currentPage
+                      ? "border-red-600 bg-red-600 text-white"
+                      : "border-[#333] bg-[#0F0F0F]"
+                      }`}
                     onClick={() => setCurrentPage(pageNumber)}
                   >
                     {pageNumber}
@@ -253,11 +252,10 @@ export default function CouponsList() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`h-8 w-8 p-0 ${
-                    totalPages === currentPage
-                      ? "border-red-600 bg-red-600 text-white"
-                      : "border-[#333] bg-[#0F0F0F]"
-                  }`}
+                  className={`h-8 w-8 p-0 ${totalPages === currentPage
+                    ? "border-red-600 bg-red-600 text-white"
+                    : "border-[#333] bg-[#0F0F0F]"
+                    }`}
                   onClick={() => setCurrentPage(totalPages)}
                 >
                   {totalPages}
