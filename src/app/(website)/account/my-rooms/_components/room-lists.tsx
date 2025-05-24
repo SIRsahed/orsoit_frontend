@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 
-
 interface Room {
   _id: string;
   roomName: string;
@@ -15,10 +14,8 @@ interface Room {
 }
 
 
-
 export function RoomsList() {
-
-
+  
   const session = useSession()
 
   const userId = String(session.data?.user?.id)

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Settings, ChevronDown, User, LogOut } from "lucide-react";
+import { Bell, ChevronDown, User, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { LogoutDialog } from "./logout-dialog";
 
 export default function DashboardHeader() {
   const { data: session } = useSession();
@@ -96,6 +97,9 @@ export default function DashboardHeader() {
     );
   };
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+
   return (
     <header className="flex w-full items-center justify-between border-b border-[#222] bg-[#1A0A0A] bg-[#843E3E54] p-4 shadow-[0_4px_12px_0px_#EC747973] backdrop-blur-xl">
       <h1 className="text-xl font-bold">Dashboard</h1>
@@ -141,18 +145,36 @@ export default function DashboardHeader() {
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/account-settings" className="w-full">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Account Settings</span>
-              </Link>
+              {
+                userData?.userType === "admin" ? (
+                  <Link href="/admin/dashboard">Dashboard</Link>
+                )
+                  :
+
+                  userData?.userType === "ceo" ? (
+                    <Link href="/ceo/dashboard">Dashboard</Link>
+                  )
+                    :
+                    (
+                      <Link href="/account">Dashboard</Link>
+                    )
+              }
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
-              onClick={() => signOut()}
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
+              <Button
+                onClick={() => setDialogOpen(true)}
+                className="w-full justify-start bg-neutral-800"
+              >
+                <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
+                Logout
+              </Button>
+              <LogoutDialog
+                isOpen={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

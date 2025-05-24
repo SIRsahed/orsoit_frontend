@@ -4,7 +4,6 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardFooter } from '../ui/card'
 import { Skeleton } from '../ui/skeleton'
-import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSubscriptionPlans } from '@/lib/api'
 import { Check } from 'lucide-react'
@@ -13,6 +12,7 @@ import DeletePlanDialog from './delete-plan-dialog';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
 import { SubscriptionDialog } from '@/app/(website)/service/_components/subscription-dialog';
+import { useSession } from 'next-auth/react';
 
 
 export interface Subscription {
@@ -22,7 +22,7 @@ export interface Subscription {
     description: string
     features: string[]
     subscriptionPlanId: [subscriptionPlanId]
-    data: []
+    data: [],
 }
 
 
@@ -41,10 +41,11 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
     const [selectedPlan, setSelectedPlan] = useState({});
     const pathname = usePathname()
 
+    const { data: session } = useSession()
+
     const {
         data: subscriptions,
-        isLoading,
-        error,
+        isLoading
     } = useQuery({
         queryKey: ["subscriptions", serviceId], // Include serviceId in the queryKey
         queryFn: () => fetchSubscriptionPlans({ serviceId }),
@@ -52,19 +53,29 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
         refetchOnMount: true, // Refetch when component mounts
     })
 
-    if (error) {
-        toast.error("Failed to load services")
-    }
-
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    console.log(subscriptions)
+    const [subIdForPayment, setSubIdForPayment] = useState("")
 
-    const handleOpenDialog = (plan: subscriptionPlanId) => {
+    const handleOpenDialog = async (plan: subscriptionPlanId, index: number) => {
         setDialogOpen(true);
         setSelectedPlan(plan)
+        await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/subscription-info`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId: session?.user?.id, subscriptionPlanId: [subscriptions?.data[index]?.subscriptionPlanId[0]._id], services: [{ serviceId }] }),
+            }
+        ).then((res) => res.json())
+            .then((data) => setSubIdForPayment(data?.data?._id))
     }
+
+    console.log(subscriptions)
+
 
     return (
         <div className="">
@@ -92,12 +103,12 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                 : (
                     <div className="">
                         <div className="text-center py-10">
-                            <h2 className='text-xl lg:text-4xl font-bold pb-4 text-white'>Subscription Plans of <span className='capitalize'>{subscriptions?.data[0]?.services[0]?.serviceId?.name}</span></h2>
+                            <h2 className='text-xl lg:text-4xl font-bold pb-4 text-white'>Subscription Plans for <span className='capitalize'>{subscriptions?.data?.service?.name}</span></h2>
                             <p className='text-sm text-[#E6E6E6]'>At Orso, we are more than a cybersecurity provider - we&apos;re your trusted partner in building a resilient digital environment. Our mission is to empower businesses to operate securely in today&apos;s complex and ever-changing threat landscape. We specialize in delivering end-to-end security solutions.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             {subscriptions?.data?.length > 0 ? (
-                                subscriptions?.data?.map((subscription: Subscription) => (
+                                subscriptions?.data?.map((subscription: Subscription, index: number) => (
                                     <Card
                                         key={subscription._id}
                                         className="overflow-hidden border-[#222] bg-[#1A1A1A] text-white"
@@ -127,7 +138,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                         </CardContent>
                                         <CardFooter className="flex justify-center">
                                             {
-                                                pathname.includes("ceo-dashboard") ? (
+                                                pathname.includes("ceo") ? (
                                                     <div className="flex justify-center gap-4 border-t border-[#222] p-4">
                                                         <EditSubscriptionDialog subscription={subscription} />
                                                         <DeletePlanDialog infoId={subscription?._id} planId={subscription?.subscriptionPlanId[0]?._id} />
@@ -138,13 +149,14 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
 
                                                     <div className=''>
                                                         <Button
-                                                            onClick={() => handleOpenDialog(subscription?.subscriptionPlanId[0])}
+                                                            onClick={() => handleOpenDialog(subscription?.subscriptionPlanId[0], index)}
                                                         >
                                                             Buy Plan
                                                         </Button>
                                                         <SubscriptionDialog
                                                             // @ts-expect-error typeError
                                                             planData={selectedPlan}
+                                                            subscriptionIdForPayment={subIdForPayment}
                                                             isOpen={dialogOpen}
                                                             onClose={() => setDialogOpen(false)} />
                                                     </div>
@@ -157,7 +169,7 @@ export default function SubscriptionList({ serviceId }: { serviceId: string }) {
                                 :
 
                                 (
-                                    <p className='text-center text-2xl font-bold mt-10'>No subscriptions plan found</p>
+                                    <p className='col-span-3 text-center text-2xl font-bold mt-10 text-white'>No subscriptions plan found</p>
                                 )
                             }
                         </div>

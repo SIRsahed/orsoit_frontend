@@ -1,52 +1,39 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { updateService } from "@/lib/api";
-import Image from "next/image";
+import { useState, useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { z } from "zod"
+import { Upload } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { updateService } from "@/lib/api"
+import Image from "next/image"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   image: z.any().optional(),
-});
+})
 
 export interface Service {
-  _id: string;
-  name: string;
-  description: string;
-  image: string;
+  _id: string
+  name: string
+  description: string
+  image: string
 }
 
 export default function EditServiceDialog({ service }: { service: Service }) {
-  const [open, setOpen] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,57 +41,56 @@ export default function EditServiceDialog({ service }: { service: Service }) {
       name: service.name,
       description: service.description,
     },
-  });
+  })
 
   // Clean up the object URL when component unmounts or when dialog closes
   useEffect(() => {
     return () => {
       if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
+        URL.revokeObjectURL(imagePreview)
       }
-    };
-  }, [imagePreview]);
+    }
+  }, [imagePreview])
 
   // Reset image preview when dialog closes
   useEffect(() => {
     if (!open && imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-      setImagePreview(null);
+      URL.revokeObjectURL(imagePreview)
+      setImagePreview(null)
     }
-  }, [open, imagePreview]);
+  }, [open, imagePreview])
 
   const mutation = useMutation({
-    mutationFn: (values: z.infer<typeof formSchema>) =>
-      updateService(service._id, values),
+    mutationFn: (values: z.infer<typeof formSchema>) => updateService(service._id, values),
     onSuccess: () => {
-      toast.success("Service updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["services"] });
-      setOpen(false);
+      toast.success("Service updated successfully")
+      queryClient.invalidateQueries({ queryKey: ["services"] })
+      setOpen(false)
     },
     onError: (error) => {
-      toast.error("Failed to update service");
-      console.error(error);
+      toast.error("Failed to update service")
+      console.error(error)
     },
-  });
+  })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    mutation.mutate(values);
+    mutation.mutate(values)
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
       // Clean up previous preview if exists
       if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
+        URL.revokeObjectURL(imagePreview)
       }
 
       // Create a new preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-      form.setValue("image", file);
+      const previewUrl = URL.createObjectURL(file)
+      setImagePreview(previewUrl)
+      form.setValue("image", file)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -127,7 +113,7 @@ export default function EditServiceDialog({ service }: { service: Service }) {
                   <FormControl>
                     <Input
                       placeholder="Enter plan Name"
-                      className="border-[#333] bg-[#0F0F0F]"
+                      className="border-[#333] bg-[#0F0F0F] text-white w-full"
                       {...field}
                     />
                   </FormControl>
@@ -145,7 +131,7 @@ export default function EditServiceDialog({ service }: { service: Service }) {
                   <FormControl>
                     <Textarea
                       placeholder="Write here..."
-                      className="min-h-[100px] border-[#333] bg-[#0F0F0F]"
+                      className="min-h-[100px] border-[#333] bg-[#0F0F0F] text-white w-full"
                       {...field}
                     />
                   </FormControl>
@@ -156,27 +142,19 @@ export default function EditServiceDialog({ service }: { service: Service }) {
 
             <div className="rounded-lg border border-dashed border-[#333] p-6">
               <div className="flex flex-col items-center justify-center gap-2">
-                {/* Show either the new image preview or the existing service image */}
                 {imagePreview ? (
-                  <div className="mb-4">
-                    <p className="mb-2 text-sm text-gray-400">
-                      New Image Preview:
-                    </p>
-                    <Image
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Preview"
-                      className="h-40 w-40 object-contain"
-                      fill
-                    />
+                  <div className="mb-4 relative w-full aspect-[5/3]">
+                    <p className="!mb-3 text-sm text-gray-400">New Image Preview:</p>
+                    <Image src={imagePreview} alt="Preview" className="object-cover" fill />
                   </div>
                 ) : service.image ? (
-                  <div className="mb-4">
-                    <p className="mb-2 text-sm text-gray-400">Current Image:</p>
+                  <div className="mb-4 relative w-full aspect-[5/3]">
+                    <p className="mb-3 text-sm text-gray-400">Current Image:</p>
                     <Image
-                      fill
-                      src={service.image || "/placeholder.svg"}
+                      src={service.image}
                       alt={service.name}
-                      className="h-40 w-40 object-contain"
+                      className="object-cover"
+                      fill
                     />
                   </div>
                 ) : null}
@@ -198,9 +176,7 @@ export default function EditServiceDialog({ service }: { service: Service }) {
                   type="button"
                   variant="outline"
                   className="mt-2 border-[#333] bg-[#0F0F0F]"
-                  onClick={() =>
-                    document.getElementById("image-upload-edit")?.click()
-                  }
+                  onClick={() => document.getElementById("image-upload-edit")?.click()}
                 >
                   Choose File
                 </Button>
@@ -211,9 +187,9 @@ export default function EditServiceDialog({ service }: { service: Service }) {
                     variant="outline"
                     className="mt-2 border-[#333] bg-[#0F0F0F] text-red-500 hover:text-red-400"
                     onClick={() => {
-                      URL.revokeObjectURL(imagePreview);
-                      setImagePreview(null);
-                      form.setValue("image", undefined);
+                      URL.revokeObjectURL(imagePreview)
+                      setImagePreview(null)
+                      form.setValue("image", undefined)
                     }}
                   >
                     Remove New Image
@@ -231,11 +207,7 @@ export default function EditServiceDialog({ service }: { service: Service }) {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-red-600 hover:bg-red-700"
-                disabled={mutation.isPending}
-              >
+              <Button type="submit" className="bg-red-600 hover:bg-red-700" disabled={mutation.isPending}>
                 {mutation.isPending ? "Saving..." : "Save"}
               </Button>
             </div>
@@ -243,5 +215,5 @@ export default function EditServiceDialog({ service }: { service: Service }) {
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
