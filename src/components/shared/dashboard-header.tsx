@@ -97,8 +97,7 @@ export default function DashboardHeader() {
     );
   };
 
-  const [dialogOpen, setDialogOpen] = useState(false)
-
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <header className="flex w-full items-center justify-between border-b border-[#222] bg-[#1A0A0A] bg-[#843E3E54] p-4 shadow-[0_4px_12px_0px_#EC747973] backdrop-blur-xl">
@@ -145,25 +144,16 @@ export default function DashboardHeader() {
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              {
-                userData?.userType === "admin" ? (
-                  <Link href="/admin/dashboard">Dashboard</Link>
-                )
-                  :
-
-                  userData?.userType === "ceo" ? (
-                    <Link href="/ceo/dashboard">Dashboard</Link>
-                  )
-                    :
-                    (
-                      <Link href="/account">Dashboard</Link>
-                    )
-              }
+              {userData?.userType === "admin" ? (
+                <Link href="/admin/dashboard">Dashboard</Link>
+              ) : userData?.userType === "ceo" ? (
+                <Link href="/ceo/dashboard">Dashboard</Link>
+              ) : (
+                <Link href="/account">Dashboard</Link>
+              )}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
-            >
+            <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
               <Button
                 onClick={() => setDialogOpen(true)}
                 className="w-full justify-start bg-neutral-800"
@@ -171,13 +161,13 @@ export default function DashboardHeader() {
                 <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                 Logout
               </Button>
-              <LogoutDialog
-                isOpen={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <LogoutDialog
+          isOpen={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+        />
       </div>
     </header>
   );

@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowDown } from "lucide-react";
 
 import {
   Sidebar,
@@ -22,11 +21,11 @@ export function AdminSidebar() {
       href: "/admin/dashboard",
       label: "Dashboard",
     },
-    {
-      href: "/admin/tickets",
-      label: "Tickets",
-      icon: ArrowDown,
-    },
+    // {
+    //   href: "/admin/tickets",
+    //   label: "Tickets",
+    //   icon: ArrowDown,
+    // },
     {
       href: "/admin/rooms",
       label: "Rooms",
@@ -35,17 +34,13 @@ export function AdminSidebar() {
       href: "/admin/account",
       label: "Account",
     },
-    {
-      href: "/admin/logout",
-      label: "Log out",
-    },
   ];
 
   return (
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/ceo/dashboard"
+          href="/admin/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image
@@ -77,7 +72,6 @@ export function AdminSidebar() {
                     className="flex items-center justify-between gap-3"
                   >
                     <span>{item.label}</span>
-                    {item.icon && <item.icon className="h-4 w-4" />}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

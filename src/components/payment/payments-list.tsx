@@ -6,11 +6,9 @@ import { toast } from "sonner";
 import { Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { fetchPayments } from "@/lib/api";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import Image from "next/image";
 
 interface Payment {
   _id: string;
@@ -46,7 +44,7 @@ interface PaymentsResponse {
 export default function PaymentsList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
+  // const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
 
   const {
     data: paymentsData,
@@ -173,30 +171,30 @@ export default function PaymentsList() {
     }
   };
 
-  const toggleSelectPayment = (paymentId: string) => {
-    setSelectedPayments((prev) =>
-      prev.includes(paymentId)
-        ? prev.filter((id) => id !== paymentId)
-        : [...prev, paymentId],
-    );
-  };
+  // const toggleSelectPayment = (paymentId: string) => {
+  //   setSelectedPayments((prev) =>
+  //     prev.includes(paymentId)
+  //       ? prev.filter((id) => id !== paymentId)
+  //       : [...prev, paymentId],
+  //   );
+  // };
 
-  const toggleSelectAll = () => {
-    if (
-      paymentsData?.data &&
-      selectedPayments.length === paymentsData.data.length &&
-      paymentsData.data.length > 0
-    ) {
-      setSelectedPayments([]);
-    } else {
-      setSelectedPayments(
-        paymentsData?.data?.map((payment) => payment._id) || [],
-      );
-    }
-  };
+  // const toggleSelectAll = () => {
+  //   if (
+  //     paymentsData?.data &&
+  //     selectedPayments.length === paymentsData.data.length &&
+  //     paymentsData.data.length > 0
+  //   ) {
+  //     setSelectedPayments([]);
+  //   } else {
+  //     setSelectedPayments(
+  //       paymentsData?.data?.map((payment) => payment._id) || [],
+  //     );
+  //   }
+  // };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[#222] bg-[#1A1A1A]">
+    <div className="rounded-lg border border-[#222] bg-[#1A1A1A]">
       <div className="flex items-center justify-between p-4">
         <div className="text-sm font-medium">Payments</div>
         <div className="relative">
@@ -214,7 +212,7 @@ export default function PaymentsList() {
         <table className="w-full">
           <thead>
             <tr className="border-y border-[#333] bg-[#0F0F0F]">
-              <th className="px-4 py-3">
+              {/* <th className="px-4 py-3">
                 <Checkbox
                   checked={
                     paymentsData?.data &&
@@ -223,7 +221,7 @@ export default function PaymentsList() {
                   }
                   onCheckedChange={toggleSelectAll}
                 />
-              </th>
+              </th> */}
               <th className="px-4 py-3 text-left font-medium">#</th>
               <th className="px-4 py-3 text-left font-medium">Amount</th>
               <th className="px-4 py-3 text-left font-medium">Status</th>
@@ -231,7 +229,7 @@ export default function PaymentsList() {
                 Payment method
               </th>
               <th className="px-4 py-3 text-left font-medium">Customer</th>
-              <th className="px-4 py-3 text-left font-medium">Email</th>
+              {/* <th className="px-4 py-3 text-left font-medium">Email</th> */}
               <th className="px-4 py-3 text-left font-medium">Date</th>
               <th className="px-4 py-3 text-center font-medium">Receipt</th>
             </tr>
@@ -276,12 +274,12 @@ export default function PaymentsList() {
                   ))
               : paymentsData?.data?.map((payment, index) => (
                   <tr key={payment._id} className="border-b border-[#222]">
-                    <td className="px-4 py-3">
+                    {/* <td className="px-4 py-3">
                       <Checkbox
                         checked={selectedPayments.includes(payment._id)}
                         onCheckedChange={() => toggleSelectPayment(payment._id)}
                       />
-                    </td>
+                    </td> */}
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3">${payment.amount.toFixed(2)}</td>
                     <td className="px-4 py-3">
@@ -300,18 +298,12 @@ export default function PaymentsList() {
                       </span>
                     </td>
                     <td className="flex items-center gap-2 px-4 py-3">
-                      <Image
-                        fill
-                        src="/credit-card-icon.png"
-                        alt={payment.paymentMethod}
-                        className="h-5 w-8 object-contain"
-                      />
                       <span className="text-xs">
                         **** {payment.stripeSessionId.slice(-4)}
                       </span>
                     </td>
                     <td className="px-4 py-3">{`${payment?.userId?.firstName} ${payment?.userId?.lastName}`}</td>
-                    <td className="px-4 py-3">{payment?.userId?.email}</td>
+                    {/* <td className="px-4 py-3">{payment?.userId?.email}</td> */}
                     <td className="px-4 py-3">
                       {new Date(payment.createdAt).toLocaleDateString("en-US", {
                         day: "2-digit",

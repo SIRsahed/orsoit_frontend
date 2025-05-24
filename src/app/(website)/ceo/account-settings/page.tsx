@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -45,26 +45,7 @@ export default function AccountPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
-  // Initialize user data from session
-  useEffect(() => {
-    if (session?.user) {
-      const nameParts = (session.user.name || "").split(" ");
-      setUserData({
-        firstName: nameParts[0] || "",
-        lastName: nameParts.slice(1).join(" ") || "",
-        email: session.user.email || "",
-        phoneNumber: "",
-        address: "",
-        about: "",
-        abator: session.user.image || "",
-      });
-
-      // Fetch additional user data from API
-      fetchUserData();
-    }
-  }, [session]);
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!session?.user?.id || !session?.user?.accessToken) return;
 
     try {
@@ -95,7 +76,24 @@ export default function AccountPage() {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-  };
+  }, [session, setUserData]);
+
+  useEffect(() => {
+    if (session?.user) {
+      const nameParts = (session.user.name || "").split(" ");
+      setUserData({
+        firstName: nameParts[0] || "",
+        lastName: nameParts.slice(1).join(" ") || "",
+        email: session.user.email || "",
+        phoneNumber: "",
+        address: "",
+        about: "",
+        abator: session.user.image || "",
+      });
+
+      fetchUserData();
+    }
+  }, [session, fetchUserData]);
 
   const handleAvatarClick = () => {
     if (isEditing && fileInputRef.current) {
@@ -120,6 +118,7 @@ export default function AccountPage() {
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!session?.user?.id || !session?.user?.accessToken) return;
 
     setLoading(true);
@@ -146,36 +145,26 @@ export default function AccountPage() {
         body: formData,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-
-        // Force a complete session refresh
-        const updatedSession = {
-          ...session,
-          user: {
-            ...session.user,
-            name: `${userData.firstName} ${userData.lastName}`,
-            image: data.abator || session.user.image,
-          },
-        };
-
-        // Update the session
-        await update(updatedSession);
-
-        // Broadcast the session update to all components
-        broadcastSessionUpdate(updatedSession);
-
-        toast.success("Your profile has been updated successfully.");
-
-        setIsEditing(false);
-        router.refresh();
-
-        // Reload the page to ensure session is refreshed
-        window.location.reload();
-      } else {
+      if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Failed to update profile");
       }
+
+      const data = await response.json();
+
+      // ✅ Safely update only allowed session fields
+      await update({
+        name: `${userData.firstName} ${userData.lastName}`,
+        image: data.abator || session.user.image,
+      });
+
+      // ✅ Broadcast session update for syncing across tabs or components
+      broadcastSessionUpdate();
+
+      toast.success("Your profile has been updated successfully.");
+      setIsEditing(false);
+      router.refresh(); // For server components
+      window.location.reload(); // Optional: force full sync across client
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error(

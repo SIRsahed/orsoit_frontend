@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -101,7 +101,7 @@ export default function AdminChatPage() {
   useEffect(() => {
     if (!adminId) return;
 
-    const socketInstance = io("http://localhost:5000");
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
 
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
@@ -274,11 +274,6 @@ export default function AdminChatPage() {
   }, [token, adminId]);
 
   // Fetch messages when a room is selected
-  useEffect(() => {
-    if (selectedRoom && token) {
-      fetchMessages(selectedRoom._id);
-    }
-  }, [selectedRoom, token]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -305,70 +300,77 @@ export default function AdminChatPage() {
   }, [searchQuery, rooms]);
 
   // Update the fetchMessages function to handle the new lastMessage format
-  const fetchMessages = async (roomId: string) => {
-    if (!token) return;
+  const fetchMessages = useCallback(
+    async (roomId: string) => {
+      if (!token) return;
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/receive-message?roomId=${roomId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/receive-message?roomId=${roomId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
-      const data = await response.json();
-      if (data.success) {
-        setMessages(data.data);
+        );
+        const data = await response.json();
 
-        // Update the last message for this room
-        if (data.data.length > 0) {
-          const lastMsg = data.data[data.data.length - 1];
+        if (data.success) {
+          setMessages(data.data);
 
-          setRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room._id === roomId
-                ? {
-                  ...room,
-                  lastMessage: {
-                    msg: lastMsg.message,
-                    sender: {
-                      _id: lastMsg.userId._id,
-                      firstName: lastMsg.userId.firstName,
-                    },
-                  },
-                  updatedAt: lastMsg.createdAt,
-                  unreadCount: 0,
-                }
-                : room,
-            ),
-          );
+          if (data.data.length > 0) {
+            const lastMsg = data.data[data.data.length - 1];
 
-          // Also update filtered rooms
-          setFilteredRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room._id === roomId
-                ? {
-                  ...room,
-                  lastMessage: {
-                    msg: lastMsg.message,
-                    sender: {
-                      _id: lastMsg.userId._id,
-                      firstName: lastMsg.userId.firstName,
-                    },
-                  },
-                  updatedAt: lastMsg.createdAt,
-                  unreadCount: 0,
-                }
-                : room,
-            ),
-          );
+            setRooms((prevRooms) =>
+              prevRooms.map((room) =>
+                room._id === roomId
+                  ? {
+                      ...room,
+                      lastMessage: {
+                        msg: lastMsg.message,
+                        sender: {
+                          _id: lastMsg.userId._id,
+                          firstName: lastMsg.userId.firstName,
+                        },
+                      },
+                      updatedAt: lastMsg.createdAt,
+                      unreadCount: 0,
+                    }
+                  : room,
+              ),
+            );
+
+            setFilteredRooms((prevRooms) =>
+              prevRooms.map((room) =>
+                room._id === roomId
+                  ? {
+                      ...room,
+                      lastMessage: {
+                        msg: lastMsg.message,
+                        sender: {
+                          _id: lastMsg.userId._id,
+                          firstName: lastMsg.userId.firstName,
+                        },
+                      },
+                      updatedAt: lastMsg.createdAt,
+                      unreadCount: 0,
+                    }
+                  : room,
+              ),
+            );
+          }
         }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
       }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
+    },
+    [token, setMessages, setRooms, setFilteredRooms],
+  );
+  useEffect(() => {
+    if (selectedRoom && token) {
+      fetchMessages(selectedRoom._id);
     }
-  };
+  }, [selectedRoom, token, fetchMessages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -464,17 +466,17 @@ export default function AdminChatPage() {
           searchQuery.trim() === ""
             ? updatedRooms
             : updatedRooms.filter(
-              (room) =>
-                room.roomName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                room.userId?.firstName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                room.userId?.lastName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()),
-            ),
+                (room) =>
+                  room.roomName
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                  room.userId?.firstName
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                  room.userId?.lastName
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()),
+              ),
         );
         setSelectedRoom(null);
         setSidebarOpen(false);
@@ -559,10 +561,11 @@ export default function AdminChatPage() {
                   {filteredRooms.map((room) => (
                     <Card
                       key={room._id}
-                      className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
+                      className={`cursor-pointer transition-colors ${
+                        selectedRoom?._id === room._id
                           ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
                           : "bg-[#151515] !text-white hover:bg-[#252525]"
-                        }`}
+                      }`}
                       onClick={() => {
                         setSelectedRoom(room);
                         setSidebarOpen(false);
@@ -798,10 +801,11 @@ export default function AdminChatPage() {
                             </span>
                           </div>
                           <div
-                            className={`mt-1 rounded-lg p-3 ${isCurrentUser
+                            className={`mt-1 rounded-lg p-3 ${
+                              isCurrentUser
                                 ? "rounded-tr-none bg-red-900 text-white"
                                 : "rounded-tl-none bg-zinc-800 text-white"
-                              }`}
+                            }`}
                           >
                             <p>{message.message}</p>
                             {message.attachmentFile && (
@@ -812,6 +816,7 @@ export default function AdminChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={
                                       message.attachmentFile ||
@@ -904,7 +909,7 @@ export default function AdminChatPage() {
       </div>
 
       {/* Right sidebar - Room list (desktop only) */}
-      <div className="flex hidden w-80 flex-col border-l border-zinc-800 md:flex">
+      <div className="hidden w-80 flex-col border-l border-zinc-800 md:flex">
         <div className="border-b border-zinc-800 p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
@@ -921,10 +926,11 @@ export default function AdminChatPage() {
             {filteredRooms.map((room) => (
               <Card
                 key={room._id}
-                className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
+                className={`cursor-pointer transition-colors ${
+                  selectedRoom?._id === room._id
                     ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
                     : "bg-[#151515] !text-white hover:bg-[#252525]"
-                  }`}
+                }`}
                 onClick={() => setSelectedRoom(room)}
               >
                 {/* Update the room list rendering in the desktop view */}

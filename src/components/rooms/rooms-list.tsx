@@ -62,7 +62,7 @@ export default function RoomPage() {
       joinRoom(roomId as string);
 
       // Listen for new messages
-      socket?.on("receiveMessage", (newMessage) => {
+      socket?.on("receiveMessage", (/* newMessage */) => {
         queryClient.invalidateQueries({ queryKey: ["messages", roomId] });
       });
 

@@ -37,7 +37,9 @@ interface User {
   abator?: string;
   password?: string;
   emailVerified?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions?: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coupons?: any[];
   createdAt: string;
   updatedAt: string;
@@ -99,7 +101,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (!userId) return;
 
-    const socketInstance = io("http://localhost:5000");
+    const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
 
     socketInstance.on("connect", () => {
       console.log("Socket connected:", socketInstance.id);
@@ -198,10 +200,10 @@ export default function ChatPage() {
     });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!socket) return;
 
-    // Now we can directly use the message with full user object
     socket.on("receiveMessage", handleReceiveMessage);
 
     return () => {
@@ -761,6 +763,7 @@ export default function ChatPage() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={
                                       message.attachmentFile ||
@@ -853,7 +856,7 @@ export default function ChatPage() {
       </div>
 
       {/* Right sidebar - Room list (desktop only) */}
-      <div className="flex hidden w-80 flex-col border-l border-zinc-800 md:flex">
+      <div className="hidden w-80 flex-col border-l border-zinc-800 md:flex">
         <div className="border-b border-zinc-800 p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
@@ -911,7 +914,7 @@ export default function ChatPage() {
                   </div>
                   {room.unreadCount && room.unreadCount > 0 && (
                     <Badge className="absolute bottom-3 right-3 bg-red-600 text-white">
-                      {room.unreadCount}
+                      {room.unreadCount == 0 ? "" : room.unreadCount}
                     </Badge>
                   )}
                 </CardContent>

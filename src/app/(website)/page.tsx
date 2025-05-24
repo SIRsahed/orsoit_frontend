@@ -1,7 +1,6 @@
 import React from "react";
 import Hero from "./_components/hero";
 import { ServicesGrid } from "./_components/services-grid";
-import BlogsSection from "./_components/blogs-section";
 import ContactSection from "./_components/contact-section";
 import AboutUsSection from "./_components/aboutUs-section";
 
@@ -11,7 +10,7 @@ const page = () => {
       <Hero />
       <ServicesGrid />
       <AboutUsSection />
-      <BlogsSection />
+      {/* <BlogsSection /> */}
       <ContactSection />
     </>
   );

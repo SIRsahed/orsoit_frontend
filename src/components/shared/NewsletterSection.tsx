@@ -126,7 +126,7 @@ const NewsletterSection = () => {
 
       setEmail("");
     } catch (error) {
-      toast.error("Failed to subscribe. Please try again later.");
+      toast.error("Failed to subscribe. Please try again later." + error);
     } finally {
       setIsLoading(false);
     }

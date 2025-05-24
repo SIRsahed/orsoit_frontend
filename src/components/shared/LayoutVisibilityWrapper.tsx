@@ -11,6 +11,7 @@ const HIDDEN_ROUTES = [
   "/sales",
   "/customer-dashboard",
   "/admin",
+  "/auth"
 ];
 
 export default function LayoutVisibilityWrapper({

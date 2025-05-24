@@ -1,6 +1,5 @@
 import ConversionChart from "@/components/dashboard/conversion-chart";
 import DashboardStats from "@/components/dashboard/dashboard-stats";
-import RecentSubscriptions from "@/components/dashboard/recent-subscriptions";
 import RevenueChart from "@/components/dashboard/revenue-chart";
 import React from "react";
 
@@ -15,7 +14,7 @@ export default function page() {
           <ConversionChart />
         </div>
 
-        <RecentSubscriptions />
+        {/* <RecentSubscriptions /> */}
       </main>
     </div>
   );
