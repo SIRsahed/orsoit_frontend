@@ -1,8 +1,51 @@
+"use client";
+
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
+interface Service {
+  _id: string;
+  image: string;
+  name: string;
+  description: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+interface ApiResponse {
+  success: boolean;
+  data: Service[];
+}
 
 export default function Footer() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/default-services`,
+        );
+        const result: ApiResponse = await response.json();
+
+        if (result.success) {
+          // Limit to 5 services
+          setServices(result.data.slice(0, 5));
+        }
+      } catch (error) {
+        console.error("Failed to fetch services:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
   return (
     <footer className="bg-black text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -49,13 +92,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-red-400">
-                  Privacy Policy
+                <Link href="/service" className="hover:text-red-400">
+                  Services
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-red-400">
-                  Terms & Condition
+                <Link href="/contact-us" className="hover:text-red-400">
+                  Contact Us
                 </Link>
               </li>
             </ul>
@@ -63,33 +106,29 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-4 text-lg font-semibold">Service</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/security" className="hover:text-red-400">
-                  Network Security
-                </Link>
-              </li>
-              <li>
-                <Link href="/cloud" className="hover:text-red-400">
-                  Cloud Infrastructure
-                </Link>
-              </li>
-              <li>
-                <Link href="/data" className="hover:text-red-400">
-                  Data Security
-                </Link>
-              </li>
-              <li>
-                <Link href="/vpn" className="hover:text-red-400">
-                  Virtual Private Network
-                </Link>
-              </li>
-              <li>
-                <Link href="/testing" className="hover:text-red-400">
-                  Penetration Testing
-                </Link>
-              </li>
-            </ul>
+            {loading ? (
+              <div className="space-y-2">
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="h-4 animate-pulse rounded bg-gray-700"
+                  ></div>
+                ))}
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {services.map((service) => (
+                  <li key={service._id}>
+                    <Link
+                      href={`/service/${service._id}`}
+                      className="hover:text-red-400"
+                    >
+                      {service.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div>
