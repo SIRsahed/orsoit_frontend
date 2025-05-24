@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronDown, LogOut } from "lucide-react";
+import { Bell, ChevronDown, User, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { LogoutDialog } from "./logout-dialog";
 
 export default function DashboardHeader() {
   const { data: session } = useSession();
@@ -62,7 +65,7 @@ export default function DashboardHeader() {
     }
   }, [session]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Listen for profile update events
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleStorageChange = (event: any) => {
@@ -94,14 +97,16 @@ export default function DashboardHeader() {
     );
   };
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   return (
     <header className="flex w-full items-center justify-between border-b border-[#222] bg-[#1A0A0A] bg-[#843E3E54] p-4 shadow-[0_4px_12px_0px_#EC747973] backdrop-blur-xl">
       <h1 className="text-xl font-bold">Dashboard</h1>
 
       <div className="flex items-center gap-4">
-        {/* <Button variant="ghost" size="icon" className="text-white">
+        <Button variant="ghost" size="icon" className="text-white">
           <Bell className="h-5 w-5" />
-        </Button> */}
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -125,6 +130,9 @@ export default function DashboardHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="flex items-center justify-start gap-2 p-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                <User className="h-4 w-4 text-red-700" />
+              </div>
               <div className="flex flex-col space-y-1 text-left">
                 <p className="text-sm font-medium leading-none">
                   {getFullName()}
@@ -134,20 +142,29 @@ export default function DashboardHeader() {
                 </p>
               </div>
             </div>
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/account-settings" className="w-full">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Account Settings</span>
-              </Link>
-            </DropdownMenuItem> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
-              onClick={() => signOut()}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
+            <DropdownMenuItem asChild>
+              {userData?.userType === "admin" ? (
+                <Link href="/admin/dashboard">Dashboard</Link>
+              ) : userData?.userType === "ceo" ? (
+                <Link href="/ceo/dashboard">Dashboard</Link>
+              ) : (
+                <Link href="/account">Dashboard</Link>
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
+              <Button
+                onClick={() => setDialogOpen(true)}
+                className="w-full justify-start bg-neutral-800"
+              >
+                <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
+                Logout
+              </Button>
+              <LogoutDialog
+                isOpen={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

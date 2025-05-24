@@ -111,7 +111,7 @@ export default function AddServiceDialog() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plan Name</FormLabel>
+                  <FormLabel>Service Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter plan Name"

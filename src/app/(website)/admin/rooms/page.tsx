@@ -466,17 +466,17 @@ export default function AdminChatPage() {
           searchQuery.trim() === ""
             ? updatedRooms
             : updatedRooms.filter(
-                (room) =>
-                  room.roomName
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) ||
-                  room.userId?.firstName
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()) ||
-                  room.userId?.lastName
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()),
-              ),
+              (room) =>
+                room.roomName
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                room.userId?.firstName
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                room.userId?.lastName
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()),
+            ),
         );
         setSelectedRoom(null);
         setSidebarOpen(false);
@@ -561,11 +561,10 @@ export default function AdminChatPage() {
                   {filteredRooms.map((room) => (
                     <Card
                       key={room._id}
-                      className={`cursor-pointer transition-colors ${
-                        selectedRoom?._id === room._id
+                      className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
                           ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
                           : "bg-[#151515] !text-white hover:bg-[#252525]"
-                      }`}
+                        }`}
                       onClick={() => {
                         setSelectedRoom(room);
                         setSidebarOpen(false);
@@ -801,11 +800,10 @@ export default function AdminChatPage() {
                             </span>
                           </div>
                           <div
-                            className={`mt-1 rounded-lg p-3 ${
-                              isCurrentUser
+                            className={`mt-1 rounded-lg p-3 ${isCurrentUser
                                 ? "rounded-tr-none bg-red-900 text-white"
                                 : "rounded-tl-none bg-zinc-800 text-white"
-                            }`}
+                              }`}
                           >
                             <p>{message.message}</p>
                             {message.attachmentFile && (
@@ -926,11 +924,10 @@ export default function AdminChatPage() {
             {filteredRooms.map((room) => (
               <Card
                 key={room._id}
-                className={`cursor-pointer transition-colors ${
-                  selectedRoom?._id === room._id
+                className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
                     ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
                     : "bg-[#151515] !text-white hover:bg-[#252525]"
-                }`}
+                  }`}
                 onClick={() => setSelectedRoom(room)}
               >
                 {/* Update the room list rendering in the desktop view */}

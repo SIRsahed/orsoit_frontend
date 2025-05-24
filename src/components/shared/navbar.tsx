@@ -15,7 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
+import { LogoutDialog } from "./logout-dialog";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -108,6 +109,7 @@ export default function Navbar() {
     return `${firstInitial}${lastInitial}`;
   };
 
+
   // Get full name
   const getFullName = () => {
     return (
@@ -116,6 +118,9 @@ export default function Navbar() {
       "User"
     );
   };
+
+  const [dialogOpen, setDialogOpen] = useState(false)
+
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -139,9 +144,8 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors hover:text-red-400 ${
-                  isActive(link.href) ? "text-red-500" : "text-white"
-                }`}
+                className={`transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -167,9 +171,8 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`text-lg font-medium transition-colors hover:text-red-400 ${
-                        isActive(link.href) ? "text-red-500" : "text-white"
-                      }`}
+                      className={`text-lg font-medium transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                        }`}
                       onClick={() => setOpen(false)}
                     >
                       {link.label}
@@ -187,20 +190,38 @@ export default function Navbar() {
                     </Button>
                   ) : (
                     <div className="mt-4 space-y-2">
-                      <Link
-                        href="/dashboard"
-                        className="block text-lg font-medium text-white hover:text-red-400"
-                        onClick={() => setOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
+                      {
+                        userData.userType === "ceo" ? (
+                          <Link href="/ceo/dashboard" className="flex items-center">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </Link>
+                        )
+                          :
+                          userData.userType === "admin" ? (
+                            <Link href="/admin/dashboard" className="flex items-center">
+                              <User className="mr-2 h-4 w-4" />
+                              <span>Dashboard</span>
+                            </Link>
+                          )
+                            : (
+                              <Link href="/account" className="flex items-center">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>Dashboard</span>
+                              </Link>
+                            )
+                      }
                       <Button
-                        variant="outline"
-                        className="w-full border-red-500 text-white hover:bg-red-800 hover:text-white"
-                        onClick={() => signOut()}
+                        onClick={() => setDialogOpen(true)}
+                        className="w-full justify-start bg-transparent px-0 !mt-4"
                       >
+                        <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                         Logout
                       </Button>
+                      <LogoutDialog
+                        isOpen={dialogOpen}
+                        onClose={() => setDialogOpen(false)}
+                      />
                     </div>
                   )}
                 </div>
@@ -254,17 +275,43 @@ export default function Navbar() {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
-                      Dashboard
-                    </Link>
+                    {
+                      userData.userType === "ceo" ? (
+                        <Link href="/ceo/dashboard">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </Link>
+                      )
+                        :
+                        userData.userType === "admin" ? (
+                          <Link href="/admin/dashboard">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </Link>
+                        )
+                          : (
+                            <Link href="/account">
+                              <User className="mr-2 h-4 w-4" />
+                              <span>Dashboard</span>
+                            </Link>
+                          )
+                    }
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600"
-                    onClick={() => signOut()}
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
+                    <Button
+                      onClick={() => setDialogOpen(true)}
+                      className="w-full justify-start bg-neutral-800"
+                    >
+                      <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
+                      Logout
+                    </Button>
+                    <LogoutDialog
+                      isOpen={dialogOpen}
+                      onClose={() => setDialogOpen(false)}
+                    />
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

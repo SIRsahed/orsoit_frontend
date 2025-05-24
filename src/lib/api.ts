@@ -262,6 +262,18 @@ export async function deleteSubscriptionPlan(id: string) {
   }
 }
 
+
+export async function fetchUserSubscriptions(userId: string) {
+  try {
+    const response = await api.get(`user/subscription-plan/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch user subscriptions",
+    );
+  }
+}
+
 // Payment API
 export async function fetchPayments(page = 1, limit = 10) {
   try {
