@@ -266,7 +266,7 @@ export default function CreateCouponDialog({
                           if (date) setActiveFromOpen(false);
                         }}
                         initialFocus
-                        className="bg-[#1A1A1A]"
+                        className="pointer-events-auto bg-[#1A1A1A] text-white"
                       />
                     </PopoverContent>
                   </Popover>
@@ -315,7 +315,7 @@ export default function CreateCouponDialog({
                           date < new Date(form.getValues("activeFrom"))
                         }
                         initialFocus
-                        className="relative z-[99999] bg-[#1A1A1A]"
+                        className="pointer-events-auto bg-[#1A1A1A] text-white"
                       />
                     </PopoverContent>
                   </Popover>

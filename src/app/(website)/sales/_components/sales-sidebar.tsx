@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, LogOut, PackagePlus } from "lucide-react";
+import { LayoutDashboard, PackagePlus } from "lucide-react";
 
 import {
   Sidebar,
@@ -24,15 +24,13 @@ export function SalesSidebar() {
       icon: LayoutDashboard,
     },
     { href: "/sales/coupon", label: "Coupons", icon: PackagePlus },
-
-    { href: "/sales/logout", label: "Log out", icon: LogOut },
   ];
 
   return (
     <Sidebar className="w-[270px] border-none">
       <SidebarHeader className="flex justify-center bg-black p-6">
         <Link
-          href="/ceo/dashboard"
+          href="/sales/dashboard"
           className="flex flex-col items-center gap-1"
         >
           <Image

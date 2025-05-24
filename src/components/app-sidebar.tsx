@@ -11,8 +11,7 @@ import {
   WrenchIcon as WrenchScrewdriver,
   CreditCard,
   Ticket,
-  Settings,
-  LogOut,
+  Settings
 } from "lucide-react";
 
 import {
@@ -56,7 +55,6 @@ export function AppSidebar() {
       label: "Account settings",
       icon: Settings,
     },
-    { href: "/ceo/logout", label: "Log out", icon: LogOut },
   ];
 
   return (

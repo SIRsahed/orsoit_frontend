@@ -280,7 +280,7 @@ export default function EditCouponDialog({
                           if (date) setActiveFromOpen(false);
                         }}
                         initialFocus
-                        className="bg-[#1A1A1A]"
+                        className="pointer-events-auto bg-[#1A1A1A] text-white"
                       />
                     </PopoverContent>
                   </Popover>
@@ -329,7 +329,7 @@ export default function EditCouponDialog({
                           date < new Date(form.getValues("activeFrom"))
                         }
                         initialFocus
-                        className="bg-[#1A1A1A]"
+                        className="pointer-events-auto bg-[#1A1A1A] text-white"
                       />
                     </PopoverContent>
                   </Popover>

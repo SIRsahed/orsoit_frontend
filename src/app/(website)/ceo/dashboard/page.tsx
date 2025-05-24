@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import DashboardStats from "@/components/dashboard/dashboard-stats";
 import RevenueChart from "@/components/dashboard/revenue-chart";
 import ConversionChart from "@/components/dashboard/conversion-chart";
-import RecentSubscriptions from "@/components/dashboard/recent-subscriptions";
 
 export const metadata: Metadata = {
   title: "Dashboard | Orso Solutions",
@@ -20,7 +19,7 @@ export default function DashboardPage() {
           <ConversionChart />
         </div>
 
-        <RecentSubscriptions />
+        {/* <RecentSubscriptions /> */}
       </main>
     </div>
   );
