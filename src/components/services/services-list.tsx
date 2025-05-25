@@ -83,7 +83,7 @@ export default function ServicesList() {
                   alt={service.name}
                   height={1000}
                   width={1000}
-                  className="w-[300px] aspect-[5/3] object-cover"
+                  className="w-[300px] aspect-[5/3] object-contain"
                 />
               </div>
               <h3 className="mb-4 text-center text-xl font-bold">
