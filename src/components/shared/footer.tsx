@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -62,7 +61,7 @@ export default function Footer() {
               At Orso, we are dedicated to protecting your business in the
               ever-evolving digital landscape.
             </p>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <Link href="#" className="bg-red-600 p-2 hover:bg-red-700">
                 <Facebook className="h-5 w-5" />
               </Link>
@@ -75,7 +74,7 @@ export default function Footer() {
               <Link href="#" className="bg-red-600 p-2 hover:bg-red-700">
                 <Twitter className="h-5 w-5" />
               </Link>
-            </div>
+            </div> */}
           </div>
 
           <div>

@@ -25,10 +25,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
 
 export default function TicketsList() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [entriesPerPage, setEntriesPerPage] = useState("10");
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +67,7 @@ export default function TicketsList() {
     onSuccess: (data) => {
       toast.success("Room created successfully");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
-      router.push(`/rooms/${data.data._id}`);
+      console.log(data)
     },
     onError: () => {
       toast.error("Failed to create room");

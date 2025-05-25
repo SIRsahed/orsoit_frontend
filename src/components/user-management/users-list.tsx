@@ -40,9 +40,9 @@ interface User {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions: any[];
   updatedAt: string;
-  userType: "customer" | string; //  if there are other possible values
+  userType: "customer" | string; 
   _id: string;
-  __v: number; //  Consider if this is always present
+  __v: number; 
 }
 
 export const updateUserType = async (userId: string, userType: string) => {
@@ -241,6 +241,8 @@ export default function UsersList() {
                             <SelectItem value="ceo">Ceo</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="sales">Sales</SelectItem>
+
                           </SelectContent>
                         </Select>
                       </td>
