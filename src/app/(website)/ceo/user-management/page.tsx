@@ -11,7 +11,7 @@ export default function UserManagementPage() {
     <div className="flex min-h-screen flex-col">
       <main className="flex-1 p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Support</h2>
+          <h2 className="text-2xl font-bold">User management</h2>
         </div>
 
         <UsersList />
