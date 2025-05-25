@@ -108,7 +108,7 @@ export function TicketsList() {
               key={ticket._id}
               className="border-t border-neutral-800 hover:bg-neutral-900/50"
             >
-              <TableCell className="text-white capitalize truncate">{ticket.issueDetails}</TableCell>
+              <TableCell className="text-white capitalize truncate max-w-[300px]">{ticket.issueDetails}</TableCell>
               <TableCell className="text-white">
                 {new Date(ticket.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -126,7 +126,7 @@ export function TicketsList() {
               <TableCell>
                 <Button
                   onClick={() => handleOpenDialog(ticket)}
-                  className="bg-transparent text-[#c23636] hover:bg-transparent cursor-pointer">
+                  className="bg-transparent pl-0 text-[#c23636] hover:bg-transparent cursor-pointer">
                   View Details
                 </Button>
                 <TicketDetailsDialog

@@ -204,11 +204,18 @@ export default function Navbar() {
                           <User className="mr-2 h-4 w-4" />
                           <span>Dashboard</span>
                         </Link>
-                      ) : (
-                        <Link href="/account" className="flex items-center">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Dashboard</span>
-                        </Link>
+                      ) : userData.userType === "sales" ? (
+                          <Link href="/sales" className="flex items-center">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </Link>
+                        )
+                        :
+                      (
+                      <Link href="/account" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
                       )}
                       <Button
                         onClick={() => setDialogOpen(true)}
