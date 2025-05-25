@@ -10,14 +10,14 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/verify", "/auth/forgot-password"];
+  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/verify-email", "/auth/forgot-password"];
   const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const isStatic = pathname.startsWith("/_next") || pathname.includes(".");
 
   // Redirect unauthenticated users trying to access protected routes
   if (!token && !isPublicRoute && !isStatic) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
 
