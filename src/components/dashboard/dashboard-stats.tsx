@@ -47,7 +47,7 @@ export default function DashboardStats() {
     },
   ];
 
-  console.log(revenue?.data);
+  console.log(revenue);
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
