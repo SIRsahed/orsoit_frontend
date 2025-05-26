@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -21,10 +20,22 @@ const formSchema = z.object({
     features: z.array(z.string()).min(1, "At least one feature is required"),
 })
 
-export default function AddSubscriptionDialog({ serviceId }: { serviceId: string }) {
-    const [open, setOpen] = useState(false)
+export default function AddSubscriptionDialog({
+    serviceId,
+    open,
+    onOpenChange,
+}: {
+    serviceId: string
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+}) {
+    const [internalOpen, setInternalOpen] = useState(false)
     const queryClient = useQueryClient()
-    const [featuresText, setFeaturesText] = useState(",")
+    const [featuresText, setFeaturesText] = useState("")
+
+    // Use external open state if provided, otherwise use internal state
+    const isOpen = open !== undefined ? open : internalOpen
+    const setIsOpen = onOpenChange || setInternalOpen
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -39,22 +50,21 @@ export default function AddSubscriptionDialog({ serviceId }: { serviceId: string
     const mutation = useMutation({
         mutationFn: (values: z.infer<typeof formSchema>) => createSubscriptionPlan(values),
         onSuccess: async (data) => {
-
-            await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/subscription-info`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ subscriptionPlanId: [data?.data?._id], services: [{ serviceId }] }),
-                }
-            ).then((res) => console.log(res.json()))
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription-info`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ subscriptionPlanId: [data?.data?._id], services: [{ serviceId }] }),
+            }).then((res) => console.log(res.json()))
 
             queryClient.invalidateQueries({ queryKey: ["subscriptions"] })
             toast.success("Subscription added successfully")
 
-            setOpen(false)
+            setIsOpen(false)
+            // Reset form
+            form.reset()
+            setFeaturesText("")
         },
         onError: (error) => {
             toast.error("Failed to add subscription")
@@ -62,17 +72,20 @@ export default function AddSubscriptionDialog({ serviceId }: { serviceId: string
         },
     })
 
-
-
     function onSubmit(values: z.infer<typeof formSchema>) {
         mutation.mutate(values)
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="bg-red-600 hover:bg-red-700">Add Plan <Plus /></Button>
-            </DialogTrigger>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            {open === undefined && (
+                <DialogTrigger asChild>
+                    <Button className="bg-red-600 hover:bg-red-700 w-full justify-start text-left font-normal">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Plan
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="border-[#222] bg-[#1A1A1A] text-white w-full max-w-md md:max-w-lg">
                 <DialogHeader>
                     <DialogTitle>Add Plan</DialogTitle>
@@ -105,7 +118,7 @@ export default function AddSubscriptionDialog({ serviceId }: { serviceId: string
                                             placeholder="Enter plan price"
                                             className="border-[#333] bg-[#0F0F0F]"
                                             onChange={(e) => {
-                                                onChange(e.target.valueAsNumber || 0)
+                                                onChange(e.target.valueAsNumber)
                                             }}
                                             {...rest}
                                         />
@@ -169,7 +182,11 @@ export default function AddSubscriptionDialog({ serviceId }: { serviceId: string
                                 type="button"
                                 variant="outline"
                                 className="border-[#333] bg-transparent w-full sm:w-auto"
-                                onClick={() => setOpen(false)}
+                                onClick={() => {
+                                    setIsOpen(false)
+                                    form.reset()
+                                    setFeaturesText("")
+                                }}
                             >
                                 Cancel
                             </Button>
