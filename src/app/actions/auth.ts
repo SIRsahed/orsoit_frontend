@@ -1,7 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function registerUser(userData: {
@@ -64,15 +62,7 @@ export async function loginUser(credentials: {
       };
     }
 
-    // Store token in cookie
-    const cookieStore = cookies();
-    cookieStore.set("auth_token", data.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
-
+    // Don't set cookies manually - let NextAuth handle this
     return {
       success: true,
       data: data.user,
@@ -86,6 +76,8 @@ export async function loginUser(credentials: {
     };
   }
 }
+
+// ... rest of your functions remain the same
 
 export async function verifyEmail(verificationData: {
   code: string;
@@ -189,10 +181,9 @@ export async function resetPassword(resetData: {
   }
 }
 
+// Update logout to use NextAuth signOut
 export async function logout() {
-  const cookieStore = cookies();
-  cookieStore.delete("auth_token");
-
+  // This should be handled by NextAuth signOut on the client side
   return {
     success: true,
     message: "Logged out successfully",
