@@ -6,11 +6,42 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchUsers, fetchRevenue } from "@/lib/api";
 
+const fetchConversionData = async () => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/conversion-ratio`,
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch conversion data");
+  }
+  const data = await response.json();
+  return data.data;
+};
+type ConversionEntry = {
+  month: string;
+  registered: number;
+  subscribed: number;
+};
+
 export default function DashboardStats() {
   const { data: users, isLoading: isLoadingUsers } = useQuery({
     queryKey: ["users"],
     queryFn: () => fetchUsers(),
   });
+
+  const { data: conversionData } = useQuery({
+    queryKey: ["conversionData"],
+    queryFn: fetchConversionData,
+  });
+
+  let latestSubscribed = 0;
+
+  if (conversionData?.length) {
+    const latest = conversionData?.reduce(
+      (latest: ConversionEntry, item: ConversionEntry) =>
+        item.month > latest.month ? item : latest,
+    );
+    latestSubscribed = latest.subscribed;
+  }
 
   interface Revenue {
     month: string;
@@ -21,11 +52,13 @@ export default function DashboardStats() {
     queryKey: ["revenue"],
     queryFn: () => fetchRevenue("monthly"),
   });
+
   const totalRevenue =
     revenue?.data?.reduce(
       (sum: number, item: Revenue) => sum + item.value,
       0,
     ) ?? 0;
+
   const stats = [
     {
       title: "Total Users",
@@ -34,8 +67,8 @@ export default function DashboardStats() {
       color: "bg-red-600",
     },
     {
-      title: "Total Orders",
-      value: "40,225",
+      title: "Monthly Subscribers",
+      value: latestSubscribed,
       icon: ShoppingCart,
       color: "bg-red-600",
     },
@@ -46,8 +79,6 @@ export default function DashboardStats() {
       color: "bg-red-600",
     },
   ];
-
-  console.log(revenue?.data);
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-3">
