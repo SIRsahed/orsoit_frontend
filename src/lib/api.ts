@@ -485,6 +485,20 @@ export async function deleteCustomService(id: string) {
   }
 }
 
+
+export async function fetchUserCustomServices(userId: string) {
+  try {
+    const response = await api.get(`/custom-service/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch user custom services",
+    );
+  }
+}
+
+
+
 export async function fetchUserById(userId: string) {
   try {
     const response = await api.get(`/single/user/${userId}`);

@@ -8,10 +8,19 @@ import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function SubscriptionPlan() {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
 
   const { data: userSubscriptions } = useQuery({
     queryKey: ["userSubscriptions"],
@@ -122,11 +131,41 @@ export function SubscriptionPlan() {
                   <TableCell className="text-white md:text-sm text-xs">{plan?.subscriptionPlanId[0]?.price}</TableCell>
                   <TableCell>
                     <button
-                      onClick={() => handleUnsubscribe(plan._id)}
+                      onClick={() => setShowConfirmation(true)}
                       className="md:text-[16px] text-sm text-[#D80100] hover:text-[#D80100]/80"
                     >
                       Unsubscribe
                     </button>
+                    <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+                      <DialogContent className="border-[#222] bg-[#1A1A1A] text-white sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Confirm Unsubscription</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4">
+                          <p>
+                            Are you sure you want to unsubscribe from this plan?
+                          </p>
+                          <p className="mt-2 text-sm text-gray-400">
+                            This action cannot be undone. Please confirm your decision.
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-end gap-2 sm:flex-row">
+                          <Button
+                            variant="outline"
+                            className="w-full border-[#333] bg-[#0F0F0F] sm:w-auto"
+                            onClick={() => setShowConfirmation(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            className="w-full bg-red-600 hover:bg-red-700 sm:w-auto"
+                            onClick={() => handleUnsubscribe(plan._id)}
+                          >
+                            Unsubscribe
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}
@@ -183,13 +222,43 @@ export function SubscriptionPlan() {
 
               <div className="pt-2 border-t border-neutral-800">
                 <Button
-                  onClick={() => handleUnsubscribe(plan._id)}
+                  onClick={() => setShowConfirmation(true)}
                   variant="ghost"
                   size="sm"
                   className="w-full text-[#D80100] hover:text-[#D80100]/80 hover:bg-neutral-800"
                 >
                   Unsubscribe
                 </Button>
+                <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+                  <DialogContent className="border-[#222] bg-[#1A1A1A] text-white sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Confirm Unsubscription</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <p>
+                        Are you sure you want to unsubscribe from this plan?
+                      </p>
+                      <p className="mt-2 text-sm text-gray-400">
+                        This action cannot be undone. Please confirm your decision.
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-end gap-2 sm:flex-row">
+                      <Button
+                        variant="outline"
+                        className="w-full border-[#333] bg-[#0F0F0F] sm:w-auto"
+                        onClick={() => setShowConfirmation(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="w-full bg-red-600 hover:bg-red-700 sm:w-auto"
+                        onClick={() => handleUnsubscribe(plan._id)}
+                      >
+                        Unsubscribe
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardContent>
           </Card>

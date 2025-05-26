@@ -158,12 +158,12 @@ export default function VerifyOTPPage() {
       if (response.ok && data.success) {
         toast.success("A new OTP has been sent to your email");
       } else {
-        toast.error(data.message || "Failed to resend OTP");
+        toast.error(data.message || "Failed to resend link");
         setResendDisabled(false);
       }
     } catch (error) {
-      toast.error("Failed to resend OTP");
-      console.error("Resend OTP error:", error);
+      toast.error("Failed to resend link");
+      console.error("Resend link error:", error);
       setResendDisabled(false);
     }
   };

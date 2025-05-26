@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Cog, Home, LogOut, Bell, CreditCard, Ticket, Menu } from "lucide-react"
+import { Cog, Home, LogOut, Bell, CreditCard, Ticket, Menu, WrenchIcon } from "lucide-react"
 import { LogoutDialog } from "@/components/shared/logout-dialog"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -24,6 +24,11 @@ const navigation = [
     name: "Tickets",
     href: "/account/tickets",
     icon: Ticket,
+  },
+  {
+    name: "Custom Services",
+    href: "/account/custom-services",
+    icon: WrenchIcon,
   },
   {
     name: "Notifications",
