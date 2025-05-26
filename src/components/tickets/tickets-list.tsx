@@ -1,92 +1,108 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { Search, Download, Eye, FileText, ImageIcon, File } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { fetchTickets, fetchAdminUsers, assignTicket, createRoom } from "@/lib/api"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Search, Download, Eye, FileText, ImageIcon, File } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  fetchTickets,
+  fetchAdminUsers,
+  assignTicket,
+  createRoom,
+} from "@/lib/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default function TicketsList() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [entriesPerPage, setEntriesPerPage] = useState("10")
-  const [currentPage, setCurrentPage] = useState(1)
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [entriesPerPage, setEntriesPerPage] = useState("10");
+  const [currentPage, setCurrentPage] = useState(1);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [viewTicket, setViewTicket] = useState<any>(null)
-  const [selectedAdmin, setSelectedAdmin] = useState("")
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [viewTicket, setViewTicket] = useState<any>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const { data: tickets, isLoading } = useQuery({
     queryKey: ["tickets", currentPage, entriesPerPage],
     queryFn: () => fetchTickets(currentPage, Number.parseInt(entriesPerPage)),
-  })
+  });
 
   const { data: admins } = useQuery({
     queryKey: ["admins"],
     queryFn: fetchAdminUsers,
-  })
+  });
 
   const assignMutation = useMutation({
     mutationFn: ({
       ticketId,
       adminId,
     }: {
-      ticketId: string
-      adminId: string
+      ticketId: string;
+      adminId: string;
     }) => assignTicket(ticketId, adminId),
     onSuccess: () => {
-      toast.success("Admin assigned successfully")
-      queryClient.invalidateQueries({ queryKey: ["tickets"] })
-    }
-  })
+      toast.success("Admin assigned successfully");
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
 
   const createRoomMutation = useMutation({
     mutationFn: createRoom,
     onSuccess: () => {
-      toast.success("Room created successfully")
-      queryClient.invalidateQueries({ queryKey: ["rooms"] })
-      router.push(`/ceo/rooms`)
-    }
-  })
+      toast.success("Room created successfully");
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      router.push(`/ceo/rooms`);
+    },
+  });
 
   const handleAssignAdmin = () => {
     if (!selectedAdmin || !viewTicket) {
-      toast.error("Please select an admin")
-      return
+      toast.error("Please select an admin");
+      return;
     }
 
-    setShowConfirmation(true)
-  }
+    setShowConfirmation(true);
+  };
 
   const confirmAssignment = () => {
-    setShowConfirmation(false)
+    setShowConfirmation(false);
 
     assignMutation.mutate({
       ticketId: viewTicket._id,
       adminId: selectedAdmin,
-    })
+    });
 
     // Create a room after assigning admin
     createRoomMutation.mutate({
       userId: viewTicket.userId,
       adminId: selectedAdmin,
       ticketId: viewTicket._id,
-    })
-  }
+    });
+  };
 
   // File handling functions
   const getFileIcon = (fileName: string) => {
-    if (!fileName) return <File className="h-4 w-4" />
+    if (!fileName) return <File className="h-4 w-4" />;
 
-    const extension = fileName.split(".").pop()?.toLowerCase()
+    const extension = fileName.split(".").pop()?.toLowerCase();
 
     switch (extension) {
       case "jpg":
@@ -94,18 +110,18 @@ export default function TicketsList() {
       case "png":
       case "gif":
       case "webp":
-        return <ImageIcon className="h-4 w-4" />
+        return <ImageIcon className="h-4 w-4" />;
       case "pdf":
-        return <FileText className="h-4 w-4" />
+        return <FileText className="h-4 w-4" />;
       default:
-        return <File className="h-4 w-4" />
+        return <File className="h-4 w-4" />;
     }
-  }
+  };
 
   const getFileType = (fileName: string) => {
-    if (!fileName) return "file"
+    if (!fileName) return "file";
 
-    const extension = fileName.split(".").pop()?.toLowerCase()
+    const extension = fileName.split(".").pop()?.toLowerCase();
 
     switch (extension) {
       case "jpg":
@@ -113,51 +129,51 @@ export default function TicketsList() {
       case "png":
       case "gif":
       case "webp":
-        return "image"
+        return "image";
       case "pdf":
-        return "pdf"
+        return "pdf";
       default:
-        return "file"
+        return "file";
     }
-  }
+  };
 
   const handleFileView = (fileName: string) => {
     // Construct the file URL - adjust this based on your file storage setup
-    const fileUrl = fileName
+    const fileUrl = fileName;
 
-    const fileType = getFileType(fileName)
+    const fileType = getFileType(fileName);
 
     if (fileType === "image") {
       // Open image in a new tab
-      window.open(fileUrl, "_blank")
+      window.open(fileUrl, "_blank");
     } else if (fileType === "pdf") {
       // Open PDF in a new tab
-      window.open(fileUrl, "_blank")
+      window.open(fileUrl, "_blank");
     } else {
       // Download other file types
-      const link = document.createElement("a")
-      link.href = fileUrl
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-  }
+  };
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency?.toLowerCase()) {
       case "high":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
+        return "bg-red-500/20 text-red-400 border-red-500/30";
       case "medium":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
       case "low":
-        return "bg-green-500/20 text-green-400 border-green-500/30"
+        return "bg-green-500/20 text-green-400 border-green-500/30";
       default:
-        return "bg-neutral-500/20 text-neutral-400 border-neutral-500/30"
+        return "bg-neutral-500/20 text-neutral-400 border-neutral-500/30";
     }
-  }
+  };
 
-  console.log(viewTicket)
+  console.log(viewTicket);
 
   return (
     <>
@@ -169,8 +185,8 @@ export default function TicketsList() {
             <Select
               value={entriesPerPage}
               onValueChange={(value) => {
-                setEntriesPerPage(value)
-                setCurrentPage(1)
+                setEntriesPerPage(value);
+                setCurrentPage(1);
               }}
             >
               <SelectTrigger className="w-16 border-[#333] bg-[#0F0F0F]">
@@ -188,7 +204,10 @@ export default function TicketsList() {
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-            <Input placeholder="Search Here..." className="w-full border-[#333] bg-[#0F0F0F] pl-10 md:w-64" />
+            <Input
+              placeholder="Search Here..."
+              className="w-full border-[#333] bg-[#0F0F0F] pl-10 md:w-64"
+            />
           </div>
         </div>
 
@@ -198,10 +217,11 @@ export default function TicketsList() {
             <table className="w-full">
               <thead>
                 <tr className="border-y border-[#333] bg-[#0F0F0F]">
-                  <th className="px-4 py-3 text-left font-medium">ID</th>
                   <th className="px-4 py-3 text-left font-medium">Name</th>
+                  <th className="px-4 py-3 text-left font-medium">Subject</th>
+                  <th className="px-4 py-3 text-left font-medium">Urgency</th>
+
                   <th className="px-4 py-3 text-left font-medium">Date</th>
-                  <th className="px-4 py-3 text-left font-medium">Rent</th>
                   <th className="px-4 py-3 text-left font-medium">Time</th>
                   <th className="px-4 py-3 text-center font-medium">Respond</th>
                   <th className="px-4 py-3 text-center font-medium">Assign</th>
@@ -210,148 +230,177 @@ export default function TicketsList() {
               <tbody>
                 {isLoading
                   ? Array(5)
-                    .fill(0)
-                    .map((_, i) => (
-                      <tr key={i} className="animate-pulse border-b border-[#222]">
+                      .fill(0)
+                      .map((_, i) => (
+                        <tr
+                          key={i}
+                          className="animate-pulse border-b border-[#222]"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="h-4 w-16 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="h-4 w-24 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="h-4 w-24 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="h-4 w-16 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="h-4 w-16 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="mx-auto h-8 w-16 rounded bg-[#333]"></div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="mx-auto h-8 w-24 rounded bg-[#333]"></div>
+                          </td>
+                        </tr>
+                      ))
+                  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    tickets?.data?.map((ticket: any) => (
+                      <tr key={ticket._id} className="border-b border-[#222]">
+                        <td className="px-4 py-3">{ticket.name}</td>
+                        <td className="px-4 py-3">{ticket.subject}</td>
+                        <td className="px-4 py-3">{ticket.urgency}</td>
                         <td className="px-4 py-3">
-                          <div className="h-4 w-16 rounded bg-[#333]"></div>
+                          {new Date(ticket.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="h-4 w-24 rounded bg-[#333]"></div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="h-4 w-24 rounded bg-[#333]"></div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="h-4 w-16 rounded bg-[#333]"></div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="h-4 w-16 rounded bg-[#333]"></div>
+                          {new Date(ticket.createdAt).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <div className="mx-auto h-8 w-16 rounded bg-[#333]"></div>
+                          <Button
+                            variant="secondary"
+                            className=""
+                            onClick={() => setViewTicket(ticket)}
+                          >
+                            View
+                          </Button>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <div className="mx-auto h-8 w-24 rounded bg-[#333]"></div>
+                          <Button
+                            variant="default"
+                            className="w-32 bg-blue-600 text-white hover:bg-blue-700"
+                            onClick={() => {
+                              setViewTicket(ticket);
+                              setSelectedAdmin("");
+                            }}
+                          >
+                            Assign Admin
+                          </Button>
                         </td>
                       </tr>
-                    ))
-                  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  tickets?.data?.map((ticket: any, index: number) => (
-                    <tr key={ticket._id} className="border-b border-[#222]">
-                      <td className="px-4 py-3">#{index + 125}</td>
-                      <td className="px-4 py-3">{ticket.name}</td>
-                      <td className="px-4 py-3">
-                        {new Date(ticket.createdAt).toLocaleDateString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td className="px-4 py-3">$125.00</td>
-                      <td className="px-4 py-3">
-                        {new Date(ticket.createdAt).toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <Button variant="secondary" className="" onClick={() => setViewTicket(ticket)}>
-                          View
-                        </Button>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <Button
-                          variant="default"
-                          className="w-32 bg-blue-600 text-white hover:bg-blue-700"
-                          onClick={() => {
-                            setViewTicket(ticket)
-                            setSelectedAdmin("")
-                          }}
-                        >
-                          Assign Admin
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                    ))}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Mobile Card View */}
-        <div className="md:hidden space-y-4 p-4">
+        <div className="space-y-4 p-4 md:hidden">
           {isLoading
             ? Array(5)
-              .fill(0)
-              .map((_, i) => (
-                <Card key={i} className="bg-[#0F0F0F] border-[#333] animate-pulse">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex justify-between">
-                      <div className="h-4 w-16 rounded bg-[#333]"></div>
-                      <div className="h-4 w-24 rounded bg-[#333]"></div>
+                .fill(0)
+                .map((_, i) => (
+                  <Card
+                    key={i}
+                    className="animate-pulse border-[#333] bg-[#0F0F0F]"
+                  >
+                    <CardContent className="space-y-3 p-4">
+                      <div className="flex justify-between">
+                        <div className="h-4 w-16 rounded bg-[#333]"></div>
+                        <div className="h-4 w-24 rounded bg-[#333]"></div>
+                      </div>
+                      <div className="h-4 w-32 rounded bg-[#333]"></div>
+                      <div className="flex gap-2">
+                        <div className="h-8 w-16 rounded bg-[#333]"></div>
+                        <div className="h-8 w-24 rounded bg-[#333]"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              tickets?.data?.map((ticket: any, index: number) => (
+                <Card key={ticket._id} className="border-[#333] bg-[#0F0F0F]">
+                  <CardContent className="space-y-3 p-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-sm font-medium text-white">
+                          #{index + 125}
+                        </h3>
+                        <p className="text-sm text-gray-400">{ticket.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-white">
+                          $125.00
+                        </div>
+                        <div className="text-xs text-gray-400">10:00 AM</div>
+                      </div>
                     </div>
-                    <div className="h-4 w-32 rounded bg-[#333]"></div>
-                    <div className="flex gap-2">
-                      <div className="h-8 w-16 rounded bg-[#333]"></div>
-                      <div className="h-8 w-24 rounded bg-[#333]"></div>
+
+                    <div className="text-xs">
+                      <span className="text-gray-400">Date: </span>
+                      <span className="text-white">
+                        {new Date(ticket.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setViewTicket(ticket)}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                        onClick={() => {
+                          setViewTicket(ticket);
+                          setSelectedAdmin("");
+                        }}
+                      >
+                        Assign
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))
-            : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            tickets?.data?.map((ticket: any, index: number) => (
-              <Card key={ticket._id} className="bg-[#0F0F0F] border-[#333]">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-white font-medium text-sm">#{index + 125}</h3>
-                      <p className="text-gray-400 text-sm">{ticket.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-white font-medium text-sm">$125.00</div>
-                      <div className="text-gray-400 text-xs">10:00 AM</div>
-                    </div>
-                  </div>
-
-                  <div className="text-xs">
-                    <span className="text-gray-400">Date: </span>
-                    <span className="text-white">
-                      {new Date(ticket.createdAt).toLocaleDateString("en-US", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                    <Button variant="secondary" size="sm" className="flex-1" onClick={() => setViewTicket(ticket)}>
-                      View
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
-                      onClick={() => {
-                        setViewTicket(ticket)
-                        setSelectedAdmin("")
-                      }}
-                    >
-                      Assign
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+              ))}
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between p-4 text-sm gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 p-4 text-sm sm:flex-row">
           <div className="text-center sm:text-left">
             Showing {tickets?.pagination?.currentPage || 1} to{" "}
             {Math.min(
-              (tickets?.pagination?.currentPage || 1) * Number.parseInt(entriesPerPage),
+              (tickets?.pagination?.currentPage || 1) *
+                Number.parseInt(entriesPerPage),
               tickets?.pagination?.totalItems || 0,
             )}{" "}
             of {tickets?.pagination?.totalItems || 0} entries
@@ -368,27 +417,37 @@ export default function TicketsList() {
               &lt;
             </Button>
 
-            {Array.from({ length: Math.min(5, tickets?.pagination?.totalPages || 1) }, (_, i) => {
-              const pageNumber = i + 1
-              return (
-                <Button
-                  key={pageNumber}
-                  variant="outline"
-                  size="sm"
-                  className={`h-8 w-8 p-0 ${pageNumber === currentPage ? "border-red-600 bg-red-600 text-white" : "border-[#333] bg-[#0F0F0F]"
+            {Array.from(
+              { length: Math.min(5, tickets?.pagination?.totalPages || 1) },
+              (_, i) => {
+                const pageNumber = i + 1;
+                return (
+                  <Button
+                    key={pageNumber}
+                    variant="outline"
+                    size="sm"
+                    className={`h-8 w-8 p-0 ${
+                      pageNumber === currentPage
+                        ? "border-red-600 bg-red-600 text-white"
+                        : "border-[#333] bg-[#0F0F0F]"
                     }`}
-                  onClick={() => setCurrentPage(pageNumber)}
-                >
-                  {pageNumber}
-                </Button>
-              )
-            })}
+                    onClick={() => setCurrentPage(pageNumber)}
+                  >
+                    {pageNumber}
+                  </Button>
+                );
+              },
+            )}
 
             <Button
               variant="outline"
               size="sm"
               className="h-8 w-8 border-[#333] bg-[#0F0F0F] p-0"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, tickets?.pagination?.totalPages || 1))}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, tickets?.pagination?.totalPages || 1),
+                )
+              }
               disabled={currentPage === (tickets?.pagination?.totalPages || 1)}
             >
               &gt;
@@ -399,10 +458,15 @@ export default function TicketsList() {
 
       {/* Ticket Details Dialog */}
       {viewTicket && (
-        <Dialog open={!!viewTicket} onOpenChange={(open) => !open && setViewTicket(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-[#222] bg-[#1A1A1A] text-white">
+        <Dialog
+          open={!!viewTicket}
+          onOpenChange={(open) => !open && setViewTicket(null)}
+        >
+          <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto border-[#222] bg-[#1A1A1A] text-white">
             <DialogHeader className="pb-4">
-              <DialogTitle className="text-lg sm:text-xl">Ticket Details</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl">
+                Ticket Details
+              </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4 sm:space-y-6">
@@ -410,24 +474,34 @@ export default function TicketsList() {
               <div className="space-y-4">
                 <div className="">
                   <h3 className="mb-1 text-sm font-medium">Subject</h3>
-                  <p className="text-gray-400 text-sm break-words">{viewTicket.subject}</p>
+                  <p className="break-words text-sm text-gray-400">
+                    {viewTicket.subject}
+                  </p>
                 </div>
 
                 <div className="">
                   <h3 className="mb-1 text-sm font-medium">Name</h3>
-                  <p className="text-gray-400 text-sm">{viewTicket.name}</p>
+                  <p className="text-sm text-gray-400">{viewTicket.name}</p>
                 </div>
 
                 <div className="">
                   <h3 className="mb-1 text-sm font-medium">Service</h3>
-                  <p className="text-gray-400 text-sm">
-                    {typeof viewTicket.serviceId === "object" ? viewTicket.serviceId.name : "Unknown Service"}
+                  <p className="text-sm text-gray-400">
+                    {typeof viewTicket.serviceId === "object"
+                      ? viewTicket.serviceId.name
+                      : "Unknown Service"}
                   </p>
                 </div>
 
                 <div>
                   <h3 className="mb-1 text-sm font-medium">Urgency</h3>
-                  <Badge variant="outline" className={cn("text-xs", getUrgencyColor(viewTicket.urgency))}>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-xs",
+                      getUrgencyColor(viewTicket.urgency),
+                    )}
+                  >
                     {viewTicket.urgency}
                   </Badge>
                 </div>
@@ -435,15 +509,21 @@ export default function TicketsList() {
 
               {/* Envato Purchase Key */}
               <div>
-                <h3 className="mb-1 text-sm font-medium">Envato Purchase Key</h3>
-                <p className="text-gray-400 text-sm break-all">{viewTicket.envotoPunchesKey}</p>
+                <h3 className="mb-1 text-sm font-medium">
+                  Envato Purchase Key
+                </h3>
+                <p className="break-all text-sm text-gray-400">
+                  {viewTicket.envotoPunchesKey}
+                </p>
               </div>
 
               {/* Issue Details */}
               <div>
                 <h3 className="mb-1 text-sm font-medium">Issue Details</h3>
-                <div className="bg-[#0F0F0F] border border-[#333] rounded-md p-3">
-                  <p className="text-gray-400 text-sm">{viewTicket.issueDetails}</p>
+                <div className="rounded-md border border-[#333] bg-[#0F0F0F] p-3">
+                  <p className="text-sm text-gray-400">
+                    {viewTicket.issueDetails}
+                  </p>
                 </div>
               </div>
 
@@ -451,27 +531,29 @@ export default function TicketsList() {
               <div>
                 <h3 className="mb-2 text-sm font-medium">Attachments</h3>
                 {viewTicket.file && viewTicket.file.trim() !== "" ? (
-                  <div className="bg-[#0F0F0F] border border-[#333] rounded-md p-3">
+                  <div className="rounded-md border border-[#333] bg-[#0F0F0F] p-3">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex min-w-0 items-center gap-2">
                         {getFileIcon(viewTicket.file)}
-                        <span className="text-gray-400 text-sm truncate">{viewTicket.file}</span>
+                        <span className="truncate text-sm text-gray-400">
+                          {viewTicket.file}
+                        </span>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0">
+                      <div className="flex flex-shrink-0 gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleFileView(viewTicket.file)}
-                          className="border-[#333] bg-[#0F0F0F] hover:bg-[#222] text-white text-xs"
+                          className="border-[#333] bg-[#0F0F0F] text-xs text-white hover:bg-[#222]"
                         >
                           {getFileType(viewTicket.file) === "image" ? (
                             <>
-                              <Eye className="h-3 w-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               <span className="hidden sm:inline">View</span>
                             </>
                           ) : (
                             <>
-                              <Download className="h-3 w-3 mr-1" />
+                              <Download className="mr-1 h-3 w-3" />
                               <span className="hidden sm:inline">Download</span>
                             </>
                           )}
@@ -480,8 +562,10 @@ export default function TicketsList() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-[#0F0F0F] border border-[#333] rounded-md p-3">
-                    <p className="text-gray-500 text-sm italic">No file attached</p>
+                  <div className="rounded-md border border-[#333] bg-[#0F0F0F] p-3">
+                    <p className="text-sm italic text-gray-500">
+                      No file attached
+                    </p>
                   </div>
                 )}
               </div>
@@ -489,27 +573,36 @@ export default function TicketsList() {
               {/* Admin Assignment */}
               <div className="border-t border-[#222] pt-4">
                 <h3 className="mb-3 text-sm font-medium">Assign Admin</h3>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Select value={selectedAdmin} onValueChange={setSelectedAdmin}>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Select
+                    value={selectedAdmin}
+                    onValueChange={setSelectedAdmin}
+                  >
                     <SelectTrigger className="flex-1 border-[#333] bg-[#0F0F0F] text-white">
                       <SelectValue placeholder="Select Admin" />
                     </SelectTrigger>
                     <SelectContent className="border-[#333] bg-[#1A1A1A]">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {admins?.data?.map((admin: any) => (
-                        <SelectItem key={admin._id} value={admin._id} className="text-white hover:bg-[#333]">
+                        <SelectItem
+                          key={admin._id}
+                          value={admin._id}
+                          className="text-white hover:bg-[#333]"
+                        >
                           {admin.firstName} {admin.lastName}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <Button
-                    className="bg-red-600 hover:bg-red-700 sm:w-auto w-full"
+                    className="w-full bg-red-600 hover:bg-red-700 sm:w-auto"
                     onClick={handleAssignAdmin}
                     disabled={!selectedAdmin}
                   >
-                    <span className="sm:inline hidden">Assign & Create Room</span>
-                    <span className="sm:hidden inline">Assign Admin</span>
+                    <span className="hidden sm:inline">
+                      Assign & Create Room
+                    </span>
+                    <span className="inline sm:hidden">Assign Admin</span>
                   </Button>
                 </div>
               </div>
@@ -526,18 +619,26 @@ export default function TicketsList() {
               <DialogTitle>Confirm Assignment</DialogTitle>
             </DialogHeader>
             <div className="py-4">
-              <p>Are you sure you want to assign this ticket to the selected admin?</p>
-              <p className="mt-2 text-sm text-gray-400">This will create a new chat room for communication.</p>
+              <p>
+                Are you sure you want to assign this ticket to the selected
+                admin?
+              </p>
+              <p className="mt-2 text-sm text-gray-400">
+                This will create a new chat room for communication.
+              </p>
             </div>
-            <div className="flex flex-col sm:flex-row justify-end gap-2">
+            <div className="flex flex-col justify-end gap-2 sm:flex-row">
               <Button
                 variant="outline"
-                className="border-[#333] bg-[#0F0F0F] sm:w-auto w-full"
+                className="w-full border-[#333] bg-[#0F0F0F] sm:w-auto"
                 onClick={() => setShowConfirmation(false)}
               >
                 Cancel
               </Button>
-              <Button className="bg-red-600 hover:bg-red-700 sm:w-auto w-full" onClick={confirmAssignment}>
+              <Button
+                className="w-full bg-red-600 hover:bg-red-700 sm:w-auto"
+                onClick={confirmAssignment}
+              >
                 Confirm & Create Room
               </Button>
             </div>
@@ -545,5 +646,5 @@ export default function TicketsList() {
         </Dialog>
       )}
     </>
-  )
+  );
 }
