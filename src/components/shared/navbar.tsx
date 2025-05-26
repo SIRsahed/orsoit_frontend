@@ -205,18 +205,18 @@ export default function Navbar() {
                           <span>Dashboard</span>
                         </Link>
                       ) : userData.userType === "sales" ? (
-                          <Link href="/sales" className="flex items-center">
+                        <Link href="/sales/dashboard" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </Link>
+                      )
+                        :
+                        (
+                          <Link href="/account" className="flex items-center">
                             <User className="mr-2 h-4 w-4" />
                             <span>Dashboard</span>
                           </Link>
-                        )
-                        :
-                      (
-                      <Link href="/account" className="flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Dashboard</span>
-                      </Link>
-                      )}
+                        )}
                       <Button
                         onClick={() => setDialogOpen(true)}
                         className="!mt-4 w-full justify-start px-0 bg-transparent"
@@ -278,21 +278,34 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     {userData.userType === "ceo" ? (
-                      <Link href="/ceo/dashboard">
+                      <Link
+                        href="/ceo/dashboard"
+                        className="flex items-center"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
                     ) : userData.userType === "admin" ? (
-                      <Link href="/admin/dashboard">
+                      <Link
+                        href="/admin/dashboard"
+                        className="flex items-center"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
-                    ) : (
-                      <Link href="/account">
+                    ) : userData.userType === "sales" ? (
+                      <Link href="/sales/dashboard" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
-                    )}
+                    )
+                      :
+                      (
+                        <Link href="/account" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </Link>
+                      )}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
