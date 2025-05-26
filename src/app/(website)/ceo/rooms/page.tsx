@@ -284,7 +284,7 @@ export default function ChatPage() {
       fetchMessages(selectedRoom._id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRoom, token])
+  }, [selectedRoom, token]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -328,17 +328,17 @@ export default function ChatPage() {
             prevRooms.map((room) =>
               room._id === roomId
                 ? {
-                  ...room,
-                  lastMessage: {
-                    msg: lastMsg.message,
-                    sender: {
-                      _id: lastMsg.userId._id,
-                      firstName: lastMsg.userId.firstName,
+                    ...room,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
                     },
-                  },
-                  lastMessageTime: lastMsg.createdAt,
-                  unreadCount: 0,
-                }
+                    lastMessageTime: lastMsg.createdAt,
+                    unreadCount: 0,
+                  }
                 : room,
             ),
           );
@@ -348,17 +348,17 @@ export default function ChatPage() {
             prevRooms.map((room) =>
               room._id === roomId
                 ? {
-                  ...room,
-                  lastMessage: {
-                    msg: lastMsg.message,
-                    sender: {
-                      _id: lastMsg.userId._id,
-                      firstName: lastMsg.userId.firstName,
+                    ...room,
+                    lastMessage: {
+                      msg: lastMsg.message,
+                      sender: {
+                        _id: lastMsg.userId._id,
+                        firstName: lastMsg.userId.firstName,
+                      },
                     },
-                  },
-                  lastMessageTime: lastMsg.createdAt,
-                  unreadCount: 0,
-                }
+                    lastMessageTime: lastMsg.createdAt,
+                    unreadCount: 0,
+                  }
                 : room,
             ),
           );
@@ -463,8 +463,8 @@ export default function ChatPage() {
           searchQuery.trim() === ""
             ? updatedRooms
             : updatedRooms.filter((room) =>
-              room.roomName.toLowerCase().includes(searchQuery.toLowerCase()),
-            ),
+                room.roomName.toLowerCase().includes(searchQuery.toLowerCase()),
+              ),
         );
         setSelectedRoom(null);
         setSidebarOpen(false);
@@ -475,7 +475,7 @@ export default function ChatPage() {
   };
 
   const getInitials = (user: User) => {
-    return `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`.toUpperCase();
+    return `${user?.firstName?.charAt(0)}${user?.lastName?.charAt(0)}`.toUpperCase();
   };
 
   const getRoomInitials = (roomName: string) => {
@@ -548,10 +548,11 @@ export default function ChatPage() {
                   {filteredRooms.map((room) => (
                     <Card
                       key={room._id}
-                      className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
-                        ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
-                        : "bg-[#151515] !text-white hover:bg-[#252525]"
-                        }`}
+                      className={`cursor-pointer transition-colors ${
+                        selectedRoom?._id === room._id
+                          ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
+                          : "bg-[#151515] !text-white hover:bg-[#252525]"
+                      }`}
                       onClick={() => {
                         setSelectedRoom(room);
                         setSidebarOpen(false);
@@ -649,46 +650,47 @@ export default function ChatPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
-                          {selectedRoom.userId.abator ? (
+                          {selectedRoom?.userId?.abator ? (
                             <AvatarImage
                               src={
-                                selectedRoom.userId.abator || "/placeholder.svg"
+                                selectedRoom?.userId?.abator ||
+                                "/placeholder.svg"
                               }
-                              alt={`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}
+                              alt={`${selectedRoom?.userId?.firstName} ${selectedRoom?.userId?.lastName}`}
                             />
                           ) : (
                             <AvatarFallback>
-                              {getInitials(selectedRoom.userId)}
+                              {getInitials(selectedRoom?.userId)}
                             </AvatarFallback>
                           )}
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">{`${selectedRoom.userId.firstName} ${selectedRoom.userId.lastName}`}</p>
+                          <p className="text-sm font-medium">{`${selectedRoom?.userId?.firstName} ${selectedRoom?.userId?.lastName}`}</p>
                           <p className="text-xs text-zinc-400">
-                            {selectedRoom.userId.userType}
+                            {selectedRoom?.userId?.userType}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                         <Avatar className="h-8 w-8">
-                          {selectedRoom.adminId.abator ? (
+                          {selectedRoom?.adminId?.abator ? (
                             <AvatarImage
                               src={
                                 selectedRoom.adminId.abator ||
                                 "/placeholder.svg"
                               }
-                              alt={`${selectedRoom.adminId.firstName} ${selectedRoom.adminId.lastName}`}
+                              alt={`${selectedRoom?.adminId?.firstName} ${selectedRoom?.adminId?.lastName}`}
                             />
                           ) : (
                             <AvatarFallback>
-                              {getInitials(selectedRoom.adminId)}
+                              {getInitials(selectedRoom?.adminId)}
                             </AvatarFallback>
                           )}
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">{`${selectedRoom.adminId.firstName} ${selectedRoom.adminId.lastName}`}</p>
+                          <p className="text-sm font-medium">{`${selectedRoom?.adminId?.firstName} ${selectedRoom?.adminId?.lastName}`}</p>
                           <p className="text-xs text-zinc-400">
-                            {selectedRoom.adminId.userType}
+                            {selectedRoom?.adminId?.userType}
                           </p>
                         </div>
                       </div>
@@ -749,10 +751,11 @@ export default function ChatPage() {
                             </span>
                           </div>
                           <div
-                            className={`mt-1 rounded-lg p-3 ${isCurrentUser
-                              ? "rounded-tr-none bg-red-900 text-white"
-                              : "rounded-tl-none bg-zinc-800 text-white"
-                              }`}
+                            className={`mt-1 rounded-lg p-3 ${
+                              isCurrentUser
+                                ? "rounded-tr-none bg-red-900 text-white"
+                                : "rounded-tl-none bg-zinc-800 text-white"
+                            }`}
                           >
                             <p>{message.message}</p>
                             {message.attachmentFile && (
@@ -873,10 +876,11 @@ export default function ChatPage() {
             {filteredRooms.map((room) => (
               <Card
                 key={room._id}
-                className={`cursor-pointer transition-colors ${selectedRoom?._id === room._id
-                  ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
-                  : "bg-[#151515] !text-white hover:bg-[#252525]"
-                  }`}
+                className={`cursor-pointer transition-colors ${
+                  selectedRoom?._id === room._id
+                    ? "bg-gradient-to-b from-[#D80100] to-[#200C0D] !text-white"
+                    : "bg-[#151515] !text-white hover:bg-[#252525]"
+                }`}
                 onClick={() => setSelectedRoom(room)}
               >
                 {/* Update the room list rendering in the desktop view */}
