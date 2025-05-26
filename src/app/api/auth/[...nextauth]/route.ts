@@ -69,6 +69,18 @@ const handler = NextAuth({
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        domain: "https://orsoit.vercel.app",
+      },
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
