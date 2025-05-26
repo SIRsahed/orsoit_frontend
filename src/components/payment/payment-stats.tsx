@@ -1,17 +1,29 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { PaymentsResponse } from "./payments-list";
+import { fetchPayments } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function PaymentStats() {
+
+  const {
+    data: paymentsData
+  } = useQuery<PaymentsResponse>({
+    queryKey: ["payments"],
+    queryFn: () => fetchPayments(1, 10),
+  });
+
   const stats = [
-    { title: "All", value: "120", variant: "default" },
+    { title: "All", value: paymentsData?.pagination?.totalItems, variant: "default" },
     { title: "Succeed", value: "110", variant: "success" },
-    { title: "Refunded", value: "0", variant: "warning" },
     { title: "Failed", value: "0", variant: "danger" },
   ];
 
+  console.log(paymentsData)
+
   return (
-    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {stats.map((stat) => (
         <Card key={stat.title} className="border-[#222] bg-[#1A1A1A]">
           <CardContent className="p-6">

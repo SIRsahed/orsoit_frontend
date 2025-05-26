@@ -110,10 +110,8 @@ export default function CreateCouponDialog({
       expireIn: values.expireIn.toISOString(),
     };
 
-    console.log(payload);
-
     // Uncomment this when ready to submit to API
-    // mutation.mutate(payload);
+    mutation.mutate(payload);
   }
 
   return (
@@ -188,38 +186,38 @@ export default function CreateCouponDialog({
                   <FormLabel>Service</FormLabel>
                   <div className="space-y-2">
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-                    servicesData?.data?.map((service: any) => (
-                      <div
-                        key={service._id}
-                        className="flex items-center space-x-2"
-                      >
-                        <FormField
-                          control={form.control}
-                          name="applicableServices"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(service._id)}
-                                  onCheckedChange={(checked) => {
-                                    const updatedServices = checked
-                                      ? [...field.value, service._id]
-                                      : field.value.filter(
+                      servicesData?.data?.map((service: any) => (
+                        <div
+                          key={service._id}
+                          className="flex items-center space-x-2"
+                        >
+                          <FormField
+                            control={form.control}
+                            name="applicableServices"
+                            render={({ field }) => (
+                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(service._id)}
+                                    onCheckedChange={(checked) => {
+                                      const updatedServices = checked
+                                        ? [...field.value, service._id]
+                                        : field.value.filter(
                                           (value: string) =>
                                             value !== service._id,
                                         );
-                                    field.onChange(updatedServices);
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="cursor-pointer text-sm font-normal">
-                                {service.name}
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    ))}
+                                      field.onChange(updatedServices);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="cursor-pointer text-sm font-normal">
+                                  {service.name}
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      ))}
                   </div>
                   <FormMessage />
                 </FormItem>

@@ -112,7 +112,7 @@ export default function CustomWorkForm() {
   const mutation = useMutation({
     mutationFn: submitCustomService,
     onSuccess: () => {
-      toast.success("Form submitted successfully!");
+      toast.success("Custom service submitted successfully!");
       form.reset();
       setFileName(null);
     },

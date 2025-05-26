@@ -156,7 +156,7 @@ export default function AddServiceDialog() {
                           alt="Preview"
                           width={600}
                           height={500}
-                          className="h-48 w-full object-cover"
+                          className="h-48 w-full object-contain"
                         />
                         <Button
                           type="button"

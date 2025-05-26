@@ -16,40 +16,21 @@ export async function middleware(request: NextRequest) {
     secureCookie: process.env.NODE_ENV === "production",
   });
 
-  console.log("Token:", token);
-
-  // Updated public routes with /auth prefix
-  const publicRoutes = [
-    "/",
-    "/auth/login",
-    "/auth/register",
-    "/auth/verify",
-    "/auth/forgot-password",
-  ];
-  const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/verify-email", "/auth/forgot-password"];
+  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const isStatic = pathname.startsWith("/_next") || pathname.includes(".");
 
   // Redirect unauthenticated users trying to access protected routes
   if (!token && !isPublicRoute && !isStatic) {
-    console.log("Redirecting to login - no token");
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Redirect authenticated users away from auth routes
-  if (
-    token &&
-    [
-      "/auth/login",
-      "/auth/register",
-      "/auth/verify",
-      "/auth/forgot-password",
-    ].includes(pathname)
-  ) {
-    console.log("Redirecting authenticated user from auth page");
-    // Redirect based on role to their respective dashboards
+
+
+
+  // Redirect authenticated users away from public/auth routes
+  if (token && ["/login", "/register", "/verify", "/forgot-password"].includes(pathname)) {
     if (token.role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
@@ -59,7 +40,6 @@ export async function middleware(request: NextRequest) {
     if (token.role === "sales") {
       return NextResponse.redirect(new URL("/sales", request.url));
     }
-    // Default redirect for customers or users without specific roles
     return NextResponse.redirect(new URL("/", request.url));
   }
 

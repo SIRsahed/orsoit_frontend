@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Bell, ChevronDown, User, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import { LogoutDialog } from "./logout-dialog";
 
 export default function DashboardHeader() {
   const { data: session } = useSession();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -26,8 +28,8 @@ export default function DashboardHeader() {
     phoneNumber: "",
   });
 
-  // Fetch user data from API
-  const fetchUserData = async () => {
+  // ✅ useCallback prevents `fetchUserData` from being a changing dependency
+  const fetchUserData = useCallback(async () => {
     if (!session?.user?.id || !session?.user?.accessToken) return;
 
     try {
@@ -57,29 +59,26 @@ export default function DashboardHeader() {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-  };
+  }, [session?.user?.id, session?.user?.accessToken, session?.user?.image]);
 
+  // ✅ Clean effect with fixed dependency array
   useEffect(() => {
     if (session?.user?.id) {
       fetchUserData();
     }
-  }, [session]);
+  }, [session?.user?.id, fetchUserData]);
 
-  // Listen for profile update events
+  // ✅ Storage event listener
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleStorageChange = (event: any) => {
-      if (event.key === "profile-updated") {
-        // Refetch user data when profile is updated
-        if (session?.user?.id) {
-          fetchUserData();
-        }
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "profile-updated" && session?.user?.id) {
+        fetchUserData();
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [session]);
+  }, [session?.user?.id, fetchUserData]);
 
   const getUserInitials = () => {
     if (!userData.firstName && !userData.lastName) return "U";
@@ -88,7 +87,6 @@ export default function DashboardHeader() {
     return `${firstInitial}${lastInitial}`;
   };
 
-  // Get full name
   const getFullName = () => {
     return (
       `${userData.firstName} ${userData.lastName}`.trim() ||
@@ -97,10 +95,8 @@ export default function DashboardHeader() {
     );
   };
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-
   return (
-    <header className="flex w-full items-center justify-between border-b border-[#222] bg-[#1A0A0A] bg-[#843E3E54] p-4 shadow-[0_4px_12px_0px_#EC747973] backdrop-blur-xl">
+    <header className="flex w-full items-center justify-between border-b border-[#222] bg-[#843E3E54] p-4 shadow-[0_4px_12px_0px_#EC747973] backdrop-blur-xl">
       <h1 className="text-xl font-bold">Dashboard</h1>
 
       <div className="flex items-center gap-4">
@@ -156,7 +152,7 @@ export default function DashboardHeader() {
             <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
               <Button
                 onClick={() => setDialogOpen(true)}
-                className="w-full justify-start bg-neutral-800"
+                className="w-full justify-start"
               >
                 <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                 Logout

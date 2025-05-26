@@ -142,9 +142,8 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors hover:text-red-400 ${
-                  isActive(link.href) ? "text-red-500" : "text-white"
-                }`}
+                className={`transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -170,9 +169,8 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`text-lg font-medium transition-colors hover:text-red-400 ${
-                        isActive(link.href) ? "text-red-500" : "text-white"
-                      }`}
+                      className={`text-lg font-medium transition-colors hover:text-red-400 ${isActive(link.href) ? "text-red-500" : "text-white"
+                        }`}
                       onClick={() => setOpen(false)}
                     >
                       {link.label}
@@ -206,15 +204,22 @@ export default function Navbar() {
                           <User className="mr-2 h-4 w-4" />
                           <span>Dashboard</span>
                         </Link>
-                      ) : (
-                        <Link href="/account" className="flex items-center">
+                      ) : userData.userType === "sales" ? (
+                        <Link href="/sales/dashboard" className="flex items-center">
                           <User className="mr-2 h-4 w-4" />
                           <span>Dashboard</span>
                         </Link>
-                      )}
+                      )
+                        :
+                        (
+                          <Link href="/account" className="flex items-center">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </Link>
+                        )}
                       <Button
                         onClick={() => setDialogOpen(true)}
-                        className="!mt-4 w-full justify-start bg-transparent px-0"
+                        className="!mt-4 w-full justify-start px-0 bg-transparent"
                       >
                         <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                         Logout
@@ -273,27 +278,40 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     {userData.userType === "ceo" ? (
-                      <Link href="/ceo/dashboard">
+                      <Link
+                        href="/ceo/dashboard"
+                        className="flex items-center"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
                     ) : userData.userType === "admin" ? (
-                      <Link href="/admin/dashboard">
+                      <Link
+                        href="/admin/dashboard"
+                        className="flex items-center"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
-                    ) : (
-                      <Link href="/account">
+                    ) : userData.userType === "sales" ? (
+                      <Link href="/sales/dashboard" className="flex items-center">
                         <User className="mr-2 h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
-                    )}
+                    )
+                      :
+                      (
+                        <Link href="/account" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </Link>
+                      )}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600">
                     <Button
                       onClick={() => setDialogOpen(true)}
-                      className="w-full justify-start bg-neutral-800"
+                      className="w-full justify-start"
                     >
                       <LogOut className="mr-3 h-5 w-5" aria-hidden="true" />
                       Logout
