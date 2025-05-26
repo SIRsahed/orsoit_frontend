@@ -197,7 +197,6 @@ export default function TicketsList() {
     }
   };
 
-  console.log(viewTicket);
 
   return (
     <>
