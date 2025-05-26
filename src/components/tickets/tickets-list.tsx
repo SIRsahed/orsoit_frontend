@@ -15,12 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  fetchTickets,
-  fetchAdminUsers,
-  assignTicket,
-  createRoom,
-} from "@/lib/api";
+import { fetchTickets, fetchAdminUsers, createRoom } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +24,21 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+
+const approveTicket = async (ticketId: string) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/tickets/approve/${ticketId}`,
+    {
+      method: "PUT",
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to approve ticket");
+  }
+
+  return true;
+};
 
 export default function TicketsList() {
   const router = useRouter();
@@ -50,19 +60,19 @@ export default function TicketsList() {
     queryFn: fetchAdminUsers,
   });
 
-  const assignMutation = useMutation({
-    mutationFn: ({
-      ticketId,
-      adminId,
-    }: {
-      ticketId: string;
-      adminId: string;
-    }) => assignTicket(ticketId, adminId),
-    onSuccess: () => {
-      toast.success("Admin assigned successfully");
-      queryClient.invalidateQueries({ queryKey: ["tickets"] });
-    },
-  });
+  // const assignMutation = useMutation({
+  //   mutationFn: ({
+  //     ticketId,
+  //     adminId,
+  //   }: {
+  //     ticketId: string;
+  //     adminId: string;
+  //   }) => assignTicket(ticketId, adminId),
+  //   onSuccess: () => {
+  //     toast.success("Admin assigned successfully");
+  //     queryClient.invalidateQueries({ queryKey: ["tickets"] });
+  //   },
+  // });
 
   const createRoomMutation = useMutation({
     mutationFn: createRoom,
@@ -82,15 +92,29 @@ export default function TicketsList() {
     setShowConfirmation(true);
   };
 
+  const approveTicketMutation = useMutation({
+    mutationFn: approveTicket,
+    onSuccess: () => {
+      toast.success("Ticket approved successfully");
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+    onError: () => {
+      toast.error("Failed to approve ticket");
+    },
+  });
+
   const confirmAssignment = () => {
     setShowConfirmation(false);
 
-    assignMutation.mutate({
-      ticketId: viewTicket._id,
-      adminId: selectedAdmin,
-    });
+    // assignMutation.mutate({
+    //   ticketId: viewTicket._id,
+    //   adminId: selectedAdmin,
+    // });
 
     // Create a room after assigning admin
+
+    approveTicketMutation.mutate(viewTicket._id);
+
     createRoomMutation.mutate({
       userId: viewTicket.userId,
       adminId: selectedAdmin,
