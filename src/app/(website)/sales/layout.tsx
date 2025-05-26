@@ -25,7 +25,7 @@ export default function RootLayout({
         <div className="flex min-h-screen">
           <SalesSidebar />
           <div className="flex-1 md:w-[calc(100vw-271.5px)]">
-            <div className="sticky top-0 z-10 flex">
+            <div className="sticky top-0 z-10 flex md:ml-[15px]">
               <DashboardHeader />
             </div>
             {children}
