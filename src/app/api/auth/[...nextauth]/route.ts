@@ -51,12 +51,12 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.accessToken = token.accessToken as string;
-      }
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        role: token.role as string,
+        accessToken: token.accessToken as string,
+      };
       return session;
     },
   },
