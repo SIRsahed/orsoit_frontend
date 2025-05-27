@@ -115,7 +115,7 @@ export function ServicesGrid() {
                           className="bg-primary text-white transition-colors hover:bg-red-600"
                           size="lg"
                         >
-                          See Plans
+                          Request Service
                         </Button>
                       </Link>
                     </div>

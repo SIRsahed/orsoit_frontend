@@ -316,6 +316,8 @@ export default function RoomChatPage() {
     );
   }
 
+  console.log(room)
+
   return (
     <div className="flex h-[calc(100vh-150px)] flex-col overflow-hidden rounded-lg border border-neutral-800 bg-black text-white">
       {/* Chat header */}
@@ -330,7 +332,7 @@ export default function RoomChatPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <Avatar className="h-8 w-8">
-            {room.adminId.abator ? (
+            {room?.adminId?.abator ? (
               <AvatarImage
                 src={room.adminId.abator || "/placeholder.svg"}
                 alt={`${room.adminId.firstName} ${room.adminId.lastName}`}
@@ -357,7 +359,7 @@ export default function RoomChatPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 rounded p-2 hover:bg-zinc-800">
                   <Avatar className="h-8 w-8">
-                    {room.userId.abator ? (
+                    {room?.userId?.abator ? (
                       <AvatarImage
                         src={room.userId.abator || "/placeholder.svg"}
                         alt={`${room.userId.firstName} ${room.userId.lastName}`}

@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginUser } from "@/app/actions/auth";
+import { loginUser } from "@/app/actions/auth"; // Adjust the path as needed
 
 const handler = NextAuth({
   providers: [
@@ -35,14 +35,20 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/logout",
     error: "/auth/error",
   },
+
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
+
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -51,7 +57,6 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
@@ -60,15 +65,9 @@ const handler = NextAuth({
       return session;
     },
   },
-  session: {
-    strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours
-  },
+
   secret: process.env.NEXTAUTH_SECRET,
-  // Add this to ensure JWT is properly configured
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
+  debug: process.env.NODE_ENV === "development",
 });
 
 export { handler as GET, handler as POST };

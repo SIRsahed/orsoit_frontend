@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -100,10 +100,6 @@ export default function DashboardHeader() {
       <h1 className="text-xl font-bold">Dashboard</h1>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-white">
-          <Bell className="h-5 w-5" />
-        </Button>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex cursor-pointer items-center space-x-2">

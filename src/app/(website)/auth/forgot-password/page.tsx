@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
                 disabled={isLoading}
                 className="w-full rounded-md bg-red-600 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               >
-                {isLoading ? "Sending..." : "Send OTP"}
+                {isLoading ? "Sending..." : "Send Link"}
               </Button>
 
               <div className="text-center text-sm">
