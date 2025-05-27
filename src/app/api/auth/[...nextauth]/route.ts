@@ -42,7 +42,6 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -51,7 +50,6 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
@@ -65,7 +63,6 @@ const handler = NextAuth({
     maxAge: 24 * 60 * 60, // 24 hours
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // Add this to ensure JWT is properly configured
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
@@ -77,10 +74,11 @@ const handler = NextAuth({
         sameSite: "lax",
         path: "/",
         secure: true,
-        domain: "https://orsoit.vercel.app",
+        domain: ".orsoit.vercel.app", // ✅ Correct format
       },
     },
   },
+  debug: process.env.NODE_ENV === "development",
 });
 
 export { handler as GET, handler as POST };
