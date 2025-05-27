@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginUser } from "@/app/actions/auth";
+import { loginUser } from "@/app/actions/auth"; // Adjust the path as needed
 
 const handler = NextAuth({
   providers: [
@@ -35,11 +35,18 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/logout",
     error: "/auth/error",
   },
+
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -58,26 +65,8 @@ const handler = NextAuth({
       return session;
     },
   },
-  session: {
-    strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours
-  },
+
   secret: process.env.NEXTAUTH_SECRET,
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
-  cookies: {
-    sessionToken: {
-      name: `__Secure-next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: true,
-        domain: ".orsoit.vercel.app", // ✅ Correct format
-      },
-    },
-  },
   debug: process.env.NODE_ENV === "development",
 });
 
