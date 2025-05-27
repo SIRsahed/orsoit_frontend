@@ -35,37 +35,14 @@ const handler = NextAuth({
       },
     }),
   ],
-
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/logout",
     error: "/auth/error",
   },
-
-  session: {
-    strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours
-  },
-
-  // Updated cookie configuration for Vercel compatibility
-  cookies: {
-    sessionToken: {
-      name:
-        process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.session-token"
-          : "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        // Remove domain specification for better compatibility
-      },
-    },
-  },
-
   callbacks: {
     async jwt({ token, user }) {
+      // Initial sign in
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -74,6 +51,7 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
+      // Send properties to the client
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
@@ -82,12 +60,15 @@ const handler = NextAuth({
       return session;
     },
   },
-
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
-
-  // Additional options for better Vercel compatibility
-  useSecureCookies: process.env.NODE_ENV === "production",
+  // Add this to ensure JWT is properly configured
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
 });
 
 export { handler as GET, handler as POST };
