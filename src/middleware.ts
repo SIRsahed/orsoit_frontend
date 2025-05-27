@@ -1,5 +1,3 @@
-
-
 // middleware.ts
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
@@ -12,9 +10,10 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL("/auth/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname); 
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
+  console.log("User is authenticated, proceeding to the requested page");
 
   return NextResponse.next();
 }
