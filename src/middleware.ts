@@ -16,8 +16,16 @@ export async function middleware(request: NextRequest) {
     secureCookie: process.env.NODE_ENV === "production",
   });
 
-  const publicRoutes = ["/", "/auth/login", "/auth/register", "/auth/verify-email", "/auth/forgot-password", "/auth/reset-password"];
-  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+  const publicRoutes = [
+    "/",
+    "/auth/login",
+    "/auth/register",
+    "/auth/verify-email",
+    "/auth/forgot-password",
+  ];
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 
   const isStatic = pathname.startsWith("/_next") || pathname.includes(".");
 
@@ -26,11 +34,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-
-
-
   // Redirect authenticated users away from public/auth routes
-  if (token && ["/login", "/register", "/verify-email"].includes(pathname)) {
+  if (
+    token &&
+    ["/login", "/register", "/verify", "/forgot-password"].includes(pathname)
+  ) {
     if (token.role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
@@ -42,7 +50,6 @@ export async function middleware(request: NextRequest) {
     }
     return NextResponse.redirect(new URL("/", request.url));
   }
-
 
   // Role-based dashboard access control
   if (token) {

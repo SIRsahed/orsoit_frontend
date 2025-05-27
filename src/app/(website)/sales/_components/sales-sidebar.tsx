@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, PackagePlus } from "lucide-react";
+import { LayoutDashboard, PackagePlus, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -24,6 +24,11 @@ export function SalesSidebar() {
       icon: LayoutDashboard,
     },
     { href: "/sales/coupon", label: "Coupons", icon: PackagePlus },
+    {
+      href: "/sales/account-settings",
+      label: "Account Settings",
+      icon: Settings,
+    },
   ];
 
   return (
