@@ -119,7 +119,9 @@ export default function Navbar() {
   };
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  console.log(session?.user?.id, "session user id");
+  setTimeout(() => {
+    console.log(session?.user?.id, "session user id");
+  }, 5000);
 
   return (
     <header className="sticky top-0 z-50 w-full">

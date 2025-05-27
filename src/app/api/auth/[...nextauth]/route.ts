@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginUser } from "@/app/actions/auth"; // Adjust the path as needed
+import { loginUser } from "@/app/actions/auth";
 
 const handler = NextAuth({
   providers: [
@@ -47,6 +47,23 @@ const handler = NextAuth({
     maxAge: 24 * 60 * 60, // 24 hours
   },
 
+  // Updated cookie configuration for Vercel compatibility
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        // Remove domain specification for better compatibility
+      },
+    },
+  },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -68,6 +85,9 @@ const handler = NextAuth({
 
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+
+  // Additional options for better Vercel compatibility
+  useSecureCookies: process.env.NODE_ENV === "production",
 });
 
 export { handler as GET, handler as POST };
