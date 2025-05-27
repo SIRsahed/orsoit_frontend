@@ -130,7 +130,7 @@ export default function CustomServicesList() {
     }
 
     fetchInitialData()
-  }, [services?.data])
+  }, [services.data, userCache, userError, userLoading])
 
   const getUserData = (userId: string) => {
     if (userCache[userId]) {

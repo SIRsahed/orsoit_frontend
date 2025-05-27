@@ -25,7 +25,7 @@ export default function RootLayout({
             </SocketProvider>
           </QueryProvider>
         </SessionWrapper>
-        <Toaster position="bottom-right" theme="dark" />
+        <Toaster position="top-right" theme="dark" />
       </body>
     </html>
   );

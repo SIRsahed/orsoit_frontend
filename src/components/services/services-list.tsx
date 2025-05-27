@@ -33,7 +33,6 @@ export default function ServicesList() {
   if (error) {
     toast.error("Failed to load services");
   }
-  
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
