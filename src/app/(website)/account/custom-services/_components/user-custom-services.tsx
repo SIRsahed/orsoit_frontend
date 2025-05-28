@@ -106,7 +106,8 @@ export default function UserCustomServicesList() {
                         subscriptionPlanId: [selectedPlan?.subscriptionPlanId[0]._id],
                         services: [
                             {
-                                serviceId: selectedService?._id
+                                serviceId: selectedService?._id,
+                                serviceType: "Customservice"
                             }
                         ]
                     }),

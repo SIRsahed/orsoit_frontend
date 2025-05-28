@@ -58,6 +58,7 @@ export function SubscriptionPlan() {
       .then((data) => {
         queryClient.invalidateQueries({ queryKey: ["userSubscriptions"] })
         toast.success(data.message)
+        setShowConfirmation(false)
       })
   }
 

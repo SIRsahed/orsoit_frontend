@@ -78,7 +78,6 @@ export default function CustomWorkForm() {
     formData.append("description", data.description || "");
     formData.append("country", data.country || "");
     formData.append("price", data.price?.toString() || "0");
-
     // Add userId from session
     if (userId) {
       formData.append("userId", userId);
