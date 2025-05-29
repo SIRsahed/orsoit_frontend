@@ -89,6 +89,33 @@ export default function UserCustomServicesList() {
     const handlePayment = async () => {
         setLoading(true)
         try {
+
+            if (!selectedPlan) {
+                toast.error("Please select a plan")
+                return
+            }
+
+            const habijabi = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription-info`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId: session?.data?.user?.id,
+                        subscriptionPlanId: [selectedPlan?.subscriptionPlanId[0]._id],
+                        services: [
+                            {
+                                serviceId: selectedService?._id,
+                                serviceType: "Customservice"
+                            }
+                        ]
+                    }),
+                }
+            )
+
+            const habijabiData = await habijabi.json()
+
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-intent`, {
                 method: "POST",
                 headers: {
@@ -97,7 +124,7 @@ export default function UserCustomServicesList() {
                 body: JSON.stringify({
                     userId: session?.data?.user?.id,
                     price: finalPrice,
-                    subscriptionId: selectedPlan?._id,
+                    subscriptionId: habijabiData.data._id
                 }),
             })
 
@@ -204,12 +231,12 @@ export default function UserCustomServicesList() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-[#333] bg-[#0F0F0F]">
-                                    <th className="px-4 py-3 text-left font-medium text-white">Service Name</th>
-                                    <th className="px-4 py-3 text-left font-medium text-white">Country</th>
-                                    <th className="px-4 py-3 text-left font-medium text-white">Budget</th>
-                                    <th className="px-4 py-3 text-left font-medium text-white">File</th>
-                                    <th className="px-4 py-3 text-center font-medium text-white">Status</th>
-                                    <th className="px-4 py-3 text-center font-medium text-white">Action</th>
+                                    <th className="px-4 py-3 text-sm text-left font-medium text-white">Service Name</th>
+                                    <th className="px-4 py-3 text-sm text-left font-medium text-white">Country</th>
+                                    <th className="px-4 py-3 text-sm text-left font-medium text-white">Budget</th>
+                                    <th className="px-4 py-3 text-sm text-left font-medium text-white">File</th>
+                                    <th className="px-4 py-3 text-sm text-center font-medium text-white">Status</th>
+                                    <th className="px-4 py-3 text-sm text-center font-medium text-white">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -240,10 +267,10 @@ export default function UserCustomServicesList() {
                                         ))
                                     : services?.data?.map((service: CustomService) => (
                                         <tr key={service._id} className="border-b border-[#222] text-white">
-                                            <td className="px-4 py-3 font-medium">{service.name}</td>
-                                            <td className="px-4 py-3">{service.country}</td>
-                                            <td className="px-4 py-3">${service.price}</td>
-                                            <td className="px-4 py-3">
+                                            <td className="px-4 py-3 text-sm font-medium">{service.name}</td>
+                                            <td className="px-4 py-3 text-sm">{service.country}</td>
+                                            <td className="px-4 py-3 text-sm">${service.price}</td>
+                                            <td className="px-4 py-3 text-sm">
                                                 <a
                                                     href={service.fileUpload}
                                                     target="_blank"

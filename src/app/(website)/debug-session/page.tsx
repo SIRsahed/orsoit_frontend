@@ -9,7 +9,7 @@ export default function DebugSessionPage() {
   useEffect(() => {
     console.log("Session Status:", status);
     console.log("Session Data:", session);
-  }, [session]);
+  }, [session, status]);
 
   return (
     <main className="p-4">
